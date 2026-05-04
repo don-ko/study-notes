@@ -16,9 +16,30 @@ positive probabilities on $x\in \Theta_1$ even if $f\left( x|\theta \right)
 \section{Bernoulli Distribution}
 Suppose the distribution of interest
 \[\mathbf{X}\sim Bern\left( \theta \right),\quad f\left( x|\theta \right) =\theta^{x}{\left( 1-\theta \right) }^{1-x}.\]
-The conjugate family for $\theta$ is the \textcolor{Blue}{\textbf{Beta distribution}} with parameters $\alpha, \beta >0$:
+The conjugate family for $\theta$ is the \textcolor{Blue}{\textbf{Beta
+distribution}}. Suppose $\theta\sim Beta\left( \alpha,\beta \right)$, where $
+\alpha, \beta >0$:
 \[\pi\left( \theta \right) =\frac{\Gamma \left(\alpha +\beta \right) }{\Gamma \left( \alpha \right) \Gamma \left( \beta \right) }\theta^{\alpha -1}{\left(1-\theta \right) }^{\beta -1},\quad 0<\theta<1.\]
 The posterior distribution is
 \[\pi\left( \theta|\mathbf{x} \right) =Beta\left(
 \alpha +n \bar{x},\beta +n-n \bar{x} \right).\]
 
+\section{Poisson Distribution}
+Suppose the distribution of interest
+\[\mathbf{X}\sim Poisson\left( \lambda \right),\quad f\left( x|\lambda \right) =\frac{\lambda^{x}e^{-\lambda }}{x!}.\]
+The conjugate family for $\theta$ is the \textcolor{Blue}{\textbf{Gamma
+distribution}}. Suppose $\theta\sim Gamma\left( \alpha,\frac{1}{\beta} \right)$, where
+$\alpha, \beta >0$:
+\[\pi \left( \lambda \right) =\lambda^{\alpha-1}e^{\left( -\beta\lambda \right)
+}.\]
+The posterior distribution is
+\[\pi \left( \lambda|\mathbf{x} \right) =Gamma\left( \alpha +\sum_{i=1}^{n}x_{i},\frac{1}{\beta +n} \right).\]
+
+\section{Exponential Distribution}
+Suppose the distribution of interest
+\[\mathbf{X}\sim Exponential\left( \frac{1}{\lambda} \right),\quad f\left( x|\lambda \right) =\lambda e^{-\lambda x}\quad \lambda,x>0.\]
+The conjugate family for $\lambda$ is the \textcolor{Blue}{\textbf{Gamma
+distribution}}. Suppose $\theta\sim Gamma\left( \alpha,\frac{1}{\beta} \right)$, where $\alpha, \beta >0$:
+\[\pi \left( \lambda \right) =\lambda^{\alpha-1}e^{\left( -\beta\lambda \right) }.\]
+The posterior distribution is
+\[\pi \left( \lambda|\mathbf{x} \right) =Gamma\left( \alpha +n,\frac{1}{\beta +\sum_{i=1}^{n}x_{i}} \right).\]
