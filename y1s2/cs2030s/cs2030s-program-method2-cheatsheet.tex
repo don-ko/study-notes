@@ -1,0 +1,103 @@
+%! TeX root = cheatsheet.tex
+
+\documentclass[11pt,landscape,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{PTSansNarrow} 
+\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+\usepackage[T1]{fontenc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[top=0mm,bottom=1mm,left=0mm,right=1mm]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,graphs,shapes.misc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{pifont}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\graphicspath{{src/}}
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\lstdefinestyle{pseudo}{%
+    backgroundcolor=\color{white},
+    basicstyle=\ttfamily,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    frame=single,
+    breaklines=true,
+    tabsize=4,
+    morekeywords={Function,Return,If,Else,While,Begin,End}
+}
+
+\setlength{\jot}{0pt}
+\appto{\footnotesize}{%
+	\setlength{\abovedisplayskip}{0pt}
+	\setlength{\belowdisplayskip}{0pt}
+	\setlength{\abovedisplayshortskip}{0pt}
+	\setlength{\belowdisplayshortskip}{0pt}
+}
+
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\pagestyle{empty}
+\renewcommand{\baselinestretch}{0.9}
+
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%x
+								{\sffamily\small\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%x
+								{\sffamily\bfseries}}
+\renewcommand{\paragraph}{\@startsection{paragraph}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%x
+								{\sffamily\bfseries}*}
+\makeatother
+
+\setlist[itemize]{noitemsep,nolistsep,leftmargin=*}
+\setlist[enumerate]{noitemsep,nolistsep,leftmargin=*}
+\setlength{\parindent}{0pt}
+\setlength{\topsep}{0pt}
+\setlength\multicolsep{0pt}
+
+\definecolor{forestgreen}{rgb}{0.0, 0.27, 0.13}
+
+
+\begin{document}
+\footnotesize
+\begin{multicols*}{4}
+  \setcounter{section}{-1}
+  \input{chapters/0-introduction.tex}
+	\input{chapters/1-abstraction.tex}
+  \input{chapters/2-encapsulation.tex}
+  \input{chapters/3-inheritance.tex}
+  \input{chapters/4-polymorphism.tex}
+  \input{chapters/heapstack.tex}
+  \input{chapters/exceptions.tex}
+  \input{chapters/5-complex-types.tex}
+  \input{chapters/6-generics.tex}
+  \input{chapters/7-functional.tex}
+  \input{chapters/nestedclass.tex}
+  \input{chapters/8-monads.tex}
+  \input{chapters/9-parallelel.tex}
+\end{multicols*}
+\end{document}

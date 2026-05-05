@@ -1,0 +1,730 @@
+\section{Regular Languages}
+We begin by consider a class of languages known as the \textbf{regular
+languages}. These languages can be defined by \textit{finite automaton},
+\textit{regular expressions}, or a reduced form of recursive notation known as
+\textit{linear grammars}.\\
+
+Intuitively, regular languages comprises the finite languages and infinite
+languages that involve modulo counting.
+
+\subsection{Deterministic Finite Automata}
+\begin{definition}[DFA]
+  A \textit{DFA} $A = \left( Q,\Sigma,\delta,q_0,F \right) $, where:
+  \begin{itemize}
+    \item $Q$: A finite set of states
+    \item $\Sigma$: A finite set of input symbols
+    \item $\delta$: A transition function taking as argument a state and an
+      input symbol and returns a state. $\delta: Q\times \Sigma\to Q$
+    \item $q_0$: A start state, $q_0\in Q$
+    \item $F$: A set of final or accepting states. $F\in \mathcal{P}\left( Q \right) $
+  \end{itemize}
+\end{definition}
+\begin{remark}
+  In CS3231, we consider only DFA with finite set of states.
+\end{remark}
+Suppose $a_1a_2\cdots a_{n}$ a sequence of input symbols. Starting at the start
+state $q_0$, we consult the transition function $\delta$, to find the state of
+the DFA $\delta\left( q_0,a_1 \right) =q_1$ after processing the first input
+symbol $a_1$.
+\begin{example}
+  To generate the language $L=\{ \omega | \omega$ is of the form $x01y$
+  for some strings $x$ and $y$ consisting of $0$'s and $1$'s only$\}$,
+  consider the DFA $A=\left( \left\{ q_0,q_1,q_2 \right\} ,\left\{ 0,1
+  \right\},\delta,q_0,\left\{ q_1 \right\}\right) $, where $\delta$ is defined:
+  \[\delta\left( q_0,0 \right) =q_2,\quad \delta\left( q_0,1 \right) =q_0,\quad
+  \delta\left( q_1,0 \right) =\delta\left( q_1,1 \right) =q_1,\quad
+\delta\left( q_2,0 \right) =q_2,\quad\delta\left( q_2,1 \right) =q_1\] 
+  We have alternative notations for description of DFAs, namely the transition diagram
+  and the transition table.
+  \begin{figure}[h!]
+    \centering
+    \raisebox{-0.5\height}{\includegraphics[width=0.5\textwidth]{dfa-diag}}
+    \hspace*{.2in}
+    \raisebox{-0.5\height}{\includegraphics[width=0.25\textwidth]{dfa-table}}
+    %\raisebox{-0.5\height}{\begin{tabular}{ c c c }
+    %  \toprule
+    %   & $0$ & $1$ \\
+    %   \midrule
+    %  $q_0$ & $q_2$ & $q_0$ \\
+    %  $q_1$ & $q_1$ & $q_1$ \\
+    %  $q_2$ & $q_2$ & $q_1$ \\
+    %  \bottomrule
+    %\end{tabular}}
+  \end{figure}
+\end{example}
+To extend the transition function to strings, we define an \textbf{extended
+transition function} $\hat{\delta}:Q\times \Sigma^{*}\to Q$ to describe the
+state (given a starting state), after processing a sequence of input symbols.
+We define by induction on the length of the input string:
+\begin{enumerate}
+  \item $\hat{\delta}\left( q,\epsilon \right) =q$. Starting in state $q$, if
+    no inputs are read, no change in state.
+  \item Suppose $w$ a string of the form $xa$, where $x\in \Sigma^{*},a\in \Sigma$,
+    \[\hat{\delta}\left( q,xa \right) =\delta\left( \hat{\delta}\left( q,x \right) ,a \right).\] 
+    That is, we first process all but the last symbol of $w$, then its last symbol.
+\end{enumerate}
+\begin{definition}[Language of a DFA]
+  The \textit{language} of a DFA $A$ is denoted $L(A)$, and is defined by
+  \[L(A)=\left\{ \omega | \hat{\delta}\left( q_0,\omega \right) \in F \right\},\]
+  the set of strings $\omega$ that the start state $q_0$ may take to arrive at
+  one of the accepting states.
+\end{definition}
+
+\subsection{Nondeterministic Finite Automata}
+We now consider an automata in which we can be in several state at once.
+In an NFA, it is not necessary that all states have all inputs symbols
+defining a transition. In those situations, the thread of the NFA's existence
+corresponding to those states simply ``dies''.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{nfa-diag}
+\end{figure}
+\begin{definition}[NFA]
+  An \textit{NFA} $A = \left( Q,\Sigma,\delta,q_0,F \right) $, where:
+  \begin{itemize}
+    \item $Q$: A finite set of states
+    \item $\Sigma$: A finite set of input symbols
+    \item $\delta$: A transition function taking as argument a state and an
+      input symbol and returns \textbf{a set of states}. $\delta: Q\times \Sigma\to \mathcal{P}(Q)$
+    \item $q_0$: A start state, $q_0\in Q$
+    \item $F$: A set of final or accepting states. $F\in \mathcal{P}\left( Q \right) $
+  \end{itemize}
+\end{definition}
+\begin{remark}
+  The only difference between an NFA and a DFA is the return type of the
+  transition function.
+\end{remark}
+Similarly, we define the \textbf{extended transition function}
+$\hat{\delta}:Q\times \Sigma^{*}\to\mathcal{P}\left( Q \right) $, the set of
+states that the NFA will be in if it starts in a given state $q$ and processes
+the string $\omega$. We define by induction on the length of the input string:
+\begin{enumerate}
+  \item $\hat{\delta}\left( q,\epsilon \right) =\left\{ q \right\}$. If no
+    inputs are read, we are only in the state we began in.
+  \item Suppose $w$ a string of the form $xa$, where $x\in \Sigma^{*},a\in
+    \Sigma$, and that $\hat{\delta}\left( q,x \right) =\left\{ p_1,p_2,\ldots,p_k \right\}$
+    \[\hat{\delta}\left( q,w \right) =\bigcup_{i=1}^{k}\delta\left( p_i,a
+    \right) =\left\{ r_1,r_2,\ldots,r_m \right\}\]
+    That is, we first compute $\hat{\delta}\left( q,x \right)$, then follow any
+    transition from any of the possible states.
+\end{enumerate}
+\begin{definition}[Language of an NFA]
+  The \textit{language} of an NFA $A$ is denoted $L(A)$, and is defined by
+  \[L(A)=\left\{ \omega|\hat{\delta}\left( q_0,\omega \right) \cap F\neq \emptyset \right\},\]
+  the set of string $\omega$ that the start state may take that does not
+  definitively lead to a nonaccepting state. The set of strings such that the
+  possibilities contain at least one accepting state.
+\end{definition}
+
+\subsubsection{NFAs with $\epsilon$-Transitions}
+We consider an automaton in which we allow a transition on $\epsilon$. The NFA
+is hence allowed to make a transition without receiving an input symbol.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{nfa-epsilon-diag}
+\end{figure}
+\begin{definition}[$\epsilon$-NFA]
+  An $\epsilon$-NFA $A=\left( Q,\Sigma,\delta,q_0,F \right) $, where:
+  \begin{itemize}
+    \item $Q$: A finite set of states
+    \item $\Sigma$: A finite set of input symbols
+    \item $\delta$: A transition function taking as argument a state and an
+      input symbol (including $\epsilon$) and returns \textbf{a set of states}.
+      $\delta: Q\times (\Sigma\cup \left\{ \epsilon \right\})\to \mathcal{P}(Q)$
+    \item $q_0$: A start state, $q_0\in Q$
+    \item $F$: A set of final or accepting states. $F\in \mathcal{P}\left( Q \right) $
+  \end{itemize}
+\end{definition}
+To define an extended transition function for $\epsilon$-NFAs, we first define
+the \textit{$\epsilon$-closure} of a state recursively:
+\begin{enumerate}
+  \item $q\in \epsilon$-closure$\left( q \right) $
+  \item If $p\in \epsilon$-closure$\left( q \right)\wedge\delta\left( p,\epsilon \right) =r \implies r\in \epsilon$-closure$\left( q \right) $.
+\end{enumerate}
+The $\epsilon$-closure of a state $q$ is the set of all states reachable from
+$q$ using only $\epsilon$ transitions.
+We further define the $\epsilon$-closure of a set of states $S$:
+\[\epsilon\text{-closure}\left( S \right) =\bigcup_{q\in S} \epsilon\text{-closure}\left( q \right).\]
+We now define the \textbf{extended transition function}
+$\hat{\delta}:Q\times \Sigma^{*}\to\mathcal{P}\left( Q \right) $, the set of
+states that the $\epsilon$-NFA will be in if it starts in a given state $q$ and processes
+the string $\omega$. We define by induction on the length of the input string:
+\begin{enumerate}
+  \item $\hat{\delta}\left( q,\epsilon \right) =\epsilon\text{-closure}\left(
+    q \right)$.\ (by the definition of $\epsilon$-closure) \item Suppose $w$ a string of the form $xa$, where $x\in \Sigma^{*},a\in
+    \Sigma$ (WLOG, $\epsilon$ not in $\Sigma$), and that $\hat{\delta}\left(
+    q,x \right) =\left\{ p_1,p_2,\ldots,p_k \right\}$
+    \[\hat{\delta}\left( q,w \right) =\bigcup_{i=1}^{k}\delta\left( p_i,a
+    \right) =\epsilon\text{-closure}\left(   \left\{ r_1,r_2,\ldots,r_m \right\}\right)\]
+    That is, we first compute $\hat{\delta}\left( q,x \right)$, then follow any
+    transition from any of the possible states, then consider the possibility
+    of any $\epsilon$ transitions from the possible states.
+\end{enumerate}
+
+\begin{remark}
+  A $\epsilon$-NFA $E=(Q_E,\Sigma,\delta_E,q_0,F_E)$ accepts the same language
+  as the DFA $D=\left( Q_D,\Sigma,\delta_D,q_D,F_D \right) $ where:
+  \begin{itemize}
+    \item $Q_D=\left\{ \epsilon\text{-closure}\left( S \right) | S\in
+      \mathcal{P}(Q_E) \right\}$
+    \item $q_D=\epsilon\text{-closure}\left( q_0 \right) $
+    \item $F_D = \left\{ S| S\subseteq Q_D \wedge S\cap F_E\neq
+      \emptyset\right\}$
+    \item $\delta_D\left( S,a
+  \right) =\epsilon\text{-closure}\left( \bigcup_{p\in S} \delta_E\left( p,a \right)  \right) $
+  \end{itemize}
+\end{remark}
+
+\subsection{DFAs vs NFAs}
+\subsubsection{Equivalence of DFAs and NFAs}
+\begin{theorem}
+  A language $L$ is accepted by some DFA if $L$ is accepted by some NFA\@.
+\end{theorem}
+\begin{proof}
+Suppose an NFA $N=\left( Q_N,\Sigma,\delta_N,q_0,F_N \right) $. We consider the
+DFA $D=\left( Q_D,\Sigma,\delta_D,\left\{ q_0 \right\} ,F_D \right) $, where
+\begin{itemize}
+  \item $Q_D =\mathcal{P}\left( Q_N \right) $. Intuitively, each state of the
+    DFA represents a state of the entire NFA\@.
+    \begin{remark}
+      This conversion is known as \textit{subset construction}, involving
+      constructing all subsets of the set of states of the NFA\@. Often, not all
+      states are accessible from the start state. Inaccessible states can be
+      discarded.
+    \end{remark}
+  \item $F_D = \left\{ S| S\subseteq Q_N \wedge S\cap F_N\neq
+    \emptyset\right\}\subseteq \mathcal{P}(Q_N)$. That is, $F_D$ consists all
+    sets of $N$'s states that include at least one accepting state of $N$.
+  \item $\delta_D\left( S,a \right) =\bigcup_{p\in S} \delta_N\left( p,a
+    \right) $, given $S\in \mathcal{P}\left( Q_N \right)$, and $ a\in \Sigma$.
+    We consider all possible current states, and take the union of all possible
+    states after processing input $a$
+\end{itemize}
+To prove that $\forall w\in \Sigma^{*}\left( \hat{\delta}_D\left( \left\{ q_0 \right\},\omega \right)=\hat{\delta}_N\left( q_0,w \right) \right) $, we induct on the length of $\omega$:
+\begin{enumerate}
+  \item \textit{Base case:} $\omega=\epsilon$
+    \[\hat{\delta}_D\left( \left\{ q_0  \right\} ,\epsilon  \right)=\left\{ q_0
+    \right\}=\hat{\delta}_N\left( q_0,\epsilon \right).\]
+  \item \textit{Inductive step: }
+    \begin{align*}
+      \hat{\delta}_D\left( \left\{ q_0 \right\},\omega a\right)=&\delta_D\left(
+      \hat{\delta}_D\left( \left\{ q_0 \right\},\omega \right) ,a \right)\\
+        =&\bigcup_{q\in \hat{\delta}_D\left( \left\{ q_0 \right\} ,\omega\right)} \delta_N\left( q,a \right) \\
+        =&\bigcup_{q\in \hat{\delta}_N\left(  q_0 ,\omega\right)} \delta_N\left( q,a \right) \\
+        =&\hat{\delta}_N\left( q_0,wa \right).
+    \end{align*}
+\end{enumerate}
+Since $\hat{\delta}_D\left( \left\{ q_0 \right\} ,\omega\right)\in F_D\iff\hat{\delta}_N\left( q_0,wa \right)\cap F_N \neq \emptyset$, we have $L(N)=L(D)$.\qed%
+\end{proof}
+
+\begin{theorem}
+  A language $L$ is accepted by some DFA only if $L$ is accepted by some NFA\@.
+\end{theorem}
+\begin{proof}
+  Intuitively, we take the transition diagram for the DFA as a transition diagram
+  for an NFA, which has only one choice of transition at any state.\ \qed%
+\end{proof}
+
+Consider a language that can be described by some NFA and some DFA\@. The DFA in
+practice has about as many states as the NFA, but often with more transitions.
+In the worst case, however, the smallest DFA can have $2^{n}$ states while the
+smallest NFA for the same language only has $n$ states.
+
+\subsubsection{Languages of Automata}
+\begin{definition}[Regular Language]
+  If $L$ is $L(A)$ for some DFA $A$, then $L$ is a regular language.
+\end{definition}
+\begin{corollary}
+  $L$ is a regular language $\iff$ $L$ is $L(N)$ for some NFA $N$.
+\end{corollary}
+
+\begin{theorem}
+  Given a non-empty finite alphabet $\Sigma$, there exists a countable number of regular languages.
+\end{theorem}
+Since each regular language can be represented by an automaton, there exist
+finite, or countably infinite regular languages. That is, there exist
+languages that are not accepted by any automata and is hence non-regular.
+
+\subsection{Minimisation of Automata}\label{minimisation}
+
+\subsubsection{Prerequisites}
+Suppose a regular language $L$. We define the equivalence relation for $u,w\in \Sigma$
+\[u \equiv_L w\iff \left[ \forall x\in \Sigma, ux\in L \iff wx\in L \right].\]
+We denote $equiv(w)$ the equivalence class of $w$.
+
+\begin{definition}[Distinguishable States]
+  We say that $(p,q)$ is distinguishable $\iff\exists w\in \Sigma^{*}$ such that
+  \[\hat{\delta}\left( p,w \right)\in F\wedge \hat{\delta}\left( q,w \right)
+  \notin F\qquad\vee\qquad\hat{\delta}\left( p,w \right)\notin F\wedge
+\hat{\delta}\left( q,w \right) \in F.\] 
+\end{definition}
+\begin{remark}
+  \[(p,q)\text{ is indistinguishable}\iff \left[ \forall w\in \Sigma^{*},
+  \hat{\delta}\left( p,w \right)\notin F\iff \hat{\delta}\left( q,w \right) \in
+F\right].\] 
+\end{remark}
+
+\subsubsection{Minimal DFA for $L$}
+If there is a finite number of equivalence classes, $\exists$ a DFA $D=\left(
+Q,\Sigma,\delta,q_0,F\right)$ where:
+\begin{itemize}
+  \item $Q=\left\{ equiv\left( \omega \right) | \omega\in \Sigma^{*} \right\}=\Sigma^{*}/\equiv_L$
+  \item $\delta:(\Sigma^{*}/\equiv_L \times \Sigma)\to \Sigma^{*}/\equiv_L$ defined
+    $\delta\left( equiv(\omega),a \right) =equiv(wa)$
+  \item $q_0=equiv(\epsilon)$
+  \item $F=\left\{ equiv(\omega) | w\in L \right\}$
+\end{itemize}
+which, by definition of the equivalence relation, accepts $L$. It is also the
+minimal DFA for $L$.
+
+\begin{lemma}
+  $u \not\equiv_L \omega\implies \hat{\delta}'\left( q_0',u \right) \neq
+  \hat{\delta}'\left( q_0',w \right) $.
+\end{lemma}
+\begin{proof}
+  Suppose not. That is $u\not \equiv_L
+  w\wedge\hat{\delta}'\left( q_0',u \right) = \hat{\delta}'\left( q_0',w
+  \right)$. Then $\exists x\in \Sigma^{*}$ such that WLOG, $ux\in L\wedge
+  wx\notin L$. But $\hat{\delta}'\left( q_0',u \right) = \hat{\delta}'\left(
+  q_0',w \right)$ and $A'$ accepts either both or neither. Hence a
+  contradiction.\qed%
+\end{proof}
+
+\begin{prop}
+  $D$ is minimal.
+\end{prop}
+\begin{proof}
+  Suppose a DFA $A'=\left( Q',\Sigma,\delta',q_0',F' \right) $ also accepting
+  $L$. From the lemma, we have
+  \[u \not\equiv_L \omega\implies \hat{\delta}'\left( q_0',u \right) \neq
+  \hat{\delta}'\left( q_0',w \right).\]
+  Let $u\equiv_{A'}w\iff\hat{\delta}'\left( q_0',u \right) =
+  \hat{\delta}'\left( q_0',w \right)$. Then $u\equiv_L \implies u\equiv_{A'}
+  w$. Hence $\equiv_{A'}$ divides the equivalence classes of $\equiv_{L}$ into
+  finer equivalence classes, and $\equiv_L$ is minimal.\qed%
+\end{proof}
+
+\subsubsection{Minimal DFA Construction Algorithm}
+Suppose we are given a DFA $A=\left( Q,\Sigma,\delta,q_0,F \right) $.
+We determine all distinguishable pairs with the following recursive algorithm:
+\begin{enumerate}
+  \item \textit{Base case:} Each pair $(p,q)$ such that $p\in F$ and $q\notin
+    F$ (or vice versa) is distinguishable.
+  \item \textit{Inductive step:} If $\exists a\in \Sigma\left[  \delta\left(
+    p,a \right) \text{ and }\delta\left( q,a \right) \text{ are
+  distinguishable} \right]$, then $(p,q)$
+    is distinguishable.
+  \item Steps 1 and 2 are repeated until no more pairs can be added.
+  \item The remaining pairs are non-distinguishable states.
+\end{enumerate}
+To compute the distinguishable states, we utilise the table-filling algorithm:
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{table-filling}
+\end{figure}
+We then form the new DFA as follows:
+\begin{enumerate}
+  \item Remove all unreachable states.
+  \item Find all nondistinguishable pairs of states using the algorithm. They
+    are equivalent. This yields an equivalence relation
+  \item Form the new DFA with:
+    \begin{itemize}
+      \item $Q_{new}$ as the set of the equivalence classes.
+      \item The same $\Sigma$
+      \item The transitions from each equivalence class is based on the
+        corresponding transition in the original DFA\@:
+        \[\delta\left( p,a \right) =q \implies\delta_{new}\left( E_p,a \right)=E_q.\]
+        where $E_p, E_q$ are the equivalence classes of $p,q$ respectively.
+      \item $q_{0,new}=equiv(q_0)$
+      \item $F_{new}=\left\{ equiv(\omega) | w\in F \right\}$
+    \end{itemize}
+\end{enumerate}
+% TODO: Add proof of correctness of table-filling algorithm
+% TODO: Add proof of correctness of new DFA
+
+\subsection{Parallel Simulation of n-DFAs}
+Suppose two DFAs $A=\left(Q,\Sigma,\delta,q_0,F\right)$ and $A'=\left( Q',\Sigma,
+\delta',q_0',F' \right) $.
+We may construct another DFA $A''=\left( Q\times
+Q',\Sigma,\delta'',\left(q_0,q_0'\right),F'' \right) $, where
+\[\delta''\left( \left( q,q' \right) ,a \right) =\left( \delta\left( q,a
+\right) ,\delta'\left( q',a \right)  \right).\] 
+and $F''$ depends on need.
+\begin{example}[Definitions of $F''$]\ 
+   \begin{itemize}
+    \item $F''=F\times F'$ finds the intersections of the two automata.
+    \item $F''=F\times Q'\cup Q\times F'$ finds the union of the two automata.
+  \end{itemize}
+\end{example}
+This simulates the two DFAs in parallel.
+\begin{remark}
+  By repeated application, we may simulate any boolean combination of
+  automata.
+\end{remark}
+
+
+\subsection{Regular Expressions}
+Through regular expressions, another type of language-defining notation that
+algebraically describes a language, we are able to declaratively express the
+strings we want to accept. Each regular expression denotes a (regular) language.
+\subsubsection{Operators}
+Given a regular expression $E$, we denote $L(E)$ for the language that $E$
+denotes. We then define regular expressions inductively (with various
+operators), as follows:
+\begin{enumerate}
+  \item \textit{Basis Step:}
+    \begin{itemize}
+      \item Constant $\epsilon$ is a regular expression, with
+        $L(\epsilon)=\left\{ \epsilon \right\}$.
+      \item Constant $\emptyset$ is a regular expression, with $L(\emptyset)=\emptyset$.
+      \item If $a\in \Sigma$, $a$ is a regular expression, with $L(a)=\left\{ a
+        \right\}$.
+    \end{itemize}
+  \item \textit{Inductive Step:} Given regular expressions $E$ and $F$,
+    \begin{itemize}
+      \item $E+F$ is a regular expression denoting union, $L(E+F)=L(E)\cup L(F)$.
+      \item $EF$ is a regular expression denoting concatenation, $L(EF)=L(E)L(F)$.
+      \item  $E^{*}$ is a regular expression denoting its (Kleene's) closure,
+        $L(E^{*})={\left( L\left( E \right)  \right)}^{*}$
+      \item $E^{+}$ is a regular expression denoting its closure, without $\epsilon$, $L(E^{+})=EE^{*}$
+      \item $(E)$ is a regular expression denoting the same language, $L\left( \left( E \right)  \right) =L(E)$
+    \end{itemize}
+\end{enumerate}
+We further define the order of precedence of the operators:
+ \begin{enumerate}
+  \item The parantheses operator is of highest precedence, to specify the
+    desired grouping of regular expressions.
+  \item The star operator is of highest precedence, applied to the smallest
+    sequence of symbols to its left that is a well-formed regular expression.
+  \item The concatenation operator groups all expressions that are
+    \textit{juxtaposed} (adjacent without intervening operators). Concatenation is associative.
+  \item The union binary operator groups its operands. Union is associative.
+\end{enumerate}
+
+\subsubsection{Converting Automaton to Regular Expression}
+\begin{theorem}  
+  If $L = L(A)$ for some DFA $A$, then there is a regular expression $R$ such
+  that $L=L(R)$. That is, every regular language can be defined by a regular
+  expression.
+\end{theorem}
+\begin{proof}
+  Suppose a DFA $A=\left( Q,\Sigma,\delta,q_{start},F \right)$. Without loss of generality, suppose
+  $Q=\left\{ 1,2,\ldots,n \right\}$ for some $n$ and $q_{start}=1$.
+  Let $R^{k}_{i,j}$ denote the regular expression for the set of strings which
+  can be formed by going from state $i$ to state $j$ only using intermediate
+  states $\le k$. We have
+  \[L(A)=L\left(\sum_{j\in F} R_{1,j}^{n}\right)\]
+  We compute by induction:
+  \begin{enumerate}
+    \item \textit{Base step:} $R_{i,j}^{0}$. That is, the path must have no
+      intermediate states at all. We only have an arc from (state) $i$ to $j$,
+      or a path of length 0 consisting only $i$.\\
+      \[i\neq j \implies R_{i,j}^{0}=a_1+a_2+\cdots+a_m, \qquad\forall a_r\in \Sigma, \delta\left( i,a_r \right) =j.\] 
+      \[i=j \implies R_{i,i}^{0}=\epsilon+a_1+a_2+\cdots+a_m, \qquad\forall a_r\in \Sigma, \delta\left( i,a_r \right) =i.\] 
+    \item \textit{Inductive step:} Suppose there is a path from state $i$ to
+      $j$ going through states no higher than $k$.
+      \[R_{i,j}^{k+1}=R_{i,j}^{k}+R_{i,k+1}^{k}{\left(R_{k+1,k+1}^{k}\right)}^{*}R_{k+1,j}^{k}.\] 
+      We then have the case where the path does not go through state $k+1$ at
+      all, and the case where it goes through $k+1$ at least once.
+  \end{enumerate}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{automata-regex}
+  \end{figure}
+  We may then obtain
+  $L(A)=L\left(\sum_{j\in F} R_{1,j}^{n}\right)$.\qed%
+\end{proof}
+\begin{remark}
+  The construction of a regular expression from automata could be applied to
+  NFA or $\epsilon$-NFA, but we construct about $n^{3}$ expressions, with
+  each's length growing by a factor of 4 each inductive step, resulting in a
+  expression on the order of $4^{n}$ symbols for an $n$-state automaton.
+\end{remark}
+% TODO: Add Converting DFA's to Regular Expressions by Eliminating States TB pg. 98
+
+\subsubsection{Converting Regular Expression to Automaton}
+\begin{theorem}
+  Every language defined by a regular expression can be defined by an automaton.
+\end{theorem}
+We may construct an automaton through structural induction on the expression,
+constructing automata for the basis expressions and combining them into
+larger automata that fits the various operators.
+
+\begin{proof}
+  Suppose $L=L(R)$for a regular expression $R$. We construct a $e$-NFA $E$ with:
+  \begin{enumerate}
+    \item Exactly one accepting state.
+    \item No transition into the starting state.
+    \item No transition out of the accepting state.
+    \item Starting state $\neq$ Accepting state.
+  \end{enumerate}
+  For the bases, we create automata that accepts the languages 
+  \begin{itemize}
+    \item (a) $L(\epsilon)$,
+    \item (b) $L(\emptyset)$,
+    \item (c) $L(a)$
+  \end{itemize}
+  We then assume that we have the automaton for the immediate subexpressions of
+  a given regular expression. We then have the four cases: 
+  \begin{itemize}
+    \item (a) $R+S$,
+    \item (b) $RS$,
+    \item (c) $R^{*}$
+    \item $R^{+}$ which is constructed from the automaton of $R^{*}$, but
+      without the $\epsilon$ transition from the starting to the accepting
+      state
+    \item $(R)$ where the automaton does not change.
+  \end{itemize}
+  \begin{figure}[h!]
+    \centering
+    \raisebox{-0.5\height}{\includegraphics[width=0.2\textwidth]{regex-automata}}
+    \hspace*{.2in}
+    \raisebox{-0.5\height}{\includegraphics[width=0.35\textwidth]{regex-automata-2}}
+  \end{figure}
+  The constructed automata satisfy the four conditions, providing the language
+  of the regular expression.\qed%
+\end{proof}
+
+\subsubsection{Algebra of Regular Expressions}
+We find various useful results for simplifying regular expressions and to keep
+the size of expressions manageable. We consider the algebra of regular
+expressions, analysing properties such as associativity, commutativity and
+distributivity, as well as relevant identities and annihilators. For regular
+expressions $L, M, N$:
+\paragraph{Associativity, Commutativity and Distributivity}
+\begin{itemize}
+  \item $L+M=M+L$: Commutative law for union.
+  \item  $(L+M)+N=L+(M+N)$: Associative law for union. With the commutative
+    law, we may take union in any order.
+  \item $(LM)N=L(MN)$: Associative law for concatenation. Concatenation is non-commutative.
+  \item $L(M+N)=LM+LN$: Left-distributive law of concatenation over union.
+  \item $(M+N)L=ML+NL$: Right-distributive law of concatenation over union.
+\end{itemize}
+\paragraph{Identities, Annihilators and Idempotence}
+\begin{itemize}
+  \item $\emptyset+L=L+\emptyset=L$: $\emptyset $ identity for union.
+  \item $\epsilon L = L \epsilon=L$: $\epsilon$ identity for concatenation.
+  \item $\emptyset L=L\emptyset =\emptyset $: $\emptyset $ annihilator for concatenation.
+  \item $L + L = L$: Idempotence law for union.
+\end{itemize}
+\paragraph{Closures}
+\begin{itemize}
+  \item ${\left( L^{*} \right)} ^{*}=L^{*}$: Closing an expression that is
+    already closed does not change.
+  \item $\emptyset ^{*}=\epsilon$
+  \item $\epsilon^{*}=\epsilon$ 
+  \item $L^{+}=LL^{*}=L^{*}L$ 
+  \item $L^{*}=L^{+}+\epsilon$
+  \item ${(L+M)}^{*}={(L^{*}M^{*})}^{*}$
+\end{itemize}
+
+\subsection{Regular Languages}
+To show that a given language is nonregular, we may use the pumping lemma.
+Intuitively, we can always find a nonempty string $y$ not too far from the
+beginning that can be repeated any number of times, or deleted while keeping
+the resulting string in $L$.
+\begin{lemma}
+  Let $L$ be a regular language. Then $\exists n=f(L)$ such that $\forall\omega\in L$,
+  $\left| \omega \right| \ge n$, $\exists x,y,z\in \Sigma^{*},\omega=xyz$ such that:
+  \begin{itemize}
+    \item $\left| xy \right| \le n$. That is, string to be pumped is not too
+      far from the start of the string.
+    \item $y\neq\epsilon$. The string to be ``pumped'' cannot be empty.
+    \item $\forall i\ge 0$, $xy^{k}z\in L$
+  \end{itemize}
+\end{lemma}
+The contrapositive of the lemma is used to prove that a language is
+nonregular. That is, $\forall n\in \mathbb{N}$, $\exists w\in L$, such that
+$\left| \omega \right| \ge n$, $\forall x,y,z\in \Sigma^{*}$, where $\omega=xyz$,
+$\left| xy \right| \le n$, $y\neq\epsilon$, we have
+\[\exists i\in \mathbb{N}\left( xy^{i}z\notin L \right)\]
+\begin{proof}
+  Suppose $L$ is regular. Then $\exists$ DFA $A=\left( Q, \Sigma, \delta, q_0,F
+  \right)$ such that $L=L(A)$. Suppose $\left| Q \right|=n$. Consider a string
+  $\omega\in \Sigma^{*},\left| w \right| \ge n$. Then $w=a_1a_2\cdots a_m$ for
+  some $m\ge n, a_i\in \Sigma$. For $i=0,1,\ldots,n, p_i:=\hat{\delta}\left(
+  q_0,a_1a_2\cdots a_i \right)$. $p_i$ is the state of $A$ after reading the
+  first $i$ symbols of $\omega$.\\
+  Since there are $n$ different states and $n+1$ different $p_i$'s, by the
+  pigeonhole principle, $\exists 0\le i<j<n$ such that $p_i=p_j$. Let:
+  \begin{itemize}
+    \item $x=a_1a_2\cdots a_i$ 
+    \item $y=a_{i+1}a_{i+2}\cdots a_j$
+    \item $z=a_{j+1}a_{j+2}\cdots a_m$
+  \end{itemize}
+  By processing $x$, $A$ takes up state $p_i$, after which $y$ takes it from
+  $p_i$ back to $p_i$, and $z$ is the balance of $\omega$. $x=\epsilon\iff
+  i=0$, and $z=\epsilon\iff j=n=m$. However, $y$ cannot be empty, since $i<j$.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{rl-pumping-lemma}
+  \end{figure}
+  Then consider for any $k\in \mathbb{N}$, the string $xy^{k}z$:
+  \begin{itemize}
+    \item If $k=0$, the automaton goes from $q_0=p_0$ to $p_i=p_j$ on input
+      $x$, and then from $p_i=p_j$ to the accepting state on input $z$. $A$
+      accepts $xz$.
+    \item If  $k>0$, the automaton goes from $q_0$ to $p_i$ on input $x$, and
+      then circles $p_i$ to $p_i$ $k$ times on input $y^{k}$, and then to the
+      accepting state on input $z$. $A$ accepts $xy^{k}z$.
+  \end{itemize}\vspace{-7mm}\qed%
+\end{proof}
+
+By using the pumping lemma, we can construct a proof of the following structure
+to show a specified language is non-regular:
+\begin{prop}
+  $L=\left\{ a^{m}b^{m}|m\ge 1 \right\}$ is nonregular.
+\end{prop}
+\begin{proof}
+  Suppose $L$ is regular. Let $n$ be as in the Pumping Lemma. Let
+  $\omega=a^{n}b^{n}$. Let $\omega=xyz$ as in the pumping lemma. Then $y$
+  consists of only $a$'s, and $\left| y \right| >0$, $y={\left\{ a
+  \right\}}^{+}$. By the pumping lemma, $xy^{2}z\in L$. But $xy^{2}z$ contains
+  more $a$'s than $b$'s, and $xy^{2}z\notin L$. Hence $L$ is nonregular.
+\end{proof}
+\begin{prop}
+  $L=\left\{ a^{p}|p\text{ is prime} \right\}$ is nonregular.
+\end{prop}
+\begin{proof}
+  Suppose $L$ is regular. Let $n$ be as in the Pumping Lemma. Let
+  $\omega=a^{p}$, where $p$ is prime and $p>n$. Let $\omega=xyz$ as in the
+  pumping lemma. By the pumping lemma, $\forall k\in \mathbb{N}, xy^{k}z\in L$. Consider
+  $k=p+1$. Then $xy^{k}z=a^{r}$ where 
+  \[r=\left| x \right| +\left| z \right| +\left( p+1 \right) \left| y \right| =p+p\left| y \right|  \]
+  and $r$ is non-prime,  and $xy^{p+1}z\notin L$. Hence $L$ is nonregular.
+\end{proof}
+\begin{prop}
+  $L= \left\{a^i b^j | i < j\right\}$ is nonregular.
+\end{prop}
+
+\subsubsection{Closure of Regular Languages}
+We have certain operations such that, when applied to the languages, the
+resulting related language is also regular.
+
+\begin{definition}[Homomorphism]
+  Suppose two alphabets $\Sigma$ and $\Gamma$. Consider a mapping
+  $h:\Sigma\to\Gamma^{*}$. We further define $h:\Sigma^{*}\to\Gamma^{*}$ by
+  principle of induction:
+  \begin{enumerate}
+    \item \textit{Base case:}
+      $h(\epsilon)=\epsilon$
+    \item \textit{Inductive Step:}
+      $h(a\omega)=h(a)\cdot h(\omega), \forall a\in \Sigma,\omega\in \Sigma^{*}$ 
+  \end{enumerate}
+  $h$ is called a \textit{homomorphism}. Intuitively, a homomorphism maps each
+  symbol to another symbol in every string of the language.
+\end{definition}
+
+Given regular languages $L, L_1,L_2$:
+\begin{itemize}
+  \item $L_1\cup L_2$ is regular.
+  \item $L_1\cdot L_2$ is regular.
+  \item $\bar{L}=\Sigma^{*}-L$ is regular.
+  \item $L_1\cap L_2$ is regular.
+  \item $L_1-L_2$ is regular.
+  \item $L^{R}$ is regular.
+  \item $h(L)$ is regular, for some homomorphism $h$.
+\end{itemize}
+We may prove the results by constructing a regular expression through principle
+of induction on its length, from the base cases of a regular expression
+$\emptyset,\epsilon,a\in \Sigma$ and the defined operations.
+\begin{remark}
+  Supposing $L$ is a regular language over an alphabet $\Sigma_1$. Then $L$ is also a regular language
+  over an alphabet $\Sigma_2\supseteq\Sigma_1$, by considering the same DFA over $\Sigma_2$.
+\end{remark}
+
+\subsubsection{Decision Problems of Regular Languages}
+We may examine some properties of regular languages through conversion between
+the equivalent forms of representing regular languages.\\
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{conversions}
+\end{figure}
+
+We check the \textbf{emptiness of regular languages} by considering the automaton, and
+checking whether any accepting states are reachable from the starting state. That is,
+\[L=\emptyset \iff \forall q\in F, q\text{ is unreachable}.\] 
+We compute this using a recursive algorithm:
+\begin{itemize}
+  \item \textit{Base case:} The start state is reachable from the start state.
+  \item \textit{Inductive step:} If $p$ is reachable from the start state, all
+    states $q$ such that $\exists a\in \Sigma, \delta(p,a)=q$ are reachable
+    from the start state.
+\end{itemize}
+
+We check for \textbf{membership} by converting whichever representation available into a
+DFA, and then simulating the DFA\@. Alternatively, if given another automaton, we
+may attempt to simulate the NFA or $\epsilon$-NFA itself, keeping track of all
+possible states.\\
+
+\textbf{Two automata $A, A'$ are equivalent} $\iff$ the minimisation of $A$ is the same
+as the minimisation of $A'$, except for renaming of the states. (Minimisation
+of DFA, Subsection~\ref{minimisation})
+
+\subsection{Linear Grammars}
+\begin{definition}[Right Linear Grammar]
+  A \textbf{Right Linear Grammar} is a CFG where all productions are of the form:
+  \begin{align*}
+  A\to\omega\beta\qquad &\omega\in T^{*},\quad \beta\in V\\
+  A\to \omega\qquad&\omega\in T^{*}
+  \end{align*}
+  Similarly, a \textbf{Left Linear Grammar} is one in which all productions are of the form:
+  \begin{align*}
+  A\to\beta\omega\qquad &\omega\in T^{*},\quad \beta\in V\\
+  A\to \omega\qquad&\omega\in T^{*}
+  \end{align*}
+\end{definition}
+\begin{theorem}
+  Every regular language can be generated by a right-linear grmmar.
+\end{theorem}
+\begin{proof}
+  Suppose a regular language $L$. There exists a DFA $A=\left( Q,\Sigma,\delta,q_0,F \right) $ such
+  that $L(A)=L$. WLOG, assume that $Q\cap \Sigma=\emptyset$. Consider the
+  right-linear grammar $G=\left( Q,\Sigma,P,q_0 \right) $, where:
+  \begin{enumerate}
+    \item $\forall q,p\in Q,a\in \Sigma$
+      \[\delta\left( q,a \right) =p\iff\exists\text{ a production }(q\to ap)\in P.\] 
+    \item $\forall q\in F$
+      \[\exists \text{ a production }(q\to\epsilon)\in P.\]
+  \end{enumerate}
+  We induct on the length $\left| \omega \right| $ to show that
+  $\hat{\delta}\left( q_0,\omega \right)=p\iff q_0 \Rightarrow _G^{*}\omega p$.
+  \begin{enumerate}
+    \item \textit{Basis Step}: For $\left| \omega \right| =0$, $\omega=\epsilon$ and 
+      \[\hat{\delta}\left( q_0,\omega \right)=p\iff p=q_0\iff q_0 \Rightarrow _G^{*}\omega p\]
+    \item \textit{Inductive Step}: Consider $\omega=ua$, for some $a\in \Sigma$
+      and $u\in \Sigma_{\le k}$. We have:
+      \begin{align*}
+        \hat{\delta}\left( q_0,ua \right) =p'\iff&\exists p\in Q,\quad
+        \hat{\delta}\left( q_0,u \right) =p\wedge\delta\left( p,a \right) =p'\\
+        \iff&\exists p\in Q,\quad q_0 \Rightarrow _G^{*}up\wedge p\to ap'\\
+        \iff&q_0 \Rightarrow _G^{*}uap'=\omega p'
+      \end{align*}\vspace{-4mm}\qed%
+  \end{enumerate}
+\end{proof}
+\vspace{-4mm}
+\begin{theorem}
+  A language generated by a right-linear grammar is regular.
+\end{theorem}
+\begin{proof}
+  Suppose a right-linear grammar $G=\left( V,\Sigma,P,S \right)$. WLOG, suppose
+  $V\cap \Sigma=\emptyset$ and each productions are of the form $A\to bC$ or $A\to\epsilon$ where
+  $A,C\in V$ and $b\in \Sigma\cup \left\{ \epsilon \right\} $. Consider the
+  NFA $A=\left( V,\Sigma,\delta,S,F \right) $, where:
+  \[\left( A\to aB \right)\in P\iff B\in \delta\left( A,a \right).\]
+  and $F =\left\{ A\in V|(A\to\epsilon)\in P \right\} $
+  We induct on the length $\left| \omega \right| $ to show that $A \Rightarrow _G^{*}\omega B\iff B\in \hat{\delta}\left( A,\omega \right) $.
+  \begin{enumerate}
+    \item \textit{Basis Step}: For $\left| \omega \right| =0$, $\omega=\epsilon$ and
+      \[A \Rightarrow _G^{*}B\iff A=B \iff B\in \hat{\delta}\left( A,\epsilon \right).\]
+    \item Consider $\omega=ua$. Then
+      \begin{align*}
+        A \Rightarrow _G^{*} \omega B=uaB\iff&\exists C\in V,\quad A\Rightarrow _G^{*}uC\wedge C\Rightarrow _G aB\\
+        \iff&\exists C\in V,\quad\hat{\delta}\left( A,u \right) =C\wedge \delta\left( C,a \right) =B\\
+        \iff&\hat{\delta}\left( A,ua \right)=\hat{\delta}\left( A,\omega \right)  =B
+      \end{align*}\vspace{-4mm}\qed%
+  \end{enumerate} 
+\end{proof}
+
+

@@ -1,0 +1,189 @@
+\section{Processor}
+The processor comprises two major components: the \textbf{datapath} and the \textbf{control}.
+\subsection{Datapath}
+The datapath is the \textit{collection of components that process data}. It
+performs the arithmetic, logical and memory operations.
+\begin{remark}
+  This processor design supports a subset of the core MIPS ISA:
+  \begin{itemize}
+    \item Arithmetic and Logical operations:
+      \verb|add, sub, and, or, addi, slt, sll, srl|
+    \item Data Transfer Instructions
+      \verb|lw, sw|
+    \item Branches
+      \verb|beq, bne|
+    \item Jumps
+      \verb|j|
+  \end{itemize}
+  \verb|andi, ori| is not supported because sign extension is done on immediate
+  values.
+\end{remark}
+\subsubsection{Instruction Execution Cycle}
+The Instruction Execution Cycle comprises the following steps:
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{iec.jpeg}
+\end{figure}
+\paragraph{Instruction Fetch Stage}: Uses PC to fetch the instruction from
+\textbf{instruction memory}, and then is incremented by $4$ to get the address of the next
+instruction. Output instruction is then fed to the next stage.
+
+\begin{definition}[Instruction Memory]
+  The instruction memory is a sequential circuit that as an internal state
+  storing the instructions. It also comprises a clock signal.
+\end{definition}
+
+\paragraph{Clock Period}
+The clock signal ensures that we do not read and write the PC at the same time,
+by ensuring that the PC is read during the first half of the clock period, and
+updated at the \textbf{next rising clock edge}.\\
+In general, the clock period allows us to read, compute, and write all within a
+single clock period, and allow us to synchronise between each phase of the
+instruction execution.
+
+
+\paragraph{Instruction Decode/Operand Fetch Stage}: Gathers the data from the
+instruction fields. It determines the instruction type and field lengths, and
+then read from all necessary registers. The output operation and operands is
+then fed to the next stage.
+
+\begin{definition}[Register File]
+  The register file is a collection of 32 registers that can be read/written by
+  specifying the register number. Per instruction, a maximum of two registers
+  can be read and one register can be written.
+\end{definition}
+
+\paragraph{Instruction ALU Stage}: Executes an operation specified by
+ALUControl with the two input values. It outputs \verb|ALUresult| and
+\verb|is0?|. The \verb|is0?| bit is used to generate the PCSrc Control signal
+that decides whether there is a jump.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.25\textwidth]{alu-control.jpeg}
+\end{figure}
+
+\paragraph{Memory Stage}: For load and store instructions, we use the memory
+address calculated by the ALU stage to read or write data memory. The output value
+is passed on to the RegWrite stage.
+
+\begin{definition}[Data Memory]
+  The data memory is a storage element for the data of a program., taking in a
+  memory address, data to be written and outputs the data read from memory for
+  load instructions.
+\end{definition}
+
+\paragraph{RegWrite Stage}: For most instructions, we write the result of computation
+into a register (except for stores, branches and jumps).
+
+\subsection{Control}
+The control prescribes the processes of the datapath, memory and I/O devices
+according to program instructions, through control signals. From the datapath,
+we are required to generate the control signals:
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{controlSignals.jpeg}
+\end{figure}
+
+\paragraph{ALUControl Design}
+Considering the 1-bit ALU, the ALUControl signal indicates whether to invert
+each of the input, and specify the final operation performed on the inputs, as
+shown in the figure.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{alu-control2.jpeg}
+\end{figure}
+
+We can design the ALUControl signal which depends on the opcode and function
+code fields with a \textit{multilevel decoding approach}, by generating an
+intermediate signal \verb|ALUop| from the 6-bit opcode, and then obtain
+\verb|ALUcontrol| from \verb|ALUop| and funct.
+
+\begin{remark}
+  The multilevel decoding approach simplifies the design process, reduces the
+  size of the main controller, and potentially speeds up the circuit.
+\end{remark}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{alu-control-circuit.png}
+\end{figure}
+
+\begin{figure*}[h!]
+  \centering
+  \includegraphics[width=0.65\textwidth]{alu-control-overview.jpeg}
+  \captionsetup{labelformat=empty}
+  \caption{ALUop $\to$ ALUcontrol}
+\end{figure*}
+
+\paragraph{Control Design}
+With the required outputs of the control, we now design the control circuit using the
+opcode.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{control-circuit.png}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{control.jpeg}
+  \includegraphics[width=0.4\textwidth]{control2.jpeg}
+  \captionsetup{labelformat=empty}
+  \caption{opcode $\to$ Control Signals}
+\end{figure}
+
+\subsection{Instruction Execution}
+Each instruction consists of three phases: \textit{Read} contents of one or
+more storage elements, Perform \textit{computations} through some combinational
+logic, \textit{Write} results to one or more storage elements.
+
+Each instruction is performed within a single \textbf{clock period}. The clock
+period is used to prevent concurrent reading and writing to the storage
+elements.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{clock-period.png}
+\end{figure}
+
+The clock period is computed based on the instructions to be executed, and has
+multiple possible implementations.
+
+\subsubsection{Single Cycle Implementation}
+In Single Cycle Implementation, we calculate the clock cycle time based on the
+slowest instruction between \textit{ALU}, \textit{lw}, \textit{sw},
+\textit{beq} instructions.
+\begin{example}
+  Assuming neglligible delays, we have the total time for each instruction:
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{single-cycle.png}
+  \end{figure}
+\end{example}
+Implementing a single cycle for all instructions, each instruction will take as
+much time as the slowest one.
+  
+\subsubsection{Multicycle Implementation}
+In multicycle implementation, we break up instructions into \textit{execution
+steps}, each taking a single clock cycle.
+\begin{itemize}
+  \item Instruction Fetch
+  \item Instruction Decode and Register Read
+  \item ALU Operation
+  \item Memory Read/Write
+  \item Register Write
+\end{itemize}
+The cycle time is hence much shorter, and each instruction takes a variable
+number of clock cycles.
+
+\subsubsection{Pipelining}
+In addition to breaking up instructions into execution steps, we may
+\textit{allow different instructions to be in different execution steps
+simultaneously}. This is known as \textbf{pipelining}.
+
+\newpage
+\begin{sideways}[h!]
+  \centering
+  \includegraphics[width=1.35\textwidth]{processor.jpeg}
+\end{sideways}
+\newpage

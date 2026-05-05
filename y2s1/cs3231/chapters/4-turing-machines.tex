@@ -1,0 +1,609 @@
+\section{Turing Machines}
+\begin{definition}[Turing Machine]
+  A TM $M=\left( Q,\Sigma,\Gamma,\delta,q_0,B,F \right) $, where:
+  \begin{itemize}
+    \item $Q$: A finite set of states
+    \item $\Sigma$: A finite set of input symbols. $\Sigma\subseteq \Gamma$
+    \item $\Gamma$: A finite set of tape symbols
+    \item $\delta$: A transition function taking as argument a state and stack
+      symbol and returns a state, stack symbol to write and direction to move.
+      $\delta:Q\times \Gamma\to Q\times \Gamma\times \left\{ L,R \right\} $ 
+    \item $q_0$: A start state, $q_0\in Q$ 
+    \item $B$: A blank symbol. $B\in \Gamma-\Sigma$
+    \item $F$: A set of final states. $F\in \mathcal{P}\left( Q \right) $
+  \end{itemize}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{tm}
+  \end{figure}
+  A TM consists of a finite control, which can be in any of a finite set of
+  states, a infinite tape divided into cells, each holding one of a finite set
+  of symbols.\\
+
+  Initially, the input is written on the tape with blank symbols infinitely to
+  the left and right of the input. The tape head is positioned on the leftmost
+  cell holding an input symbol.\\
+
+  The transition function $\delta$ encapsulates a move of the turing machine,
+  consisting:
+  \begin{enumerate}
+    \item A change in state in the control.
+    \item A replacement of the tape symbol in the read cell.
+    \item A move to the left or right of the current cell.
+  \end{enumerate}
+\end{definition}
+
+We have alternative notations for the descriptions of TMs, similarly to DFAs
+and PDAs, the transition diagram and table.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{tm-table}
+\end{figure}
+
+We use the transition table to show the moves of the TM, depending on the
+current state and tape symbols.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{tm-diag}
+\end{figure}
+
+The transition diagram of a TM consists of a set of nodes corresponding to the
+states of the TM, within which each arc from state $q$ to $p$ is labelled by
+some $X/YD$, where $X,Y\in \Gamma$ and $D\in \left\{ L,R \right\} $.
+Additionally, we denote accepting states by double circles and the start state
+with an arrow labelled `start' entering that state.
+
+\begin{definition}[Instantaneous Descriptions]
+  The \textbf{ID} of a TM, analogous to that of the PDA, is the string
+  \[X_1X_2\cdots X_{i-1}q{X}_{i}X_{i+1}\cdots X_{n}.\] 
+  where $q$ is the state of the TM, the tape head is scanning the symbol $X_i$
+  and $X_1 X_2 \cdots X_{n}$ is the portion of the tape from the leftmost to
+  the rightmost nonblank symbols, except if the head is past the ends, in which
+  case we extend to show the blank symbols.
+\end{definition}
+
+\begin{notation}[$\vdash$]
+  If $\delta\left( q,X_i \right) =\left( p,Y,L \right) $, we denote
+  \[X_1X_2\cdots X_{i-1} q X_i X_{i+1}\cdots X_{n}\vdash X_1X_2\cdots X_{i-2} q X_{i-1} Y X_{i+1}\cdots X_{n}.\] 
+  This represents one move of the TM.
+\end{notation}
+
+\begin{notation}[$\vdash^{*}$]
+  As usual, we denote $\vdash^{*}$ to represent zero or more moves of the TM.
+\end{notation}
+
+\subsection{Turing Machines}
+\subsubsection{Acceptance by a TM}
+\begin{definition}[Language of a TM]
+  The \textit{language} of a TM $M$ is denoted $L(M)$ and is defined by
+  \[L(M)=\left\{ x|\exists q_f\in F, q_0x\vdash^{*}\alpha q_f \beta \right\}.\]
+  That is, it is the set of strings that, given as input, would eventually
+  transit $M$ into an accepting state.
+\end{definition}
+
+\begin{definition}[Halting]
+  We say a TM halts if it enters a state $q$, scanning a tape symbol $X$, and there
+  is no move defined. $\delta\left( q,X \right)$ is undefined.
+\end{definition}
+
+\begin{remark}
+  By un-defining $\delta\left( q_f, X \right)$ for all final states $q_f$ and
+  tape symbols $X$, without changing the language accepted, the TM halts if it
+  accepts. We can hence assume that a TM always halts when it accepts a string.
+\end{remark}
+
+Since language acceptance is equivalent to function computation, we further
+define the notion of function computation on a TM. Provided an input $x$, we
+interpret the content of the tape of the TM if/after it halts as the output
+$f(x)$.
+
+\subsubsection{Models Equivalent to TMs}
+We present certain modifications or improvements to TMs to aid in their
+specifications. These modifications do not extend the class of languages
+accepted, or extend the basic model of the TM, but only affect running times
+and space complexities.
+
+\paragraph{Storage in Finite Control} The finite control not only to represent
+a position in the ``program'' of the Turing machine, but also to hold a finite
+amount of data. The finite control becomes a tuple of the current state, and
+the stored values and variables.
+
+\paragraph{Subroutines} TMs can be thought of as a colection of
+``subroutines'', sets of states that perform some useful process. Each
+subroutine includes a start state, and a ``return'' state. As such, we may
+define general subroutines that that allow us to ``jump'' to a specific return
+state depending on the current start state.
+
+\paragraph{Multiple Tapes} The tape of a TM composed of multiple ``tracks''.
+Each symbol becomes a tuple of symbols and the tape alphabet consists of tuples
+of the original tape alphabet. This TM is hence capable of simulating multiple
+tapes.
+
+\paragraph{Nondeterministic TMs} The transition function may instead return a
+set of triples, from which the NTM can choose any of the the triples to be the
+next move. The language accepted is hence defined as the strings such that,
+given as input, there exist a sequence of moves that lead to an ID with an
+accepting state.
+
+\begin{theorem}
+  If $M_N$ is a nondeterministic TM, there exists a deterministic TM  $M_D$
+  such that $L(M_N)=L(M_D)$.
+\end{theorem}
+
+Intuitively, in $M_D$, we explore the IDs of $M_N$ ``breadth-first''. That is,
+we find all IDs reachable in $0$ moves, then all IDs reachable in $1$ move,
+then all IDs reachable in $2$ moves, as so on. This is done with a tape
+operating as a queue of IDs to simulate a single move of.\\
+
+We may further consider several restrictions of TMs, that do not affect the
+capabilities of TMs.
+
+\paragraph{Semi-Infinite Tapes}  A TM that is infinite only in one
+direction (WLOG, to the right) can simulate a TM that is infinite in both
+directions. Analogue to the simulation of multiple tapes, we allow each symbol
+to be a duple of tape symbols, with each $i$-th cell from the origin be
+$(x_{-i}, x_i)$, where $x_i$ is the $i$-th cell from the origin in the original
+TM model.
+
+\paragraph{No Blank Symbols Write} The TM is not allowed to write a blank
+symbol. This, coupled with semi-infinite tapes, ensure that the tape is at all
+times a prefix of nonblank symbols followed by an infinity of blanks. We may
+achieve this by creating a new tape symbol $B'$ that effectively functions as
+the blank symbol.
+
+\paragraph{Two Stack PDAs} A PDA equipped with two stacks is as powerful as a
+TM. We take one stack to simulate the tape symbols to the left of the head, and
+the other to simulate the tape symbols to its right. Each move transits the
+PDA's state, pops and reads from one stack, and pushes the corresponding output
+to the other.
+
+
+\subsection{Languages of a TM}
+Following specifications of TMs and the languages that they accept, we have the
+following for the language classes defined by TMs' capabilities. 
+\subsubsection{Recursive Enumerable Language}
+We first consider the languages that can be accepted by TMs.
+
+\begin{definition}[Recursively Enumerable Languages]
+  If $L$ is $L(M)$ for some TM $M$, then $L$ is a \textit{recursively enumerable
+  (computably enumerable) language}.
+\end{definition}
+
+\paragraph{Codings}
+We may define, for a string $x$ over $\left\{ 0,1 \right\} ^{*}$, its coding to be
+\[i=\left( 1x \right) _2-1.\]
+\begin{notation}
+  $\omega_i$ denotes the string with code $i$.
+\end{notation}
+
+Further we may define a coding for a TM $M=\left( Q,\Sigma,\Gamma,\delta,q_1,B,\left\{ q_2 \right\}  \right)$ where
+\begin{itemize}
+  \item $Q=\left\{ q_1,q_2,\ldots,q_{n} \right\} $. If there are multiple
+    accepting states, we may define new tape symbols and modify the transition function
+    to compress into a single accepting state.
+  \item $\Sigma=\left\{ 0,1 \right\} $, WLOG.
+  \item $\Gamma=\left\{ X_1,X_2,\ldots,X_s \right\} $, where $X_1=0,X_2=1, X_3=B$.
+  \item The directions $L=D_1$ and $R=D_2$.
+\end{itemize}
+We have, in this way, a coding for any transition
+\[\delta\left( q_i,X_j \right) =\left( q_k,X_l,D_m \right)\qquad\to\qquad
+0^{i}10^{j}10^{k}10^{l}10^{m}\quad i,j,k,l,m\in \mathbb{N}^*.\]
+This allows for a coding for $M$ to be $C_1 11 C_2 11 C_3\ldots C_{n}$ where
+$C_i$ is the coding of the $i$-th transition of the TM.
+\begin{notation}
+  $M_i$ denotes the TM with code $i$, and $W_i$ denotes the language accepted
+  by the TM of code $i$.
+\end{notation}
+
+Hence, we have a function from the valid binary strings to the set of all TMs,
+or the class of all RE languages.
+\begin{remark}
+  Not all binary strings is a valid code for a TM or a RE language. By
+  convention, we take take $M_i$ to be the TM with one state and no
+  transitions, and immediately halts on any input.
+\end{remark}
+
+\begin{example}[Diagonalisation Language]
+  $L_d$ is not RE, where the diagonalisation language $L_d=\left\{ w_i |
+  w_i\not\in L(M_i)  \right\} $ is the set of strings $\omega$ such that the TM
+  whose code is $\omega$ does not accept $\omega$ as input.
+\end{example}
+\begin{proof}
+  Suppose a TM $M_j$.
+  \begin{enumerate}
+    \item Case 1: $\omega_j\in L(M_j)$. $\omega_j\not\in L_d$ by definition.
+    \item Case 2: $\omega_j\not\in L(M_j)$. $\omega_j\in L_d$ by definition.
+  \end{enumerate}
+  In all cases, $L(M_j)\neq L_d$. Since $M_j$ is an arbitrary TM, all TMs do
+  not accept $L_d$, and it is not RE. \qed
+\end{proof}
+
+\begin{example}[Universal Language]
+  The universal language $L_U=\left\{ \left( M,\omega \right) | M\text{ accepts
+  }\omega \right\}$ is RE.
+\end{example}
+\begin{proof}
+  Consider a TM which has four tapes: input tape (with codings of $M$ and
+  $\omega$), tape to simulate $M$ (with $\omega$), tape for state of $M$,
+  scratch tape. We may then simulate a step of $M$ by reading the state of $M$,
+  the current cell of $M$, and finding the corresponding transition on the
+  input tape. We hence transit the state of $M$, and write into the current
+  cell of $M$. By construction, the universal TM accepts $L_U$ and $L_U$ is RE.
+  \qed
+\end{proof}
+
+\subsubsection{Recursive Languages}
+Within the RE languages, we may further define classes of language in which a
+TM is able to tell us that a given string is not in the language. That is, it
+halts for all possible input strings.
+
+\begin{definition}[Recursive Languages]
+  If $L$ is $L(M)$ for some TM $M$, and $M$ halts on all inputs $\omega\in \Sigma^{*}$,
+  then $L$ is a \textit{recursive (decidable) language}.
+\end{definition}
+
+\begin{theorem}
+  If $L$ is recursive, then $\bar{L}$ is recursive.
+\end{theorem}
+\begin{proof}
+  Suppose $M=\left( Q,\Sigma,\Gamma,\delta,q_0,B,F \right) $ accepts $L$ and
+  halts on all inputs. Consider a TM $\bar{M}$ such that
+  \begin{itemize}
+    \item The accepting states of $M$ are the nonaccepting states of $\bar{M}$
+      with no transitions. $\bar{M}$ will halt without accepting.
+    \item $\bar{M}$ has a new accepting state $r$ with no transitions.
+      $\bar{M}$ will halt and accept.
+    \item For each nonaccepting state $q\in Q-F$ and tape symbol $\alpha\in
+      \Gamma$, if $\delta\left( q,\alpha \right) $ is not defined,
+      $\bar{\delta}\left( q,\alpha \right) =r$.
+    \item All other transitions from nonaccepting states are unchanged. $q\in
+      Q-F$, $\alpha\in \Gamma$, $p\in Q$, if $\delta\left( q,\alpha \right)
+      =p$, $\bar{\delta}\left( q,\alpha \right) =p$.
+\end{itemize}
+Since $M$ is guaranteed to halt, $\bar{M}$ is also guaranteed to halt, and
+accepts exactly strings that $M$ does not accept.
+\end{proof}
+
+\begin{theorem}
+  A language $L$ is recursive $\iff$ $L$ and $\bar{L}$ is RE.
+\end{theorem}
+\begin{proof}
+  ($\implies$) If $L$ is recursive, $\bar{L}$ is recursive, and they both are RE.\\
+  ($\impliedby$) Suppose TMs $M_1,M_2$ such that $L(M_1)=L$ and
+  $L(M_2)=\bar{L}$. Consider a 2-tape TM $M$ that simulates $M_1$ and $M_2$ in
+  parallel. If $\omega$ is given as input and is in $L$, $M_1$ halts and
+  accepts, and $M$ accepts. If $\omega$ is not in $L$, $M_2$ halts and accepts,
+  and $M$ rejects. In all cases, one of the TMs are guaranteed to halt and
+  accept. Therefore, $M$ is guaranteed to halt and $L$ is recursive.
+\end{proof}
+
+With the two theorems, we conclude that given a language $L $, we have one of four cases:
+\begin{itemize}
+  \item Both $L$ and $\bar{L}$ are recursive.
+  \item Neither $L$ and $\bar{L}$ is RE.
+  \item $L$ is RE but not recursive, and $ \bar{L}$ is not RE.
+  \item $\bar{L}$ is RE but not recursive, and ${L}$ is not RE.
+\end{itemize}
+
+\begin{example}[Complement of the Universal Language]
+  The complement of the universal language $\bar{L_u}$ is not RE. Suppose that
+  some TM $M$ accepts  $\bar{L_u}$. We can then construct a machine $M'$ for
+  accepting $L_d$:\\
+  $M'(\omega_i):$
+  \begin{enumerate}
+    \item Extract $i$ from $\omega_i$.
+    \item Run $M$ on $\left( M_i,\omega_i \right) $.
+    \item $M'$ accepts $\iff$ $M$ accepts.
+  \end{enumerate}
+  Then $L_d$ is RE. A contradiction. Hence $\bar{L_u}$ is not RE. \qed
+\end{example}
+
+\subsection{Undecidability}
+The recursive languages corresponds to what is normally defined as an
+algorithm, as a TM that is not guaranteed to halt may not give us enough
+information to conclude that a string is not in the language. We are hence
+unable to fully `solve' the problem.
+
+\begin{theorem}[Church-Turing Thesis]
+  Every effectively computable function can be computed by a Turing Machine.
+\end{theorem}
+The thesis is not a theorem as effectively calculable does not have a
+mathematical definition. In any formalisation of computability, we have found
+all models of computation to be equivalent to, or strictly weaker than, a
+Turing Machine. 
+
+\begin{definition}[Partial Recursive Functions]
+  If $f$ is a function computed by some turing machine, then $f$ is
+  \textit{partial recursive (partially computable)}.
+\end{definition}
+
+\begin{definition}[Recursive Functions]
+  If $f$ is a function computed by some turing machine and $f$ is defined on
+  all $\Sigma^{*}$, then $f$ is \textit{recursive (computable)}.
+\end{definition}
+
+Since function computation is equivalent to language acceptance, by the
+Church-Turing Thesis, the class of recursive languages are intuitively the
+`limits of computation' of traditional computers.
+
+\subsubsection{Reductions}
+\begin{definition}[Turing Reducibility]
+  We say that a problem $P_1$ is reducible to $P_2$, $P_1\le _m P_2$, if there exists a recursive
+  function $f$ such that
+  \[x\in P_1\iff f(x)\in P_2.\] 
+  That is, we can convert each instance of problem $P_1$ to some problem in
+  $P_2$ that has the same answer. $P_2$ is as hard as or harder than $P_1$.
+\end{definition}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{reduction}
+\end{figure}
+\begin{theorem}[Reductions]
+  Suppose $P_1\le _m P_2$. Then
+  \begin{enumerate}
+    \item If $P_1$ is not recursive, $P_2$ is not recursive.
+    \item If $P_1$ is not RE, $P_2$ is not RE.
+    \item If $P_2$ is recursive, $P_1$ is recursive.
+    \item If $P_2$ is RE, $P_1$ is RE.
+  \end{enumerate}
+\end{theorem}
+
+To show that a problem $P$ is hard, we pick a problem $P'$ which is hard and
+then show that $P'\le _m P$, by constructing a recursive function $f$ such that
+$x\in P'\iff f(x)\in P$.
+
+\begin{example}[TMs with an Nonempty Language]
+  The set of encoded TMs with at least one string, $L_{ne}=\left\{ M|L\left( M
+  \right) \neq \emptyset  \right\} $ is RE but not recursive.
+\end{example}
+\begin{proof}
+  Consider a TM $M'$, such that:
+  \begin{lstlisting}[mathescape]
+  M'$(M)$:
+    for $t=0$ to $\infty$:
+      for $i=0$ to $t$:
+        if M$(\omega_i)$ accepts within $t$ steps, M' accepts.
+      endfor
+    endfor
+  endM'
+  \end{lstlisting}
+  The algorithm tries $\omega_1$ with $1$ step, then $\omega_1, \omega_2$ with
+  $2$ steps, and so on. If $M$ accepts any string in the alphabet, it will halt
+  and accept. Hence $L(M)=L_{ne}$ and $L_{ne}$ is RE.\\
+
+  To show that $L_{ne}$ is not recursive, we consider the complement of
+  $L_{ne}$, $L_e=\left\{ M|L(M)=\emptyset  \right\} $, and show that
+  $\bar{L_U}\le _m L_e$, and hence $L_e$ is not RE. We want to find a recursive
+  function that finds a TM $M'$ such that 
+  \[L(M')=\emptyset \iff \omega\not\in L(M).\]
+  Given input $\left( M,\omega \right) $, we define
+  \begin{lstlisting}[mathescape]
+  M'($x$):
+    for $t=0$ to $\infty$:
+      if M$(\omega)$ accepts within $t$ steps, M' accepts.
+    endfor
+  endM'
+  \end{lstlisting}
+  If $M$ accepts $\omega$, $M'$ accepts all strings and $L(M')\neq \emptyset $.
+  If $M$ does not accept $\omega$, $M'$ does not accept any output.
+  Since $\bar{L_U}$ is not RE, $L_{e}$ is not RE.\\
+
+  $L_{ne}$ is RE but $L_e$ is not RE, hence they are not recursive.
+\end{proof}
+
+
+\subsubsection{Properties of RE Languages}
+\begin{definition}[Properties]
+  A \textit{property} of the RE languages is a subset of the $RE$ languages.
+\end{definition}
+\begin{definition}[Trivial Properties]
+  A \textit{trivial property} is a property that is either empty or all RE
+  languages. A property is nontrivial $\iff$ there exists a language that
+  fulfils a property and a language that doesn't.
+\end{definition}
+\begin{definition}[Semantic Properties]
+  A property $P$ is semantic if it pertains only the behaviour of the program,
+  rather than its syntax. 
+  \[L_1=L_2\implies L_1\in P\iff L_2\in P\]
+\end{definition}
+
+\begin{theorem}[Rice Theorem]
+  All nontrivial semantic properties of the RE languages is undecideable.
+\end{theorem}
+\begin{proof}
+  Suppose $\mathcal{P}$ a nontrivial property of RE languages. We show that
+  $L_e\le L_\mathcal{P}$. That is, there exists a recursive function $f$ such
+  that
+  \[M\in L_e\iff f(M)\in L_\mathcal{P}.\]
+  WLOG, assume $\emptyset $ satisfies $\mathcal{P}$ (otherwise, consider
+  $\bar{\mathcal{P}}$). Let $L$ be a RE language that does not satisfy
+  $\mathcal{P}$, and $M''$ the machine that accepts $L$. Given a TM $M$,
+  we define $M'$:
+  \begin{lstlisting}[mathescape]
+M'$(x)$:
+  for $t=0$ to $\infty$:
+    for $i=0$ to $t$:
+      if M$(\omega_i)$ accepts within $t$ steps $\wedge$ M''$(x)$ accepts within $t$ steps, M' accepts $x$. 
+    endfor
+  endfor
+endM'
+  \end{lstlisting}
+  If $L(M)=\emptyset $, $L(M')=\emptyset $ that satisfies $\mathcal{P}$. If
+  $L(M)\neq\emptyset $, $L(M')=L$ that does not satisfy $\mathcal{P}$. Since
+  $L_e$ is not recursive, $L_\mathcal{P}$ is not recursive.
+\end{proof}
+
+\begin{remark}
+  Rice's theorem does not imply that everything about a TM is undecidable. For
+  instance, syntactic properties, such as the number of states of the TM, is
+  decidable.
+\end{remark}
+
+\subsection{Undecidable Problems}
+With the groundwork of undecidability and TMs laid out, we may move on to prove
+the undecidability of problems involving beyond TMs and their languages. We
+begin with the Post's Correspondence Problem, which involves strings rather
+than TMs.
+
+\subsubsection{Post's Correspondence Problem}
+PCP consists two lists of strings, of equal length $k\in \mathbb{N}$, over an
+alphabet $\Sigma$.
+\[A=w_1,w_2,\ldots,w_k \qquad B=x_1,x_2,\ldots,x_k\]
+Each $i\in \mathbb{N}_{\le k}$ specifies a \textit{corresponding pair} $\left(
+w_i,x_i \right) $. A solution to PCP is a nontrivial sequence of integers
+$i_1,i_2,\ldots,i_m$ taken as indices of corresponding pairs, that yield the
+same string when concatenated.
+\[w_{i_1}w_{i_2}\cdots w_{i_m}=x_{i_1}x_{i_2}\cdots x_{i_m}.\]
+PCP is the decision problem for the existence of a solution.
+
+\paragraph{``Modified'' PCP} To prove the undecidability of PCP, we first
+consider a modified problem as an intermediate reduction. We define MPCP to be
+an instance of PCP, with the additional constraint that the first corresponding
+pair must also be the first pair in the solution. A solution similarly
+comprises a sequence of integers $i_1,i_2,\ldots,i_m$ such that
+\[w_1w_{i_1}w_{i_2}\cdots w_{i_m}=x_1x_{i_1}x_{i_2}\cdots x_{i_m}.\]
+
+\begin{prop}
+  MPCP is reducible to PCP.
+\end{prop}
+Suppose an instance of MPCP with lists $A=w_1,w_2,\ldots,w_k$ and
+$B=x_1,x_2,\ldots,x_k$. WLOG, assume $*,\$\not\in\Sigma$. We construct a PCP
+instance with $C=y_0,y_1,\ldots,y_{k+1}$ and $D=z_0,z_1,\ldots,z_{k+1}$ where:
+\begin{itemize}
+  \item For $i=1,2,\ldots,k$, $y_i:=w_i\cdot *$ and $z_i:=*\cdot x_i$
+  \item $y_0:= *\cdot y_1$ and $z_0:=z_1$
+  \item $y_{k+1}:=\$$ and $z_{k+1}:=*\$$
+\end{itemize}
+\begin{proof}
+  ($\implies$) Suppose $i_1,i_2,\ldots,i_m$ is a solution to the MPCP instance.
+  \[w_1w_{i_1}w_{i_2}\cdots w_{i_m}=x_1x_{i_1}x_{i_2}\cdots x_{i_m}.\]
+  Applying the defined transformations, we have the equal strings
+  \[*\cdot y_1y_{i_1}y_{i_2}\cdots y_{i_m}=z_1z_{i_1}z_{i_2}\cdots z_{i_m}\cdot *.\]
+  Since $y_0=*\cdot y_1$, $z_0=z_1$, and $y_{k+1}=\$$, $z_{k+1}=*\$$, we have
+  \[y_0y_{i_1}y_{i_2}\cdots y_{i_m}y_{k+1}=z_0z_{i_1}z_{i_2}\cdots z_{i_m} z_{k+1}\]
+  and $0,i_1,i_2,\ldots i_m,k+1$ is a solution to the PCP instance.\\
+
+  ($\impliedby$) Suppose a solution to the PCP instance. It must begin with
+  index $0$ and end with index $k+1$ since they are the only corresponding
+  pairs with the same start symbol and end symbol, respectively.
+  \[y_0y_{i_1}y_{i_2}\cdots y_{i_m}y_{k+1}=z_0z_{i_1}z_{i_2}\cdots z_{i_m} z_{k+1}\]
+  Removing the $*$s and the final $\$$, we have
+  \[w_1w_{i_1}w_{i_2}\cdots w_{i_m}=x_1x_{i_1}x_{i_2}\cdots x_{i_m}\]
+  and $1,i_1,i_2,\ldots,i_m$ is a solution to the MPCP instance.\qed
+\end{proof}
+
+\begin{prop}
+  $L_U$ is reducible to MPCP.
+\end{prop}
+Suppose a pair $\left( M,\omega \right)$. WLOG, assume the TM never writes a
+blank and the tape is semi-infinite (to the right). Each ID is hence of the
+form $\alpha q\beta$ where $\alpha\in \Gamma^{+}, q\in Q, \beta\in \Gamma^{*}$.
+For $M=\left( Q,\Sigma,\Gamma,\delta,q_0,B,F \right) $, we define the following
+pairs in our MPCP instance
+\begin{enumerate}
+  \item $w_1=\#$ and $x_1=\#q_0w\#$ which must start the solution of MPCP to
+    begin the simulation of $M$. 
+  \item $w_2=x_2=\#$. For each $X\in \Gamma$, $w_i=x_i=X$.
+  \item For all $q\in Q-F$, $p\in Q$, $X,Y,Z\in \Gamma$, 
+    \begin{itemize}
+      \item $w_i=qX$, $x_i=Yp$ if $\delta\left( q,X \right) =\left( p,Y,R \right) $
+      \item $w_i=ZqX$, $x_i=pZY$ if $\delta\left( q,X \right) =\left( p,Y,L \right) $
+      \item $w_i=q\#$, $x_i=Yp\#$ if $\delta\left( q,B \right) =\left( p,Y,R \right) $
+      \item $w_i=Zq\#$, $x_i=pZY\#$ if $\delta\left( q,B \right) =\left( p,Y,L \right) $
+    \end{itemize}
+    Each of these pairs extend the $B$ string to add the next ID and extend the $A$ string
+    to match the $B$ string.
+  \item For all $q\in F$, $X,Y\in \Gamma$
+    \begin{itemize}
+      \item $w_i=XqY$, $x_i=q$
+      \item $w_i=Xq$, $x_i=q$
+      \item $w_i=qY$, $x_i=q$
+    \end{itemize}
+    These pairs allow us to consume all tape symbols after achieving an
+    accepting state. This allows us to simplify to match the final step.
+  \item $w_i=q\#\#$, $x_i=\#$. When the tape is emptied, we may use the final
+    pair to complete the solution.
+\end{enumerate}
+
+Intuitively, the MPCP simulates the computation of $M$ on $\omega$, each
+partial solution consisting strings that are prefixes of the sequence of IDs of
+$M$, $\#\alpha_1\#\alpha_2\#\alpha_3\#\cdots$. The string from $B$ is one ID
+ahead of that from $A$, unless $M$ enters an accepting state, where it would be
+able to ``catch up'' to obtain a solution. Then $M$ accepts $\omega$ $\iff$
+there is a solution to this instance of MPCP.\\
+
+Since $L_U\le _m MPCP \le _m PCP$, by transitivity, since $L_U$ is undecidable,
+PCP is undecidable.
+\begin{theorem}
+  PCP is undecidable.
+\end{theorem}
+
+\subsubsection{Ambiguous Grammars}
+Using PCP, we may further prove the undecidability of other problems, particularly
+that the ambiguity of a grammar is undecidable. Suppose an instance of PCP with lists
+$A=w_1,w_2,\ldots,w_k$ and $B=x_1,x_2,\ldots,x_k$. WLOG, suppose
+$a_1,a_2,\ldots,a_k\not\in \Sigma$. Consider the grammar, for $i\in \left[ 1,k
+\right] $
+\begin{gather*}
+  S\to A|B\\
+  A\to w_iAa_i| w_ia_i\\
+  B\to x_iBa_i| x_ia_i
+\end{gather*}
+The grammar is ambiguous $\iff L(G_A)\cap L(G_B)\neq \emptyset \iff$ The
+instance of PCP has a solution, where $G_A$ is the grammar of productions
+involving $A$ and that of $B$ for $G_B$.
+
+\begin{remark}
+  $\bar{L\left( G_A \right) },\bar{L\left( G_B \right) }$ are CFLs.
+\end{remark}
+
+Using the undecidability of the intersection of $L(G_A)$ and $L(G_B)$, we may
+prove the undecidability of various other decision problems.
+\begin{example}[$L(G_1)=L(G_2)$]
+  Take $L(G_1)=\bar{L(G_A)}\cup \bar{L(G_B)}=\bar{L(G_A)\cap L(G_B)}$ and
+  $L(G_2)={\left( \Sigma\cup \left\{ a_1,a_2,\ldots \right\}  \right)}^{*}$.
+\end{example}
+
+\subsection{Unrestricted Grammars}
+\begin{definition}[Unrestricted Grammar]
+  A UG $G=\left( N,\Sigma,S,P \right) $, where:
+  \begin{itemize}
+    \item $N$: A finite set of non-terminals
+    \item $\Sigma$: A finite set of terminals, $N \cap \Sigma=\emptyset $
+    \item $S$: A start symbol, $S\in V$ 
+    \item $P$: A finite set of productions
+  \end{itemize}
+  A production, contrary to CFGs, is of the form $\alpha\to\beta$, where
+  $\alpha\in {\left( N \cup \Sigma \right)}^{*}N{\left( N\cup \Sigma
+  \right)}^{*}$ and $\beta\in {\left( N \cup \Sigma \right)}^{*}$.
+\end{definition}
+
+\begin{theorem}
+  The languages generated by unrestricted grammars are exactly the languages
+  generated by TMs.
+\end{theorem}
+
+\begin{definition}[Context Sensitive Grammar]
+  A CSG is a UG with the additional constraint that $\left| \alpha \right| \le
+  \left| \beta \right| $.
+\end{definition}
+\begin{definition}[Context Sensitive Languages]
+  If $L$ is $L(G)$ for some CSG $G$, then $L$ is a \textit{context-sensitive language}.
+\end{definition}
+\begin{example}[$\left\{ a^{n}b^{n}c^{n}|n\in \mathbb{N}^{*} \right\}$]
+   \begin{gather*}
+     S\to aSBC|aBC\\
+     CB\to BC\\
+     aB\to ab\\
+     bB\to bb\\
+     bC\to bc\\
+     cC\to cc
+   \end{gather*}
+\end{example}
+
+\begin{remark}
+  The class of context sensitive languages are exactly $NSPACE\left( O\left( n
+  \right)  \right) $. They are closed under intersection, union and concatenation.
+\end{remark}

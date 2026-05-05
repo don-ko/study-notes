@@ -1,0 +1,343 @@
+\section{Instruction Set Architecture}
+\textbf{Instruction Set Architecture} (ISA) is an abstraction on the interface
+between the hardware and low-level software. It abstracts the functionality
+of the processor, such that
+\begin{itemize}
+  \item Programmers are aware of functionality available from machine code
+  \item Computer Designers can design functionality independent of the hardware
+\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{isa.jpg}
+\end{figure}
+\subsection{ISA Design}
+We have two major design philosophies for ISA:
+\vspace{2mm}
+
+\centering
+\begin{tabular}{c c}
+  \toprule
+  Complex Instruction Set Computer (CISC) & \textbf{Reduced Instruction Set Computer (RISC)} \\
+  \midrule
+  Complex operations with single instruction & Simple and small instruction set \\
+  Smaller program size & Larger program size \\
+  No room for hardware optimisation & Easier to build/optimise hardware\\
+                                    & Burden on software to implement high-level statements\\
+  \bottomrule
+\end{tabular}
+
+\vspace{2mm}
+\raggedright
+ISA Design comprises 5 main concepts:
+\begin{enumerate}
+  \item \textbf{Data Storage}: Storage Architecture
+  \item \textbf{Memory Addressing Nodes}
+  \item \textbf{Operations in the Instruction Set}
+  \item \textbf{Instruction Formats}: Instruction Length, Fields
+  \item \textbf{Encoding the Instruction Set}
+\end{enumerate}
+
+\subsubsection{Data Storage}
+In data storage, we concern ourselves with storing the operands, the results,
+and how the operands are specified. We have the common storage architecture
+designs:
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.65\textwidth]{storage-archi.jpeg}
+\end{figure}
+\begin{itemize}
+  \item \textit{Stack Architecture}: Operands are implicitly on top of a stack
+  \item \textit{Accumulator Architecture}: One operand is implicitly in a special
+    register known as the accumulator (IBM 701, DEC PDP-8)
+  \item \textit{General-Purpose Register Architecture}: Operands are explicit. Most common design.
+      \begin{itemize}
+        \item \textit{Register-Memory Architecture}: Exactly one operand is in
+          memory (Motorola 68000, Intel 80386)
+        \item \textit{Register-Register (Load-Store) Architecture}: Both
+          operands are in registers (\textbf{MIPS}, DEC Alpha)
+      \end{itemize}
+  \item \textit{Memory-memory Architecture}: All operands are in memory. (DEC VAX)
+\end{itemize}
+
+\subsubsection{Memory Addressing Mode}
+Given a $k$-bit address, we have an address space ($0$ to $2^{32}-1$) of size
+$2^{k}$, and each memory transfer consists of one word of $n$ bits. In
+register-register architecture, the memory addressing node consists of the
+\textit{Memory Address Register}, \textit{Memory Data Register} which are used
+by the address/data bus and the control lines to load/store data.
+\paragraph{Endianness} Within a multi-byte word (say 4), the most significant
+byte can be stored in the lowest address. That is, we construct the byte by
+reading from memory sequentially. This is known as \textbf{big-endian}. On the
+contrary, \textbf{little-endian} is the case when the least significant byte is
+stored in the lowest address.
+\begin{remark}
+  Each byte itself is not reversed.
+\end{remark}
+\paragraph{Addressing Mode} For storage architectures involving explicit
+operands, there are different methods of specification in the assembly
+language.
+\begin{example}[MIPS]
+  There are 3 addressing modes in MIPS:
+  \begin{itemize}
+    \item \textit{Register}: Operands are specified by the register containing
+    the value (\verb|add $t1, $t2, $t3|)
+    \item \textit{Immediate}: Operand is specified directly in the instruction
+    with its value (\verb|addi $t1, $t2, 3|)
+    \item \textit{Displacement}: Operand is in memory with address calculated
+    as Base $+$ Offset (\verb|lw $t1, 20($t2)|)
+  \end{itemize}
+\end{example}
+\begin{example}[Other Addressing Modes]
+  There exist other addressing modes:
+  \begin{itemize}
+    \item \textit{Register Indirect}: Operand is specified with a register storing
+      its address
+    \item \textit{Indexed/Base}: Operand is in memory with address calculated
+      with Base $+$ Offset, each stored in a register
+    \item \textit{Direct/Absolute}: Operand is specified directly in the instruction
+      with its address
+    \item \textit{Memory Indirect}: Operand is specified with a register
+      containing a address to its address.
+    \item \textit{Auto-increment}: Operand is written into the destination,
+      then incremented
+    \item \textit{Auto-decrement}: Operand is decremented, then written into
+      the destination
+    \item \textit{Scaled}: Operand is in memory with address calculated as Base
+      $+$ Offset + Index $\times $ Scaling\_Factor
+  \end{itemize}
+\end{example}
+\subsubsection{Operations in the Instruction Set}
+Instructions are optimised based on usage frequency --- the speeds for load,
+conditional branch, compare and store instructions are optimised (potentially
+at the cost of other instructions).
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.75\textwidth]{instruction-set.jpeg}
+\end{figure}
+
+\subsubsection{Instruction Format}
+An instruction consists of the \textit{opcode} (a unique code specifying the
+operation) and the \textit{operands} (any additional information needed for the
+operations). The operation \textbf{designates} the type and size of the
+operands.
+\begin{multicols}{2}
+  \textbf{Variable-length} instructions: Used in most CISC.
+  \begin{itemize}
+    \item Requires multi-step fetch and decode
+    \item Allows for more flexible and compact instruction set
+  \end{itemize}
+  \textbf{Hybrid} instructions: a mix of both.\\
+  \textbf{Fixed-length} instructions: Used in most RISC
+  \begin{itemize}
+    \item Allows for easy fetch and decode
+    \item Simplifies pipelining and parallelism
+    \item Instruction bits are scarce
+  \end{itemize}
+\end{multicols}
+
+\subsubsection{Encoding the Instruction Set}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{encoding.jpeg}
+\end{figure}
+With fixed length instructions, we may adopt an \textbf{expanding opcode}
+scheme. That is, the opcode has different lengths for different instructions.
+\begin{example}[Maximum/Minimum Number of instructions]
+  Given a $16$-bit instruction consisting type-A instructions with 6-bit
+  opcodes and type-B instructions with 11-bit opcodes, the \textbf{maximum
+  number of instructions} is given by maximising the prefixes for type-B,
+  \[1 + \left( 2^{6}-1 \right) \times 2^{5} = 2017.\] 
+  The \textbf{minimum number of instructions} is given by minimising the prefixes
+  for type-B,
+  \[1\times 2^{5}+2^{6}-1.\] 
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.35\textwidth]{expanding-opcode.jpeg}
+  \end{figure}
+\end{example}
+To \textbf{design an expanding opcode} with specifications for the number of
+instructions of each type, we first accommodate for the most restrictive case
+(that is, the instruction type with the most operands).
+
+
+\subsection{MIPS}
+Microprocessor without Interlocked Pipelined Stages (MIPS) is a family of
+RISC ISA\@. In summary, it adopts the stored-memory concept with the load-store
+model:
+\begin{itemize}
+  \item \textbf{Stored-Memory Concept}: Instructions and data are stored in memory
+  \item \textbf{Load-Store Architecture}: Faster processing by \textit{limiting
+    memory access} through the bus, relying on registers for storage during
+    execution
+  \item The major \textbf{types of assembly instruction}: \textit{Memory},
+    \textit{Calculation}, \textit{Control Flow}
+  \item A typically assembly code structure is hence: (1) \textit{Load},
+    (2) \textit{Compute}, (3) \textit{Store}
+\end{itemize}
+We typically have a limited number of registers in the processor. In MIPS, we
+have $32$ registers, each referred to by its number or name. Registers
+\textbf{do not have data types}, but each instruction assumes the data in the
+register is of a certain type.
+\begin{remark}
+  In CS2100, we assume that we have enough registers to store all variables in
+  our program.
+\end{remark}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.65\textwidth]{registers.png}
+\end{figure}
+
+\subsubsection{MIPS Assembly Language}
+\[\verb|op $r0, $r1, $r2|\qquad \verb|op $r0, $r1, Immd|\qquad \verb|op Immd|.\] 
+Most MIPS (\textit{R-format}) operations consist three registers (1
+destination, 2 sources).\ \textit{I-format} operations consist two registers (1
+destination, 1 source) and an immediate value. While \textit{J-format}
+operations uses only 1 immedate value.
+\paragraph{Arithmetic Operations}
+For arithmetic operations, The immediate ranges from $-2^{15}$ to $2^{15}-1$
+(with a 16-bit 2s complement number system).
+\paragraph{Logical Operations} In logical operations, the registers consist
+of 32 raw bits, instead of a single 32-bit number.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{mips-basic.jpeg}
+\end{figure}
+
+\paragraph{Memory Organisation}
+In MIPS, the main memory can be viewed as a \textit{large, single-dimensional
+array} of memory locations. Each location has an address, sequentially indexed
+in the array (in bytes). This is known as \textit{byte addressing}.
+
+\begin{remark}
+  With the byte address, we can access a single byte (\textit{byte
+  addressable}) or a single word (\textit{word addressable})
+\end{remark}
+
+MIPS consists of $32$ registers, each $32$-bit (4-byte) long. Each word contains
+32 bits (4 bytes) and memory addresses are $32$-bit long.\ \textbf{Each word is
+aligned in memory, that is, it begins at a byte that is a multiple of $4$.}
+Hence, we have the memory instructions \verb|lw $t0, 12($t1)|,
+\verb|sw $t0, 12($t1)| requiring the address be a multiple of 4. To load/store
+misaligned values, we use the instructions \verb|lb| and \verb|sb| instead.
+
+\begin{definition}[Variable Mapping]
+  In C, during compilation, the compiler allocates a register for each variable used
+  in the program. This process is known as \textbf{variable mapping}.
+\end{definition}
+
+\begin{example}[Large Constant Loading]
+  To load a large (>16 bits) immediate, we first set the upper 16-bit:
+  $\verb|lui $t0, 0xAAAA|$, then set the lower 16-bits:
+  $\verb|ori $t0, $t0, 0xAAAA|$
+\end{example}
+
+\paragraph{Control Flow}
+In performing general computing tasks, we are required to make decisions
+(conditions) and perform iterations (loops). To alter the control flow of the program,
+we have:
+\begin{itemize}
+  \item \textbf{Conditional} (branch) instructions
+    \[\verb|bne $t0, $t1, label|.\] 
+    \[\verb|beq $t0, $t1, label|.\] 
+  \item \textbf{Unconditional} (jump) instructions
+    \[\verb|j label|\]
+\end{itemize}
+\begin{remark}
+  Labels are ``anchors'' in the assembly code indicating branch targets. They
+  are not instructions nor variables, and \textbf{no memory is allocated}.
+\end{remark}
+These instructions (along with \verb|slt| and \verb|slti|) allow us to
+implement any loop or conditional decision making in our programs.
+\begin{example}[Array Loops]
+  For instance, we may implement array loops as follows:
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{control-flow.jpeg}
+  \end{figure}\\
+  Another optimisation would be to directly use a array pointer instead of an
+  index in many cases.
+\end{example}
+
+\includepdf[pages=-]{MIPS_Reference.pdf}
+
+\subsubsection{MIPS Encoding}
+Instructions in MIPS are classified into \textit{Register Format},
+\textit{Immediate Format}, or \textit{Jump format}, according to their
+operands. \textbf{Instructions with same operand types have the same encoding.}
+
+\paragraph{R-Format} For register formats, we have the following fields:
+\begin{itemize}
+  \item \verb|opcode| Partially specifies the instruction, equals 0 $\forall$ R-format instructions
+  \item \verb|funct| Further specifies the instruction
+  \item \verb|rs| Source Register, specifies register containing the first operand 
+  \item \verb|rt| Target Register, specifies register containing the second operand 
+  \item \verb|rd| Destination Register, specifies register to receive the
+    result of computation
+  \item \verb|shamt| Shift Amount, equals 0 $\forall$ non-shift instructions
+\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{r-format.jpeg}
+\end{figure}
+
+\paragraph{I-Format} For immediate formats, we have the following fields:
+\begin{itemize}
+  \item \verb|op| Uniquely specifies the instruction
+  \item \verb|rs| Specifies the source register operand (if any)
+  \item \verb|rt| Specifies the target register to receive the result
+  \item \verb|immediate| Taken as a signed integer in 2s complement
+    (\textit{except for logical operations})
+\end{itemize}
+\begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.9\linewidth]{i-format1.jpeg}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.78\linewidth]{i-format2.jpeg}
+\end{subfigure}
+\end{figure}
+\begin{definition}[Program Counter]
+  The \textbf{program counter} (PC) is a special register keeping address of
+  the next instruction to be executed in the processor.
+\end{definition}
+Branch instructions also use the I-format, where the immediate specifies the
+\textbf{relative address of the next instruction (in number of words)} if the
+condition is fulfilled.
+\[PC:=\begin{cases} PC+4&\text{if branch is not taken}\\ \left( PC+4 \right)
++\left( \verb|immediate| \times 4 \right) & \text{if branch is
+taken}\end{cases}.\]
+\begin{remark}
+  This allows us to specify a branch up to $\pm 2^{15}$ words $=\pm 2^{17}$ 
+  bytes from the PC.
+\end{remark}
+
+\paragraph{J-Format} For jump formats, we have the following fields:
+\begin{itemize}
+  \item \verb|opcode| Uniquely specifies the instruction
+  \item \verb|targetAddress| Consists the 5th to 30th MSB of the target
+    instruction address.
+\end{itemize}
+The 4 MSBs of the target instruction address is taken from $PC+4$, and the 2
+LSBs are $00$ due to word alignment of instructions. We hence form the full
+32-bit target address from the specified 26 bits.
+
+\begin{remark}
+  Due to the use of the first $4$-bits of $PC+4$, jump instructions are limited to within
+  the same block of 256MB.
+\end{remark}
+
+\subsubsection{MIPS Addressing Modes}
+In MIPS, we have the following addressing modes:
+\begin{itemize}
+  \item \textit{Register Addressing}: (\verb|add, sub, and, xor, nor, slt, sll, srl|)
+  \item \textit{Immediate Addressing}: (\verb|addi, andi, ori, xori, slti|)
+  \item \textit{Base Addressing (Displacement Addressing)}: Operand is at the
+  address obtained from the sum of a register and an immediate (\verb|lw, sw|)
+  \item \textit{PC-Relative Addressing}: Address is obtained from the sum of PC
+  and an immediate (\verb|beq, bne|)
+  \item \textit{Pseudo-direct Addressing}: Address is given by $26$-bit instruction
+    concatenated with upper $4$-bits of $PC+4$
+\end{itemize}

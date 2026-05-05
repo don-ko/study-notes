@@ -1,0 +1,1009 @@
+\section{Context Free Languages}
+We now consider a larger class of languages known as the \textbf{context-free
+languages}. These languages can be defined by a recursive notation known as
+\textit{context-free grammars}, or a automaton-like notation known as
+\textit{pushdown automaton}.\\
+
+Intuitively, the class of CFLs comprises the RLs, and languages in which
+symmetry is required, and certain forms of matching (in opposite directions).
+
+\subsection{Context-Free Grammars}
+\begin{definition}[CFG]
+  A \textit{CFG} $C=\left( V,T,P,S \right) $, where:
+  \begin{itemize}
+    \item $V$: A finite set of non-terminals
+    \item $T$: A finite set of terminals
+    \item $P$: A finite set of productions
+    \item $S$: A start symbol, $S\in V$
+  \end{itemize}
+  A production is of the form $A\to\gamma$, where $A\in V\wedge \gamma\in
+  {\left( V\cup T \right)} ^{*}$. If we have the productions
+  of $A$ $A\to\alpha_1,A\to\alpha_2,\ldots,A\to\alpha_{n}$, we may write
+  $A\to\alpha_1|\alpha_2|\ldots|\alpha_{n}$
+\end{definition}
+\begin{example}[$L(0^{*}1{(0+1)}^{*})$]
+  To generate the regular language $L(0^{*}1{(0+1)}^{*})$, consider the CFG $G=\left(
+  \left\{ S,A,B \right\},\left\{ 0,1 \right\},P,S \right) $, where $P$
+  comprises the productions:
+  \[S\to AB,\qquad A\to 0A|\epsilon,\qquad B\to 0B|1B|\epsilon.\] 
+\end{example}
+\subsubsection{Derivations}
+To infer if a certain string is in the language of the CFG, we may apply
+\textit{recursive inference} or \textit{derivation}.
+\begin{definition}[Recursive Inference]
+  We may construct the string recursively from body to head. For example, given
+  a production $A\to BC$, we take strings $b\in L(B)$ and $c\in L(C)$ and
+  concatenate them in the proper order and infer that the resulting string is
+  in $L(A)$.
+
+  \centering
+\begin{tabular}{ccccc}
+   \toprule
+   & String Inferred & In language of & Production used & String(s) used \\
+   \midrule
+  (i) & $\epsilon$ & $A$ & $A\to\epsilon$ & -- \\
+  (ii) & $\epsilon$ & $B$ & $B\to\epsilon$ & -- \\
+  (iii) & $0$ & $A$ & $A\to 0A$ & (i) \\
+  (iv) & $0$ & $B$ & $B\to 0B$ & (ii) \\
+  (v) & $1$ & $B$ & $B\to 1B$ & (ii) \\
+  (vi) & $00$ & $A$ & $A\to 0A$ & (iii) \\
+  (vii) & $10$ & $B$ & $B\to 1B$ & (iv) \\
+  (viii) & $11$ & $B$ & $B\to 1B$ & (v) \\
+  (ix) & $11$ & $S$ & $S\to AB$ & (i), (viii) \\
+  \vdots & \vdots & \vdots & \vdots & \vdots\\
+  \bottomrule
+\end{tabular}
+
+\raggedright
+\vspace{2mm}
+This procedure is known as \textbf{recursive inference}.
+\end{definition}
+
+\begin{notation}[$\Rightarrow$] 
+  If $A\in V$ such that $A\to \gamma$ is a production of CFG $G$, we denote
+  \[\alpha A\beta\Rightarrow_G \alpha\gamma\beta\qquad\forall\alpha,\beta\in
+  {\left( V\cup T \right)}^{*}.\]
+\end{notation}
+\begin{definition}[Derivation]
+  We can expand $S$ with one of its productions, and recursively expand each
+  non-terminal with the body of its productions until a string of terminals is derived.
+  \[S\Rightarrow AB \Rightarrow A1B \Rightarrow A11B \Rightarrow A110B \Rightarrow A110
+  \Rightarrow 0A110 \Rightarrow 0110\]
+  This is referred to as a \textbf{derivation} of $0110$. We may then define a
+  derivation relation $\Rightarrow ^{*}_G$:
+  \begin{enumerate}
+    \item \textit{Base Case}: $\alpha \Rightarrow _G^{*} \alpha$
+    \item \textit{Inductive Step}: If $\alpha \Rightarrow
+      _G^{*}\beta\wedge\beta \Rightarrow _G \gamma$, then $\alpha
+      \Rightarrow _G^{*}\gamma$.
+  \end{enumerate}
+  That is, there exists a derivation from $\alpha$ to $\beta$.
+\end{definition}
+
+\begin{definition}[Left/Right-most Derivations]
+  A \textbf{leftmost derivation} is one in which at each step, the leftmost
+  variable is replaced by one of its production bodies. This restricts the
+  number of choices we have in deriving a string. Similarly, we can also
+  have a \textbf{rightmost derivation}.
+\end{definition}
+
+\begin{definition}[Sentential Forms]
+  Any string $\alpha\in {\left( V\cup T \right) }^{*}$ such that $S \Rightarrow
+  ^{*}\alpha$ is called a \textbf{sentential form}, a string (of terminals or
+  non-terminals) derived from the start symbol. We further have the
+  analogue for left/right-most derivations, known as a
+  \textit{left/right-sentential form}.
+\end{definition}
+
+\subsubsection{Parse Trees}
+\begin{definition}[Parse Tree]
+  We use a tree representation for derivations, where each interior node is
+  labelled by a nonterminal in $V$, each leaf is labelled by a symbol in $V\cup
+  T$, or $\epsilon$, and the children $X_1,X_2,\ldots,X_k$ (from the left) of
+  an interior node $A$ forms the body of the production $(A\to X_1X_2\cdots
+  X_k)\in P$. This is known as the \textbf{parse tree}.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.17\textwidth]{parse-tree.jpeg}
+  \end{figure}
+  We call the in-order traversal of its leaves the \textbf{yield} of the parse
+  tree.
+\end{definition}
+Consider the parse trees whose yields are terminal strings, and the root is
+labelled by the start symbol. Then the yield is a string in the language of the
+grammar.
+\begin{remark}
+  Derivations are non unique, but parse trees and its equivalent left-most
+  derivations, right-most derivations are unique for unambiguous grammars.
+\end{remark}
+
+\subsubsection{Language of a CFG}
+\begin{definition}[Language of a CFG]
+  The \textbf{language} of a CFG $G$ is denoted $L(G)$, and is defined by
+  \[L(G)=\left\{ \omega\in T^{*}| S \Rightarrow _G^{*}\omega \right\},\] the
+  set of strings that can be derived from the start symbol in finitely many
+  steps.
+\end{definition}
+\begin{remark}
+  The language of a CFG is hence the set of all sentential forms that consist
+  solely of terminals.
+\end{remark}
+\begin{definition}[Context Free Language]
+  If $L$ is $L(G)$ for some CFG $G$, then $L$ is a \textbf{context-free language}.
+\end{definition}
+
+We prove a property of strings in a specified CFL by inducting on the length of
+the string to prove membership, and inducting on the number of steps of
+derivation to prove the specified property, as illustrated by the following
+example.
+\begin{example}[Property of Context-Free Language]
+  Suppose the CFG $G=\left( \left\{ S \right\}, \left\{ 0,1 \right\},P, S  \right) $, where
+$P$ consists the productions \[P\to \epsilon|0|1|0P0|1P1.\] Then $L(G)$ is the
+  set of palindromes over $\left\{ 0,1 \right\} $.\\
+  \begin{proof}
+    ($\implies $) Suppose $\omega$ is a palindrome. We prove by induction on
+    $\left| \omega \right| $ that $\omega$ is in $L(G)$.
+    \begin{enumerate}
+      \item \textit{Basis Step:} If $\left| \omega \right| =0$ or $\left|
+        \omega \right| =1$, then $\omega=\epsilon,0,1$. Since we have the
+        productions $P\to\epsilon|0|1$, $P \Rightarrow ^{*}$.
+      \item \textit{Inductive Step:} Suppose $\left| \omega \right| \ge 2$.
+        Since $\omega$ is a palindrome, it begins and end with the same symbol.
+        That is, $\omega=0x0$ or $\omega=1x1$, where $x$ is a palindrome over
+        $\left\{ 0,1 \right\} $. By inductive hypothesis, $P \Rightarrow ^{*}x$.
+        \begin{itemize}
+          \item If $\omega=0x 0$, We have $P \Rightarrow 0P0 \Rightarrow ^{*} 0x0=\omega$.
+          \item If $\omega=1x1$, We have $P \Rightarrow 1P1 \Rightarrow ^{*} 1x1=\omega$.A
+        \end{itemize}
+        We have $P \Rightarrow ^{*}\omega$ is in $L(G)$.
+    \end{enumerate}
+    ($\implies$) Suppose $\omega\in L(G)$. We prove by induction on the number
+    of steps in a derivation of $\omega$ that it is a palindrome.
+    \begin{enumerate}
+      \item \textit{Basis Step:} For one-step derivations, we have $\epsilon,0,1$ which are
+        all palindromes.
+      \item \textit{Inductive Step:} Suppose that strings $x$ generated by
+        $n$-step derivations are palindromes where $n\ge 1$. Consider an
+        $(n+1)$-step derivation of $\omega$. Then $\omega=0x0$ or $\omega=1x1$
+        since $n+1\ge 2$, and these are the only productions allowing
+        additional steps of a derivation. Since $x$ is a palindrome, $\omega$
+        is also a palindrome.\qed%
+    \end{enumerate}
+  \end{proof}
+\end{example}
+\vspace{-8mm}
+\subsubsection{Inference, Derivations, and Parse Trees}
+Given a grammar $G=(V,T,P,S)$, the following are equivalent:
+ \begin{itemize}
+  \item The recursive inference procedure determines $\omega\in T^{*}$ is in the language of
+     $A\in V$
+   \item $A \Rightarrow _G^{*}\omega$
+   \item There exists a left/right-most derivation from $A$ to $\omega$
+   \item There exists a parse tree with root $A$ and yield $\omega$
+\end{itemize}
+
+\subsection{Ambiguous Grammars}
+\begin{definition}[Ambiguous Grammar]
+  A grammar $G$ is said to be ambiguous if, there exists at least two different
+  parse trees with root labelled $S$ and yield $\omega\in T^{*}$.
+  Equivalently, $G$ is ambiguous if there exist at least two left/right-most
+  derivations.
+\end{definition}
+
+\begin{remark}
+  The ambiguity of a grammar is undecidable.  There is no algorithm to decide
+  the ambiguity of a CFG, and no general algorithm to remove ambiguity.
+  However, there exists certain techniques to eliminate certain kinds of
+  ambiguity.
+\end{remark}
+
+\subsubsection{Eliminating Ambiguity}
+\begin{example}
+  Suppose the CFG $G=\left( \left\{ E,I,S \right\} ,\left\{ a,b,0,1 \right\} ,P,S \right) $ where
+  $P$ consists the productions
+  \[E \to I|E+E|E*E|(E)\qquad I\to a|b|Ia|Ib|I0|I1.\]
+  This grammar is ambiguous for two causes: (1) The precedence of operators is
+  not defined, and (2) a sequence of identical operators can be grouped from the
+  left or the right. To eliminate ambiguity, we impose an order of precedence, and
+  left-associativity of operators.
+
+  Precedence can be enforced by introducing different variables,
+  each of which represents expressions sharing the same level of ``binding strength'':
+  \begin{itemize}
+    \item Identifiers and paranthesised expressions are \textit{factors},
+      expressions that cannot be broken apart by any adjacent operator.
+    \item A product of one or more factors are \textit{terms}, expressions that
+      cannot be broken by the $+$ operator.
+    \item A sum of one or more terms is then all other possible \textit{expressions} to be
+      represented.
+  \end{itemize}
+  We hence disambiguate with the grammar
+  \begin{align*}
+    I&\to a|b|Ia|Ib|I0|I1\\
+    F&\to I|(E)\\
+    T&\to F|T*F\\
+    E&\to T|E+T
+  \end{align*}
+\end{example}
+
+\begin{remark}
+  It is difficult to prove disambiguity of a specified grammar.
+\end{remark}
+
+\subsubsection{Inherent Ambiguity}
+\begin{definition}[Inherently Ambiguous]
+  A CFL $L$ is \textbf{inherently ambiguous} if all its grammars are ambiguous.
+\end{definition}
+\begin{example}[Inherently Ambiguous CFL]
+   \[L=\left\{ a^{n}b^{n}c^{m}d^{m}|n\ge 1,m\ge 1 \right\} \cup \left\{ a^{n}b^{m}c^{m}d^{n}|n\ge 1,m\ge 1 \right\}\] 
+   is an inherently ambiguous language. 
+\end{example}
+\begin{remark}
+  Proof of inherent ambiguity is complex.
+\end{remark}
+
+\subsection{Simplification of CFG}
+\subsubsection{Prerequisites}
+For a grammar $G=\left( V,T,P,S \right)$, we have the following definitions:
+\begin{definition}[Generating Symbols]
+  A symbol $A$ is a \textit{generating symbol} if $\exists \omega\in T^{*}$,
+  $A\Rightarrow ^{*} \omega$.
+\end{definition}
+\begin{definition}[Reachable Symbols]
+  A symbol $A$ is a \textit{reachable symbol} if $\exists \alpha,\beta\in
+  {\left( V\cup T \right)}^{*}$, $S\Rightarrow ^{*} \alpha A\beta$.
+\end{definition}
+\begin{definition}[Useless Symbols]
+  A symbol $a\in V\cup T$ is a \textit{useless symbol} if it does not
+  appear in any derivation of a terminal string from the start symbol
+  $S\Rightarrow ^{*}\omega$ for any $\omega\in T^{*}$.
+\end{definition}
+A symbol $A$ is useful (not useless) $\implies$ $A$ is reachable and
+generating. The converse is not always true.
+\begin{definition}[$\epsilon$-Productions]
+  An $\epsilon$-production is a production of the form $A\to\epsilon$ for some
+  $A\in V$.
+\end{definition}
+\begin{definition}[Nullable Symbols]
+  A symbol $A$ is a \textit{nullable symbol} if $A\Rightarrow ^{*}\epsilon$.
+\end{definition}
+\begin{definition}[Unit Productions]
+  A unit production is a production of the form $A\to B$ for some
+  $A,B\in V$.
+\end{definition}
+\begin{definition}[Unit Pairs]
+  A tuple $\left( A,B \right) $ for some $A,B\in V$ is a unit pair if
+  $A\Rightarrow^{*} B$.
+\end{definition}
+
+\subsubsection{CFG Simplification Algorithm}
+Suppose we are given a grammar $G=\left( V,T,P,S \right)$ such that
+$L(G)\neq\emptyset $. Let $G_3=\left( V_3,T_3,P_3,S \right)$ be the grammar obtained by
+\textbf{eliminating all $\epsilon$-productions} by first finding all nullable
+symbols by iterating the following inductive algorithm:
+\begin{enumerate}
+  \item \textit{Basis Step:} If $A\to\epsilon$ is a production of $G$, $A$
+    is nullable.
+  \item \textit{Inductive Step:} If $B\to \beta$ is a production and
+    $\beta$ consists only of nullable nonterminals, $B$ is nullable.
+\end{enumerate}
+For each production $A\to X_1X_2\cdots X_k$, given $m$ of the $k$ $X_i$s
+are nullable, create $2^{m}$ versions of the production of all possible
+combinations of presence/absence of the nullable $X_i$s. If all symbols are
+nullable, the case of $A\to\epsilon$ is not included.
+\begin{example}[Removing $\epsilon$-productions]
+  Suppose $S\to AB$, where $A,B$ are nullable symbols. In the new grammar,
+  we have the productions $S\to AB | A | B$.
+\end{example}
+Then $G_3$ does not contain any $\epsilon$-productions, and
+$L(G_3)=L(G)-\left\{ \epsilon \right\} $.\\
+
+\begin{proof}
+  We prove the more general statement that
+  \[A\Rightarrow_{G_3}^{*}\omega\quad\iff\quad A\Rightarrow_{G}^{*}\omega\wedge
+  \omega\neq\epsilon.\]
+  ($\implies$) Suppose $A\Rightarrow_{G_3}^{*}$. $\omega\neq\epsilon$ since
+  $G_3$ has no $\epsilon$-productions. Inducting on the number of steps of the
+derivation $A\Rightarrow_{G_3}^{*}\omega$:
+  \begin{enumerate}
+    \item \textit{Basis Step:} There is a production $A\to\omega$ in $G_3$. By
+      construction of $G_3$, there is some production $A\to\alpha$ in G such
+      that $\alpha$ is $\omega$ with some number of nullable symbols
+      interspersed. We have $A\Rightarrow_G\alpha\Rightarrow _G^{*}\omega$ by
+      deriving $\epsilon$ from all the nullable symbols.
+    \item \textit{Inductive Step:} Suppose a derivation of $n>1$ steps. The derivation
+      must look like
+      \[A\Rightarrow_{G_3}X_1X_2\cdots X_k\Rightarrow_{G_3}^{*}\omega.\]
+      Similarly, this must come from a production $A\to Y_1Y_2\cdots Y_m$ in
+      $G$, where the $Y$s are the $X$s in order with some nullable symbols
+      interspersed. Let $\omega=\omega_1\omega_2\cdots\omega_k$, where
+      $X_i\Rightarrow ^{*}_{G_3}\omega_i$. Each derivation takes fewer than $n$
+      steps, and hence $X_i\Rightarrow _G^{*}\omega_i$ by inductive hypothesis.
+      \[A\Rightarrow_G Y_1Y_2\cdots Y_m\Rightarrow _G^{*}X_1X_2\cdots
+      X_k\Rightarrow ^{*}_G\omega_1\omega_2\cdots\omega_k=\omega.\] 
+  \end{enumerate}
+  ($\implies$) Suppose $A\Rightarrow ^{*}_G \omega$ and $\omega\neq\epsilon$. Inducting
+  on the number of steps of the derivation $A\Rightarrow _{G}^{*}\omega$:
+  \begin{enumerate}
+    \item \textit{Basis Step:} There is a production $A\to \omega$ in $G $.
+      Since $\omega\neq\epsilon$, it is also a production of $G_3$, and
+      $A\Rightarrow _{G_3}^{*}\omega$.
+    \item \textit{Inductive Step:} Suppose a derivation of $n>1$ steps. The
+      derivation must look like  $A\Rightarrow _G Y_1Y_2\cdots
+      Y_m\Rightarrow_G^{*}\omega$. We can break up
+      $\omega=\omega_1\omega_2\cdots\omega_m$ such that $Y_i\Rightarrow
+      _G^{*}\omega_i$. Let $X_1,X_2,\ldots,X_k$ be the $Y_j$s such that
+      $w_j\neq\epsilon$. Since $\omega\neq\epsilon$, $k\ge 1$ and $A\to
+      X_1X_2\cdots X_k$ is a production in $G_3$. Each derivation
+      $Y_j\Rightarrow_G^{*}\omega_j$ takes fewer than $n$ steps, and hence if
+      $\omega_j\neq\epsilon$, $Y_j\Rightarrow ^{*}_{G_3}\omega_j$.
+      \[A\Rightarrow _{G_3}X_1X_2\cdots X_k\Rightarrow _{G_3}^{*}\omega.\]
+  \end{enumerate}
+  We have $S\Rightarrow_{G_3}^{*}\omega\iff A\Rightarrow_G^{*}\omega\wedge\omega\neq\epsilon$. Hence $L(G_3)=L(G)-\left\{ \epsilon \right\} $.\qed
+\end{proof}\\
+
+Let $G_4=\left( V,T,P_4,S \right)$ be the grammar obtained by
+\textbf{eliminating all unit productions} by first finding all unit pairs by
+iterating the following inductive algorithm:
+\begin{enumerate}
+  \item \textit{Basis Step:} $\forall A\in V$, $\left( A,A \right) $ is a unit pair.
+  \item \textit{Inductive Step:} If $\left( A,B \right) $ is a unit pair and
+    $B\to C$ is a production, for some nonterminal $C$, $\left( A,C \right) $
+    is a unit pair.
+\end{enumerate}
+For each unit pair $\left( A,B \right)$, let $\left\{ A\to\alpha |
+B\to\alpha\text{ is a non unit production in $P$} \right\}\subseteq P'$. Then $G'$ does
+not contain any unit productions, and $L(G_4)=L(G)$.\\
+
+Let $G_1=\left( V_1,T_1,P_1,S \right) $ be the grammar
+obtained with the following steps:
+\begin{enumerate}
+  \item \textbf{Eliminating non-generating symbols} and all productions
+    involving one or more of those symbols. We find all generating symbols by
+    iterating the following inductive algorithm:
+    \begin{enumerate}
+      \item \textit{Basis Step} All terminals $a\in T$ are generating.
+      \item \textit{Inductive Step:} If $A\to\alpha$ is a production and
+        $\alpha$ consists only of generating symbols, $A$ is generating.
+    \end{enumerate}
+  \item \textbf{Eliminating non-reachable symbols} in the resultant grammar
+    $G_2$. We find all reachable symbols by iterating the following inductive
+    algorithm:
+    \begin{enumerate}
+      \item \textit{Basis Step} $S$ is reachable.
+      \item \textit{Inductive Step:} If $A$ is reachable and $A\to\alpha$ is a
+        production, every symbol in $\alpha$ is reachable.
+    \end{enumerate}
+\end{enumerate}
+Then $G_1$ has no useless symbols and $L(G_1)=L(G)$.\\
+
+\begin{proof}
+  Suppose a symbol in $G_1$, $X\in V_1\cup T_1$. $X$ is generating, and every
+  symbol used in the derivation $X\Rightarrow ^{*}\omega$ is also generating.
+  We have $X\Rightarrow_{G_2}^{*}\omega$.
+
+  Since $X$ is not eliminated in the second step, $\exists \alpha,\beta\in
+  {\left( V\cup T \right)}^{*}$, $S\Rightarrow_{G_2}^{*} \alpha A\beta$, and
+  every symbol in the derivation is also reachable, hence
+  $S\Rightarrow_{G_1}^{*}\alpha X\beta$.\\
+
+  Since every symbol in $\alpha X\beta$ is reachable and generating (since they
+  are in $V_2\cup T_2$)
+  \[S\Rightarrow_{G_1}^{*}\alpha X\beta\Rightarrow_{G_1}^{*}xwy\]
+  for some $x,\omega,y\in T^{*}$. $X$ is useful in $G_1$.\\
+
+  Additionally, $L( G_1 ) \subseteq L(G)$ since we have only eliminated symbols
+  and productions. $L(G) \subseteq L(G_1)$ since every derivation
+  $S\Rightarrow_G^{*}\omega$ consists of only useful symbols, hence
+  $S\Rightarrow _{G_1}^{*}\omega$. $L(G)=L(G_1)$. \qed
+\end{proof}\\
+
+Supposing there is at least one string in $L(G)$, by following this procedure
+of (in this order):
+\begin{enumerate}
+  \item Eliminating $\epsilon$-productions
+  \item Eliminating unit productions
+  \item Eliminating useless symbols
+\end{enumerate}
+we obtain a simplified CFG $G'$ with the various simplifications, with
+$L(G')=L(G)-\left\{ \epsilon \right\} $.
+
+\begin{remark}
+To obtain an equivalent CFG if $\epsilon\in L(G)$, we specify the CFG $G''=\left( V\cup \left\{ S_0 \right\} ,T,P'', S_0 \right) $, where 
+\[P''=P\cup \left\{ S_0\to S, S_0\to\epsilon \right\}.\] 
+\end{remark}
+
+\subsubsection{Normal Forms}
+\begin{definition}[Chomsky Normal Form]
+  A CFG $G=\left( V,T,P,S \right) $ is said to be in \textit{Chomsky Normal
+  Form} if all productions are of the form 
+  \[A\to BC\qquad\text{or}\qquad A\to a\]
+  where $A,B,C\in V$ and $a\in T$, and $G$ has no useless symbols.
+\end{definition}
+
+CNF guarantees non-decreasing length of the derived string, with respect to the
+number of productions used.
+
+\begin{theorem}
+  Every nonempty language without $\epsilon$ is $L(G)$ for some CFG $G$ in
+  Chomsky Normal Form.
+\end{theorem}
+
+Given the simplified CFG without $\epsilon$-productions, unit productions and
+useless symbols, we can obtain an equivalent CFG in CNF as follows:
+Suppose a production 
+\[A\to X_1X_2\cdots X_k.\]
+We break the production into the following set of productions:
+\begin{gather*}
+  A\to Z_1B_2\\
+  B_2\to Z_2B_3\\
+      \vdots\\
+  B_{k-1}\to Z_{k-1}Z_k\\
+  Z_i\to X_i,\quad\text{if }X_i\in T\\
+  Z_i=X_i,\quad\text{if }X_i\in V
+\end{gather*}
+with new nonterminals $B_i$ and (possibly) $Z_i$. 
+
+\begin{theorem}[Size of Parse Tree]
+  Suppose a parse tree of a Chomsky-Normal-Form Grammar. If the length of the
+  longest path from the root to a node is $k$, the size of the string generated
+  is at most $2^{k-1}$.
+\end{theorem}
+
+\begin{definition}[Greibach Normal Form]
+  A CFG $G=\left( V,T,P,S \right) $ is said to be in \textit{Greibach Normal
+  Form} if all productions are of the form 
+  \[A\to a\alpha.\] 
+  where $A\in V$, $a\in T$ and $\alpha\in {\left( V\cup T \right)}^{*}$.
+\end{definition}
+
+GNF guarantees a generated terminal in every production used as the leftmost
+symbol.
+
+\begin{theorem}
+  Every nonempty language without $\epsilon$ is $L(G)$ for some CFG $G$ in
+  Greibach Normal Form.
+\end{theorem}
+
+% TODO: Add proof of greibach normal form
+
+\subsection{Pushdown Automata}
+A pushdown automaton is in essence a NFA with $\epsilon$-transitions and a stack on which
+it can store a string of ``stack symbols''.
+\begin{definition}[PDA]
+  A PDA $P=\left( Q,\Sigma,\Gamma,\delta,q_0,Z_0,F \right) $, where:
+  \begin{itemize}
+    \item $Q$: A finite set of states
+    \item  $\Sigma$: A finite set of input symbols
+    \item $\Gamma$: A finite stack alphabet
+    \item $\delta$: A transition function taking as argument a triple $\left(
+      p,a,X \right)$ representing the current state of the PDA and returns a
+      set of pairs $\left( q,\gamma \right) $ of new states and replacement
+      stack symbols.  $\delta:Q\times \Sigma  \times \Gamma \to
+      \mathcal{P}\left( Q\times \Gamma^{*} \right) $ 
+    \item $q_0$: A start state, $q_0\in Q$ 
+    \item $Z_0$: A initial symbol on the stack, $Z_0\in \Gamma$ 
+    \item $F$: A set of final or accepting states.  $F\in \mathcal{P}\left( Q \right) $
+  \end{itemize}
+\end{definition}
+We have a transition diagram for PDAs, in which:
+\begin{itemize}
+  \item Nodes correspond to states of the PDA
+  \item Doubly circled states are accepting
+  \item An arrow labelled ``Start'' indicates the start state
+  \item Each arc corresponds to a transition of the PDA:\\
+    An arc labelled $a,X/\alpha$ from state $p$ to $q$ indicates $\left(
+    p,\alpha \right) \in \delta\left( q,a,X \right) $ 
+  \item By convention, we take $Z_0$ to be the start symbol
+\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{pda-diag.jpeg}
+\end{figure}
+\begin{definition}[Instantaneous Descriptions]
+  The \textbf{ID} of a PDA is the triple $\left( q,\omega,\gamma \right) $ such
+  that $q$ is the current state, $\omega$ the remaining input and $\gamma$ the
+  stack contents.
+\end{definition}
+
+\begin{notation}[$\vdash$]
+  If $\left( p,\alpha \right) \in \delta\left( q,a,X \right)$, we denote
+  \[\left( q,a\omega,X,\beta \right) \vdash \left( p,\omega,\alpha\beta
+  \right)\qquad \forall \omega\in \Sigma^{*},\beta\in \Gamma^{*}.\]
+  This represents one move of the PDA.
+\end{notation}
+\begin{notation}[$\vdash^{*}_P$]
+  To represent zero or moves of the PDA, we further define the relation $\vdash^{*}_P$:
+  \begin{enumerate}
+    \item \textit{Base Case}: $I\vdash^{*}_P I$ 
+    \item \textit{Inductive Step}: For IDs $I,J$, if $\epsilon$ some ID $K$
+      such that $I\vdash K$ and $K\vdash^{*}_P J$, then $I\vdash^{*}_P J$
+  \end{enumerate}
+\end{notation}
+
+\subsubsection{Language of a PDA}
+\begin{definition}[Language of a PDA]
+  The \textit{language} of a PDA $P$ is denoted $L(P)$ and depends on the modality of acceptance
+  of the PDA\@. It is defined by
+  \[\left\{ \omega|\left( q_0,\omega,Z_0 \right) \vdash_P^{*}\left( q_f,\epsilon,\alpha \right) \right\},q_f\in F \quad\text{ for acceptance by final state.}.\] 
+  \[\left\{ \omega|\left( q_0,\omega,Z_0 \right) \vdash_P^{*}\left( q_f,\epsilon,\epsilon \right) \right\},q_f\in F \quad\text{ for acceptance by empty stack.}.\] 
+\end{definition}
+
+\begin{theorem}[Equivalence of Acceptance Modalities]
+  The two modalities of acceptance are equivalent, in the sense that $L$ has a
+  PDA that accepts it by final state $\iff$ $L$ has a PDA that accepts it by
+  empty stack.\\
+  Equivalently, the class of languages accepted by final state is equal to the class
+  of languages accepted by empty stack.
+\end{theorem}
+\begin{theorem}
+  Suppose a language $L$ has a PDA that accepts it by empty stack. Then $L$ has
+  a PDA that accepts it by final state.
+\end{theorem}
+\begin{proof}
+  Suppose $L=L(P_N)$ through acceptance by empty stack for some PDA $P_N=\left(
+  Q,\Sigma,\Gamma,\delta_N,q_0,Z_0,F \right) $. Consider the PDA
+  \[P_F=\left( Q\cup \left\{ p_0,p_f \right\} ,\Sigma,\Gamma\cup \left\{ X_0
+  \right\} ,\delta_F,p_0,X_0,\left\{ p_f \right\}  \right)\]
+  such that
+  \begin{enumerate}
+    \item $P_F$ spontaneously transits to the start state of $P_N$, pushing the start symbol.
+      \[\delta_F\left( p_0,\epsilon,X_0 \right) =\left\{ \left( q_0,Z_0 X_0 \right)  \right\}\]
+    \item $P_F$ simulates $P_N$.  \[\forall q\in Q,a\in \Sigma\cup \left\{ \epsilon \right\},Y\in
+      \Gamma\qquad \delta_N\left( q,a,Y \right) \subseteq \delta_F\left(
+    q,a,Y\right) \]
+  \item After the stack is empty, transit to the final state of $P_F$.
+    \[\forall q\in Q\qquad \left( p_f,\epsilon \right) \in \delta_F\left(
+    q,\epsilon,X_0 \right) \]
+  \end{enumerate}
+  We now show that $w\in L(P_F)\text{ with acceptance by final state } \iff \omega\in L$.\\
+  ($\impliedby$) Suppose $\omega\in L$. $\left( q_0,\omega,Z_0 \right) \vdash_{P_N}^{*}$ for
+  some state $q$.
+  \[\left( q_0,\omega,Z_0X_0 \right) \vdash_{P_N}^{*}\left( q,\epsilon,X_0
+  \right).\]
+  Since $P_F$ has all the moves of $P_N$, $\left(
+  q_0,\omega,Z_0X_0 \right) \vdash_{P_F}^{*}\left(
+  q,\epsilon,X_0 \right) $. Hence we have
+  \[\left( p_0,\omega,X_0 \right) \vdash_{P_F}\left( q_0,\omega,Z_0X_0 \right) \vdash_{P_F}^{*}\left( q,\epsilon,X_0 \right)\vdash_{P_F}\left( p_f,\epsilon,\epsilon \right)\]
+  and $P_F$ accepts $\omega$ by final state.\\
+  ($\implies$) Suppose $P_F$ accepts $\omega$ by final state. Since
+  transitions to $p_f$ require $X_0$ as the stack symbol, and $X_0$ can only be
+  on the bottommost position, any computation of $P_F$ that accepts $\omega$
+  must be of the previously shown sequence.  Hence $\omega$ is in $P_N$.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pda-empty-final.jpeg}
+  \end{figure}
+  \qed
+\end{proof}
+
+\begin{theorem}
+  Suppose a language $L$ has a PDA that accepts it by final state. Then $L$ has
+  a PDA that accepts it by empty stack.
+\end{theorem}
+Suppose $L =L(P_F)$ through acceptance by final state for some PDA
+$P_F=\left( Q,\Sigma,\Gamma,\delta_F,q_0,Z_0,F \right) $. Consider the PDA
+\[P_N=\left( Q\cup \left\{ p_0,p \right\},\Sigma,\Gamma\cup \left\{ X_0 \right\} ,\delta_N,p_0,X_0 \right)\]
+such that
+\begin{enumerate}
+\item We push the start symbol of $P_F$ onto the stack and going to the start state of $P_F$. \[\delta_N\left( p_0,\epsilon,X_0 \right) =\left\{ q_0,Z_0 X_0 \right\} \]
+\item $P_N$ simulates $P_F$. \[\forall q\in Q,a\in \Sigma\cup \left\{ \epsilon \right\},Y\in \Gamma\qquad \delta_F\left( q,a,Y \right) \subseteq \delta_N\left( q,a,Y \right) \]
+  \item If $P_F$ accepts, $P_N$ starts emptying its stack without consuming
+    input. \[\forall q\in F,Y\in \Gamma\cup \left\{ X_0 \right\}\qquad \left(
+  p,\epsilon \right) \in \delta_N\left( q,\epsilon,Y \right) \]
+  \item After $P_F$ has accepted, $P_N$ pops every symbol until the stack is
+    empty. \[\forall Y\in \Gamma\cup \left\{ X_0 \right\}\qquad \delta_N\left(
+    p,\epsilon,Y \right) =\left\{ \left( p,\epsilon \right)  \right\} \]
+\end{enumerate}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{pda-final-empty.jpeg}
+\end{figure}
+It can be shown that $\omega\in L(P_N)$ with acceptance by empty stack $\iff\omega\in L$.
+\begin{remark}
+  For a given PDA $P$, the languages that $P$ accepts by final state and by
+  empty stack are different in general.
+\end{remark}
+
+
+\subsection{CFGs vs PDAs}
+\subsubsection{Equivalence of CFGs and PDAs}
+\begin{theorem}
+  A language $L$ is accepted by some PDA if $L$ is accepted by some CFG\@.
+\end{theorem}
+\begin{proof}
+  Suppose a CFG $G=\left( V,T,G,S \right) $. We construct a PDA $P$ as follows: 
+  \[P=\left( \left\{ q \right\} ,T,V\cup T,\delta,q,S \right)\]
+  where $\delta$ is defined:
+  \begin{enumerate}
+    \item For each nonterminal $A\in V$, $\delta\left( q,\epsilon,A \right)
+      =\left\{ \left( q,\beta \right) | A\to \beta\in G \right\}$
+    \item For each terminal $a\in T$, $\delta\left( q,a,a \right) =\left\{ q,\epsilon \right\} $
+  \end{enumerate}
+  We prove that $\omega\in L(G)\iff \omega\in L(P)$ with
+  acceptance by empty stack.\\
+
+  ($\implies$) Suppose $\omega\in L(G)$. Then $\omega$ has a leftmost derivation
+  \[S = \gamma_1 \Rightarrow \gamma_2 \Rightarrow \cdots \Rightarrow \gamma_{n}=\omega.\] 
+  We show by induction on $i$ that $\left( q,\omega,S \right) \vdash^{*} \left(
+  q,y_i,\alpha_i \right) $, where $\gamma_i=x_i\alpha_i$, $\omega=x_i y_i$,
+  $x_i,y_i\in T^{*}$ and $\alpha\in \left( V\cup T \right) ^{*}$. That is,
+  $\alpha_i$ is the tail of $\gamma_i$ from the first nonterminal (from the
+  left), and $y_i$ is the nonterminal string to be generated from $\alpha_i$.
+  \begin{enumerate}
+    \item \textit{Basis Step:} $\gamma_1=S$, $x_1=\epsilon$, $y_1=\omega$. By definition,
+      $\left( q,\omega,S \right) \vdash^{*}\left( q,\omega,S \right) $.
+    \item \textit{Inductive Step:} Suppose by inductive hypothesis that $\left(
+      q,\omega,S \right) \vdash^{*}\left( q,y_i,\alpha_i \right) $. $\alpha_i$
+      begins with a nonterminal $A$. By replacing $A$ by one of its production
+      bodies, say $\beta$ with rule (1) of $\delta$, and removing all terminals at the
+      top of the stack with rule (2) of $\delta$, we reach the ID $\left(
+      q,y_{i+1},\alpha_{i+1} \right) $.
+  \end{enumerate}
+  Since $\omega$ is a string of terminals, $\alpha_{n}=\epsilon$, and we have
+  $\left( q,\omega,S \right) \vdash^{*}\left( q,\epsilon,\epsilon \right) $.
+  $P$ accepts $\omega$ by empty stack.\\
+
+  ($\impliedby$) Suppose $\left( q,x,A \right) \vdash^{*}\left(
+  q,\epsilon,\epsilon \right) $. Inducting on the number of moves taken by $P$,
+  we have:
+  \begin{enumerate}
+    \item \textit{Basis Step:} $A\to\epsilon$ is a production of $G$, and the
+      move is of rule (1). We have $x=\epsilon$ and $A \Rightarrow \epsilon$.
+    \item \textit{Inductive Step:} Suppose $P$ takes $n$ moves. The first move
+      must be of rule (1), where $A$ is replaced by one of its production
+      bodies. Let the production used be $A\to Y_1 Y_2 \cdots Y_k$ for some
+      $Y_i\in \left( V\cup T \right)^{*}$. By taking $x=x_1 x_2\cdots x_k$,
+      where each $x_i$ is the portion of the input consumed until $Y_1$ is
+      popped off the stack, for all $i=1,2,\ldots,k$:
+      \[\left( q,x_i x_{i+1}\cdots x_k,Y_i \right) \vdash^{*}\left(
+      q,x_{i+1}\cdots x_k,\epsilon \right).\]
+      Each of these sequences are no more than $n-1$ moves (since the PDA
+      completes in $n-1$ moves), $Y_i \Rightarrow ^{*}x_i$ for nonterminals
+      $Y_i$. For terminals $Y_i$, only one move is involved, matching the one
+      symbol against $Y_i$. Hence we have the derivation:
+      \[A \Rightarrow Y_1 Y_2\cdots Y_k \Rightarrow ^{*}x_1Y_2\cdots Y_k \Rightarrow ^{*}\cdots \Rightarrow^{*} x_1x_2\cdots x_k.\]
+      We have $A \Rightarrow ^{*}x$.
+  \end{enumerate}
+  By letting $A=S$ and $x=\omega$, since $\omega\in L(P)$ by acceptance by empty stack,
+  $S \Rightarrow \omega$ and it is in $L(G)$.\qed
+\end{proof}
+\begin{theorem}
+  A language $L$ is accepted by some CFG if $L$ is accepted by some PDA\@.
+\end{theorem}
+\begin{proof}
+  Suppose a PDA $P=\left( Q,\Sigma,\Gamma,\delta,q_0,Z_0 \right)$ accepting by
+  empty stack. We construct a CFG as follows:
+  \[G=\left( V,\Sigma,R,S \right)\]
+  where $V=\left\{ S \right\} \cup \left\{ \left[ pXq \right] |p,q\in Q,Z\in
+  \Gamma \right\} $. Each nonterminal encodes the `net popping' of symbol $X$
+  from the stack, with a change in state from $p$ to $q$. The productions of
+  $G$ are then:
+  \begin{enumerate}
+    \item $\forall p\in Q$, $S\to\left[ q_0Z_0p \right] \in R$. That is, we
+      generate all strings that pop $Z_0$ while going from state $q_0$ to (any)
+      state $p$, $\left( q_0,\omega,Z_0 \right) \vdash^{*}\left(
+      p,\epsilon,\epsilon \right) $.
+    \item If $\left( r,Y_1Y_2\cdots Y_k \right) \in \delta\left( q,a,X \right) $, where $a\in \Sigma\cup \left\{ \epsilon \right\}, k\in \mathbb{N}$, 
+      \[\forall \left( r_1,r_2,\ldots,r_k \right) \in Q^{k},\qquad \left[ qXr_k
+      \right] \to a\left[ rY_1r_1 \right] \left[ r_1Y_2r_2 \right]\cdots\left[
+    r_{k-1}Y_kr_k \right].\] 
+    Intuitively, one of the ways to pop $X$ and go from states $q$ to $r_k$ is
+    to read $a$ and then use some input to sequentially pop each of the
+    produced symbols.
+  \end{enumerate}
+  We prove that $\left( q,\omega,X \right) \vdash^{*}\left( p,\epsilon,\epsilon
+  \right)\iff\left[ qXp \right] \Rightarrow ^{*}\omega$.\\
+
+  ($\implies$) Suppose $\left( q,\omega,X \right) \vdash^{*}\left(
+  p,\epsilon,\epsilon \right)$. Inducting on the number of moves taken by $P$, we have:
+  \begin{enumerate}
+    \item \textit{Basis Step:} With one step, $\left( p,\epsilon \right) \in \delta\left( q,\omega,X \right)$ and $\omega$ is a single symbol or $\epsilon$. By construction, $\left[ qXp \right] \to \omega$ is a production and $\left[ qXp \right] \Rightarrow \omega$.
+    \item \textit{Inductive Step:} Suppose the sequence $\left( q,\omega, X
+      \right) \vdash^{*}\left( p,\epsilon,\epsilon \right) $ takes $n>1$ steps.
+      The sequence must be of the form
+      \[\left( q,\omega, X \right) \vdash \left( r_0,x,Y_1Y_2\cdots Y_k \right)
+      \vdash^{*}\left( p,\epsilon, \epsilon \right)\] 
+      where $\omega=ax$, $a\in \left\{ \epsilon \right\} \cup \Sigma$. We have 
+      $\left( r_0,Y_1Y_2\cdots Y_k \right)\in \delta\left( q,a,X \right) $ and
+      by construction, we have the productions $\left[ qXp \right] \to a\left[
+      r_0Y_1r_1 \right] \left[ r_1Y_2r_2 \right] \cdots\left[ r_{k-1}Y_k p
+      \right] $ for all states $r_1,r_2,\ldots,r_k\in Q$. Let
+      $x=\omega_1\omega_2\cdots\omega_k$ where each $\omega_i$ is the input consumed to
+      `pop' $Y_i$ off the stack. We have the sequences of less than $n$ moves $\left( r_{i-1},\omega_i,Y_i \right)
+      \vdash{*}\left( r_i,\epsilon,\epsilon \right)$ and hence $\left[
+      r_{i-1}Y_ir_i \right] \Rightarrow
+      ^{*}\omega_i$ by inductive hypothesis.
+      \[\left[ qXr_k \right] \Rightarrow a\left[ r_0Y_1r_1 \right] \left[
+      r_1Y_1r_2 \right] \cdots\left[ r_{k-1}Y_kp \right] \Rightarrow
+    ^{*}aw_1\left[ r_1Y_2r_2 \right] \left[ r_2Y_3r_3 \right] \cdots\left[
+  r_{k-1}Y_kp \right] \Rightarrow ^{*}aw_1w_2\cdots w_k.\]
+  \end{enumerate}
+  We have $\left[ qXp \right]\Rightarrow ^{*}\omega$.\\
+  
+  ($\impliedby$) Suppose $\left[ qXp \right] \Rightarrow ^{*}\omega$. Inducting
+  on the number of steps in the derivation, we have:
+  \begin{enumerate}
+    \item \textit{Basis Step:} With one step, $\left[ qXp \right] \to \omega$
+      is a production $\iff$ there is a transition of $P$ in which $X$ is
+      popped and we transit states from $q$ to $p$. $\left( p,\epsilon \right)
+      \in \delta\left( q,a,X \right) $ and $a=\omega$, hence $\left( q,\omega,X
+      \right) \vdash \left( p,\epsilon,\epsilon \right) $.
+    \item \textit{Inductive Step:} Suppose $\left[ qXp \right] \Rightarrow
+      ^{*}\omega$ by $n>1$ steps. The derivation must be of the form
+      \[\left[ qXp \right] \Rightarrow a\left[ r_0Y_1r_1 \right] \left[
+      r_1Y_2r_2 \right] \cdots\left[ r_{k-1}Y_kp \right]\Rightarrow
+    ^{*}\omega.\]
+    We have $\left( r_0,Y_1Y_2\cdots Y_k \right) \in \delta\left( q,a,X \right) $.
+    Let $\omega=a\omega_1\omega_2\cdots\omega_k$ such that $\left[
+    r_{i-1}Y_ir_i \right] \Rightarrow ^{*}\omega_i$. By inductive hypothesis,
+    $\left( r_{i-1},w_i,Y_i \right) \vdash^{*}\left( r_i,\epsilon,\epsilon
+    \right) $ for each $i$. This gives us
+    \[\left( q,a\omega_1\omega_2\cdots\omega_k,X \right) \vdash\left(
+    r_0,\omega_1\omega_2\cdots\omega_k,Y_1Y_2\cdots Y_k \right)\vdash
+  ^{*}\left( r_1,\omega_2\omega_3\cdots\omega_k,Y_2Y_3\cdots Y_k \right)\vdash
+^{*}\cdots\vdash ^{*}\left( p,\epsilon,\epsilon \right).\] 
+  \end{enumerate}
+  Since $S\Rightarrow ^{*}\omega\iff\left[ q_0Z_0p \right]
+  \Rightarrow ^{*}\omega$ for some state $p$ (by construction), and each
+  $\left[ q_0Z_0p \right]\Rightarrow ^{*}\omega\iff\left( q_0,\omega,Z_0
+  \right) \vdash^{*}\left( p,\epsilon,\epsilon \right) $, we have $L(G)=L(P)$
+  with acceptance by empty stack.
+\end{proof}
+
+\subsection{Context Free Languages}
+To show that a given language is non context-free, we may use the pumping
+lemma. Intuitively, in any sufficiently long string, it is possible to find two
+short nearby substrings that we can ``pump'' in tandem, while keeping the
+resulting string in $L$.
+\begin{lemma}
+  Let $L$ be a CFL\@. Then $\exists n=f(L)$ such that $\forall z\in L$,
+  $\left| z \right| \ge n$, $\exists u,v,w,x,y\in \Sigma^{*},z=uvwxy$ such that:
+  \begin{enumerate}
+    \item $\left| vwx \right| \le n$. That is, the two strings to be ``pumped''
+      is not too far from the other.
+    \item $vx\neq\epsilon$. At least one of the strings to be ``pumped'' cannot be empty.
+    \item $\forall i\ge 0$, $uv^{i}wx^{i}y\in L$
+  \end{enumerate}
+\end{lemma}
+The contrapositive of the lemma is used to prove that a language is
+not context-free. That is, $\forall n\in \mathbb{N}$, $\exists z\in L$, such
+that $\left| z \right| \ge n$, $\forall u,v,w,x,y\in \Sigma^{*}$, where
+$z=uvwxy$, $\left| vwx \right| \le n$, $vx\neq\epsilon$, we have
+\[\exists i\in \mathbb{N}\left( uv^{i}wx^{i}y\notin L \right)\]
+
+\begin{proof}
+  Suppose $L$ is context-free. Without loss of generality, assume
+  $L\neq\emptyset $, $L\neq\left\{ \epsilon \right\} $ and a CNF grammar
+  $G=\left( V,T,P,S \right) $ for $L-\left\{ \epsilon \right\} $. Let $m=\left|
+  V \right| $ and $n=2^{m}$. Consider a string $z\in L$ such that $\left| z
+  \right| \ge n$.  Its parse tree must have a path from the
+  root to a leaf of length at least $m+1$. By Pigeonhole Principle, there must
+  exist a repeated nonterminal $A$.\\
+
+  We have the derivation of the form, where $z=uvwxy$ for some $u,v,w,x,y\in \Sigma^{*}$,
+  \[S\Rightarrow ^{*}uAy\Rightarrow ^{*}uvAxy\Rightarrow ^{*}uvwxy.\]
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{cfl-pumping-lemma}
+  \end{figure}
+
+  Additionally, we have $A\Rightarrow ^{*}vAx$ and $A\Rightarrow ^{*}w$. For
+  any $i\in \mathbb{N}$, we thus may have the derivation
+  \[S\Rightarrow ^{*}uAy\Rightarrow ^{*}uv^{i}Ax^{i}y\Rightarrow ^{*}uv^{i}wx^{i}y.\]
+  With the assumption that the grammar is of CNF, since the repeated terminals
+  are maximally $m$ production steps apart, we have the length $\left|  vwx
+  \right| \le n$, and since the derivation $A\Rightarrow ^{*}vAx$ uses at least
+  one production step, $vx\neq \epsilon$.\\
+
+  For the excluded cases when constructing the CNF grammar, the statement of
+  the pumping lemma is vacuously true for $L=\emptyset $ and we choose $n$ such
+  that $z\neq\epsilon$ for $L=\left\{ \epsilon \right\} $.
+  \qed%
+\end{proof}
+
+By using the pumping lemma, we can construct a proof of the following structure to show a specified language is non context-free:
+
+\begin{prop}
+  $L=\left\{ a^{m}b^{m}c^{m} | m\ge 1\right\} $ is not context-free.
+\end{prop}
+\begin{proof}
+  Suppose $L$ is regular. Let $n$ be as in the Pumping Lemma. Let
+  $z=a^{n}b^{n}c^{n}$. Let $z=uvwxy$ as in the pumping lemma. Since $\left| vwx
+  \right| \le n$, $vwx$ cannot contain both $a$ and $c$. \\
+
+  Suppose $vwx$ does not contain $a$'s. By the pumping lemma, $uv^{2}wx^{2}y\in
+  L$. But $uv^{2}wx^{2}y$ contains $n$ $a$'s, and $\left| uv^{2}wx^{2}y \right|
+  >3n$, hence $uv^{2}wx^{2}y\not\in L$.\\
+
+  Suppose $vwx$ does not contain $c$'s. Similarly, By the pumping lemma,
+  $uv^{2}wx^{2}y\in L$. But $uv^{2}wx^{2}y$ contains $n$ $c$'s, and $\left|
+  uv^{2}wx^{2}y \right| >3n$, hence $uv^{2}wx^{2}y\not\in L$.\\
+
+  Hence $L$ is non context-free.\qed%
+\end{proof}
+
+\begin{prop}
+  $L=\left\{ \alpha\alpha|\alpha\in \left\{ a,b \right\} ^{*} \right\} $ is not
+  context-free.
+\end{prop}
+
+\begin{lemma}[Ogden's Lemma]
+  Let $L$ be a CFL. Then $\exists n$ such that $\forall z\in L$, $\left| z
+  \right| \ge n$, $\exists u,v,w,x,y\in \Sigma^{*}$, $z=uvwxy$, if $\ge n$ positions
+  in $z$ are marked as distinguished,
+  \begin{itemize}
+    \item $vwx$ has at most $n$ distinguished positions.
+    \item $vx$ has at least $1$ distinguished position.
+    \item $\forall i\ge 0$, $uv^{i}wx^{i}y\in L$.
+  \end{itemize}
+\end{lemma}
+Ogden's Lemma provides an stronger form of the pumping lemma that can be used
+to prove non-context free-ness.
+
+\subsubsection{Closure of Context-Free Languages}
+We have, similarly to regular languages, certain operations that, when applied to CFLs,
+the resulting language is also a CFL\@.
+
+\begin{definition}[Substitution]
+  Suppose terminals $i$ and CFLs $L_i$. Consider a mapping
+  $s:\Sigma\to\mathcal{P}\left( \Gamma^{*} \right) $ such that $s(i)=L_i$, that
+  is further defined for strings by principle of induction:
+  \begin{enumerate}
+    \item \textit{Base Case:} $s(\epsilon)=\left\{ \epsilon \right\}$
+    \item \textit{Inductive Case:} $s(\omega a)=s(\omega)\cdot s(a), \forall a\in \Sigma,\omega\in \Sigma^{*}$
+  \end{enumerate}
+  $s$ is called a \textit{substitution}. Intuitively, we replace each symbol in the
+  strings of one language by an entire language.
+\end{definition}
+\begin{theorem}
+  Given a CFL $L$ over $\Sigma$ and $s$ a substitution on $\Sigma$ such that
+  $s\left( a \right) $ is a CFL for each $a\in \Sigma$, $s\left( L \right) $ is
+  a CFL.
+\end{theorem}
+The principle of the proof is to consider replacing each terminal in the
+original grammar with a nonterminal that acts as the start symbol of the
+substituted CFL. We then have a resultant CFG that generates $s\left( L \right)
+$.\\
+
+Given CFLs $L,L_1,L_2$ and regular language $R$:
+ \begin{itemize}
+  \item $L_1\cup L_2$ is context-free.
+  \item $L_1\cdot L_2$ is context-free.
+  \item $L^{*}$ is context-free.
+  \item $L^{+}$ is context-free.
+  \item $h\left( L \right) $ is context-free, for some homomorphism $h$.
+  \item $L^{R}$ is context-free. Consider the reverse of all productions.
+  \item $L\cap R$ is context-free. Consider the PDA for $L$, and DFA for
+    $R$. We can simulate the DFA with the analogue for parallelisation of
+    DFAs.
+  \item $h^{-1}\left( L \right) $ is context-free, for some homomorphism $h$.
+\end{itemize}
+
+\begin{remark}
+  $\bar{L}$ and $L_1-L_2$ are not necessarily context-free.
+\end{remark}
+
+\begin{remark}
+  CFLs are not closed under intersection. Consider the CFLs $L_1=\left\{
+  0^{n}1^{n}2^{i}|n\ge 1,i\ge 1 \right\} $ and $L_2=\left\{
+0^{i}1^{n}2^{n}|n\ge 1,i\ge 1 \right\} $. We have the intersection $L=\left\{
+0^{n}1^{n}2^{n}|n\ge 1 \right\} $ which is not context-free.
+\end{remark}
+
+\subsubsection{Decision Problems of CFLs}
+We may examine some decision problems of CFLs. However, in CFLs, we have to
+take into account the complexities of converting between the various forms of
+representation, that is required for their decision problems.\\
+
+We have the linear time conversions from a CFG to a PDA, from a PDA accepting
+by final state to a PDA accepting by empty stack and vice-versa. On the other hand, the
+conversion from a PDA to a CFG is requires an upper bound of $O(n^{3})$ on the
+constructed grammar's length and hence running time. Additionally, to convert a
+general CFG to its CNF requires $O(n^{2})$ for the length of the resultant
+grammar, and running time to construct the unit pairs and eliminate unit
+productions.\\
+
+Given these conversions, we are still highly limited in what we may decide
+about a CFL, many of which is undecideable as shown in a later chapter.\\
+
+We may check the \textbf{emptiness of CFLs} by running the algorithm to find
+all generating symbols in its CFG and checking whether the start symbol $S$ is
+generating. That is,
+\begin{gather*}
+  L=\emptyset \iff  S\text{ is not generating}
+\end{gather*}
+
+We may decide the \textbf{membership of a string} $\omega=a_1a_2\cdots a_{n}$
+in a CFL $L$. This can be done with dynamic programming, using the CYK
+algorithm using a CNF grammar for the language. We construct a triangular table
+where each entry $X_{ij}$ is the set of variables $A$ such that $A\Rightarrow
+^{*}a_ia_{i+1}\cdots a_j$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{cyk-algo}
+  \captionsetup{labelformat=empty}
+  \caption{Table constructed by CYK Algorithm for $n=5$}
+\end{figure}\\
+We compute the rows bottom-up, with the following inductive algorithm:
+\begin{enumerate}
+  \item \textit{Base Case:} Each $X_{ii}$ is the set of nonterminals which generate $a_i$
+  \item  \textit{Inductive Step:} $X_{i,j}$ contains all $A$ such that $A\to BC
+    $, where $B\in X_{i,k}$ and $C\in X_{k+1,j}$ for some $i\le k<j$.
+\end{enumerate}
+We then have the membership of the string if the start symbol generates the
+full length of the string. That is,
+\[\omega\in L\iff S\in X_{1,n}\]
+\begin{remark}
+  The running time of the CYK algorithm is $O(n^{3})$, in comparison to naive
+  recursive searches for membership of strings which require exponential time.
+\end{remark}
+
+\begin{remark}
+  The following CFL decision problems are undecideable:
+  \begin{itemize}
+    \item Is a given CFG $G$ ambiguous?
+    \item Is a given CFL inherently ambiguous?
+    \item Is the intersection of two CFLs empty?
+    \item Are two CFLs the same?
+    \item Is a given CFL equal to $\Sigma^{*}$?
+    \item Is a given CFL a regular language?
+  \end{itemize}
+\end{remark}
+
+\subsection{Deterministic PDA}
+PDAs are nondeterministic by definition. However, parsers generally behave
+deterministically, and not unlike a deterministic PDA\@. We investigate, in this
+section, the behaviour and types of languages accepted by deterministic PDAs.
+
+\begin{definition}[DPDA]
+  An PDA $P=\left( Q,\Sigma,\Gamma,\delta,q_0,Z_0,F \right) $ is a \textit{DPDA} if:
+  \begin{enumerate}
+    \item $\forall q\in Q$, $a\in \left\{ \epsilon \right\} \cup \Sigma$, and
+      $X\in \Gamma$,$\qquad\left| \delta\left( q,a,X \right) \right| \le 1$.
+      There is only one possible move, if any, for any input and ID.
+    \item If $\delta\left( q,\epsilon,X \right)\neq \emptyset\implies\forall
+      a\in \Sigma, \delta\left( q,a,X \right)=\emptyset $. That is, we do not
+      have a choice between taking a input symbol or making a move on
+      $\epsilon$.
+  \end{enumerate}
+\end{definition}
+
+\subsubsection{Languages Accepted by DPDAs}
+We define the languages accepted by DPDAs similarly to that of PDAs.
+
+\begin{theorem}[Languages Accepted by Final State]
+  The languages accepted by DPDAs by final state properly include the regular
+  languages, but are properly included in the CFLs.
+\end{theorem}
+On the other hand, DPDAs that accept by empty stack are highly limited, unable
+to accept even certain finite languages such as $\left\{ a,aa \right\}$.
+\begin{definition}[Prefix Property]
+  A language $L$ has the \textit{prefix property} if $\forall \left( x,y
+  \right) \in L^{2}$, $x\text{ is not a prefix of }y$.
+\end{definition}
+\begin{theorem}[Languages Accepted by Empty Stack]
+  A language $L$ is $L(P)$ by empty stack for some DPDA $P\iff$ $L$ has the
+  prefix property $L$ is $L(P')$ by final state for some DPDA $P$.
+\end{theorem}
+
+\subsubsection{Unambiguous Grammars}
+\begin{theorem}
+  If $L=L(P)$ by acceptance through empty stack for some DPDA $P$, $L$ has an
+  unambiguous context-free grammar.
+\end{theorem}
+The typical conversion of CFG from PDA (with nonterminals encoding state
+transition and symbol popped) yields an unambiguous context-free grammar.
+Intuitively, this is because there is a unique sequence of moves in the DPDA,
+and hence there is only one choice of production every step of the leftmost
+derivation of each string. There is also only one final state that can be
+reached due to the determinism, and hence only one of the initial branches of
+$S$ will be consistent with the PDA\@.
+
+\begin{theorem}
+  If $L=L(P)$ by acceptance through final state for some DPDA  $P$, $L$ has an
+  umabiguous context-free grammar.
+\end{theorem}
+This can be shown by adding an end marker $\$\not\in\Sigma$ to every string in
+$L$, then creating the context free grammar as though for acceptance through
+empty stack, and then introducing a production $\$\to\epsilon$.

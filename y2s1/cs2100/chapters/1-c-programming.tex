@@ -1,0 +1,506 @@
+\section{C Programming}
+\subsubsection{von Neumann Architecture}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{von-neumann-archi}
+\end{figure}
+The von Neumann architecture (also known as the \textit{Princeton
+architecture}, or \textit{stored-program architecture}) describes a computer
+consisting of:
+\begin{itemize}
+  \item Central Processing Unit (CPU) - Registers, A control unit containing an instruction register and program counter, An arithmetic/logic unit (ALU)
+  \item Memory - Stores both program and data in random-access memory (RAM)
+  \item I/O Devices
+\end{itemize}
+
+\subsubsection{Program Structure}
+The form of a C Program typically looks like the following:
+\begin{lstlisting}
+preprocessor directives
+
+structure types
+
+function prototypes
+
+main function header {
+  declaration of variables
+  executable statements
+}
+
+function definitions
+\end{lstlisting}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{c-program}
+\end{figure}
+
+\begin{remark}
+  The main function is obligatory in C. Typically, ``executable statements''
+  consists 3 parts: \textit{Input data, Computation, Output Results}.
+\end{remark}
+\paragraph{Function Prototypes}
+User-defined function prototypes are of the syntax
+\begin{lstlisting}
+  return_type function_name(parameter_type);
+\end{lstlisting}
+The names of parameters in the function prototype are optional and ignored by
+the compiler.
+\begin{remark}
+ It is good practice to put function prototypes before the main function. 
+\end{remark}
+If no prototype is provided but the function is used, the compiler adds an
+\textbf{implicit declaration} and returns a warning. The default return type is
+assumed to be \verb|int|, and hence is almost always wrong.
+\begin{example}
+  The function parameter types may consist of arrays, strings and structs as well.
+  \begin{lstlisting}
+    int func(int *, int [], int);
+  \end{lstlisting}
+\end{example}
+
+\subsection{Preprocessor Directives}
+The C preprocessor provides the following:
+\begin{itemize}
+  \item Inclusion of header files:
+    \begin{itemize}
+      \item To use input/output functions such as \verb|scanf()| and
+        \verb|printf()|: \verb|#include <stdio.h>| (compile with the \verb|-o|
+        flag to specify output file)
+      \item To use mathematical functions: \verb|#include <math.h>| and compile
+        with the \verb|-lm| flag on sunfire.
+      \item To use string functions: \verb|#include <string.h>|
+    \end{itemize}
+  \item Macro expansions:
+    To define a macro for a constant value. Useful for declaring constants, to
+    use all CAPS. \verb|#define PI 3.142| (without a semicolon, otherwise it
+    will be included in the substitution).
+  \item Conditional Compilation (Will not be introduced in CS2100)
+\end{itemize}
+\subsection{Input / Output}
+We use format specifiers that serve as placeholders for values to be displayed
+or read.
+\vspace{2mm}
+
+\centering
+\begin{tabular}{c c c}
+  \toprule
+  Placeholder & Variable Type & Function Use \\
+  \midrule
+  \verb|%c| & char & printf / scanf \\
+  \verb|%d| & int & printf / scanf \\
+  \verb|%f| & float / double & printf \\
+  \verb|%f| & float & scanf \\
+  \verb|%lf|  & double & scanf \\
+  \verb|%e| & float / double & printf (with scientific notation) \\
+  \verb|%p| & address & printf (in hexadecimal)\\
+  \bottomrule
+\end{tabular}
+
+\raggedright
+\begin{example}[Format Specifiers]
+  Examples of format specifiers used in \verb|printf()| are:
+  \begin{itemize}
+    \item \verb|%5d|: displays an integer in a width of 5, right justified.
+    \item \verb|%8.3f|: displays a real number (float or double) in a width of 8,
+      with 3 decimal places, right justified.
+  \end{itemize}
+  For \verb|scanf()|, format specifiers are used without indicating width or
+  decimal places.
+\end{example}
+
+Additionally, we may use escape sequences in \verb|printf()| for certain special
+effects or to display certain characters properly.
+\vspace{2mm}
+
+\centering
+\begin{tabular}{c c c}
+  \toprule
+  Escape Sequence & Meaning & Result \\
+  \midrule
+  \verb|\n| & New line & Subsequent output appears on the next line \\
+  \verb|\t| & Horizontal tab & Move to the next tab position on the current line \\
+  \verb|\"| & Double quote & Displays a double quote " \\
+  \verb|%%| & Percent & Dispalys a percent character \% \\
+  \bottomrule
+\end{tabular}
+
+\raggedright
+\subsection{Computation}
+\subsubsection{Functions}
+Computation in C is done through functions. A function body mainly composes of: 
+\begin{itemize}
+  \item \textit{Declaration statements} introducing an identifier and
+    describing its type. It is required by the compiler to accept references to
+    that identifier. Re-declaration is legal outside of class scope.
+    \begin{remark}
+      \verb|extern| can be used to import variables from another file. On
+      variables, the variable is not allocated any memory. On functions, extern
+      is the default and otherwise require \verb|static|. Similarly, using
+      \verb|static| on a global variable ensures that it cannot be named
+      outside of the current file. 
+    \end{remark}
+  \item \textit{Definition Statements} instantiating or implementing the identifiers. It
+    is required by the linker to link references. It can be used in place of
+    declarations.
+  \item \textit{Executable statements} describing the processing on the memory
+    cells.
+\end{itemize}
+\begin{remark}
+  Using \verb|static| \textit{on a local variable} persists the value of the
+  variable between function calls.
+\end{remark}
+\begin{remark}
+  The special \verb|int main(void)| function is the entry point of the program.
+\end{remark}
+
+In C, function parameters are passed to the formal parameters through
+\textit{pass-by-value}. That is, values of the actual parameters are copied to
+the formal parameters.
+
+\paragraph{Scope Rule}
+\begin{definition}[Lexical Scoping]
+  C uses \textit{lexical scoping}, also known as static scoping. That is, the
+  compiler is able to deduce the scope of each variable at compile-time.
+\end{definition}
+Formal parameters and variables declared in the function are local to the
+function. These local variables are only accessible in the function they are
+declared. This is known as \textit{scope rule}. It is implemented as follows:
+\begin{itemize}
+  \item When a function is called, an activation record is created on the call
+    stack, and memory is allocated for local parameters and variables (known as
+    \textit{automatic variables}).
+  \item When the function terminates, the activation record is removed, and
+    memory allocated for the local parameters and variables is released.
+\end{itemize}
+In contrast to automatic variables, we have static variables that remain in
+memory after the function is executed.
+
+\subsubsection{Variables}
+Data used in a program are stored in \textbf{variables}, identified by a name
+(identifier), having a data type, containing a value which can be modified and
+having an address (which varies from run to run).
+\begin{remark}
+  A variable is declared with a data type, and may be initialised during declaration
+  \begin{lstlisting}
+    int count = 3;
+  \end{lstlisting}
+  Without initialisation, the variable contains an unknown value (\textit{not
+  necessarily zero}). We can use the \verb|-Wall| option during compilation to
+  turn on warnings for missing initialisation.
+\end{remark}
+\begin{lstlisting}
+int x;
+scanf("%d", &x); // Refers to the (address of) the memory cell of x
+printf("x equals %d\n", x) // Refers to the value in the variable x
+\end{lstlisting}
+C is a relatively strongly typed language, where every variable is to be
+declared with a data type, but less so than Java or Pascal, as C supports
+implicit type conversions and allows pointer values to be explicitly cast.
+\subsubsection{Data Types}
+In C, we have the basic data types (sizes in \textit{sunfire}):
+\begin{itemize}
+  \item int: $4\text{ bytes}; -2,147,483,648\ (-2^{31})\text{ to }+2,147,483,647\ (2^{31} – 1)$
+  \item float: $4\text{ bytes};$ or double: $8\text{ bytes}$; May use
+  scientific notation (e.g. \verb|1.5e-2|)
+  \item char: Enclosed in a pair of single quotes.
+\end{itemize}
+The size of a type, or a variable, can be found using the \verb|sizeof()| function.\\
+\begin{remark}
+  With \verb|stdint.h|, we have more precise/unsigned integer types
+  \verb|int8_t|, \verb|uint8_t|, \verb|int16_t|, \verb|uint16_t|,
+  \verb|int32_t|, \verb|uint32_t|, \verb|int64_t|, \verb|uint64_t|, which can
+  be printed with \verb|inttypes.h|.
+\end{remark}
+\subsubsection{User-defined Identifiers}
+To define functions, or declare the use of variables, the user is required to
+define the identifier as the name of a variable or function. It is obligatory
+to follow the following rules:
+\begin{itemize}
+  \item Consists of letters (a-z, A-Z), digits (0-9), and underscores (\_)
+    but cannot begin with a digit.
+  \item Cannot be a reserved word. See \url{http://c.ihypress.ca/reserved.html}
+    for a complete list.
+\end{itemize}
+In addition, it is recommended (while not obligatory) to follow these restrictions:
+\begin{itemize}
+  \item Begins with a lowercase letter, except constants which we identify in ALL CAPS.
+  \item Avoids standard identifiers (names of common functions) such as
+  \verb|printf|, \verb|scanf|.
+  \begin{lstlisting}
+    # include <stdio.h>
+    int printf=5 // No issue, if printf() is not used
+    printf("Hello world!") // Compile time error thrown from this line.
+  \end{lstlisting}
+\end{itemize}
+\subsubsection{Assignment Statements}
+Executable statements, in general, are I/O statements or computational and
+assignment statements. Assignment statements store a value in a variable:
+\verb|lvalue = 30;|.
+\begin{remark}
+  \verb|lvalue| must be assignable. That is, \verb|32 = a| (not a variable)
+  and \verb|a + b = c| (an expression) are not assignable and throws the
+  compilation error "lvalue required as left operand of assignment".
+\end{remark}
+Additionally, assignment can be cascaded, with associativity from right to left:
+
+\centering
+\verb|a = b = c = 1 + 2| $\equiv$ \verb|a = (b = (c = 1 + 2))|
+
+\raggedright
+In C, the assignment statement has the side effect of returning the value of
+the expression. This allows the cascading of assignment as shown, but also
+allows statements such as \verb|a = 5 + (b = 10)|.
+\subsubsection{Operations}
+\begin{tabular}{c c c}
+  \toprule
+  Operator & Operator & Associativity \\
+  \midrule
+  Primary Expression Operators & \verb|()  []  .  ->  expr++  expr--| & Left to right \\
+  Unary Operators & \verb|* & + ! ~ - ++expr --expr (typecast) sizeof| & Right to left \\
+  \multirow{6}{8em}{Binary Operators} & \verb|*  /  %| & \multirow{6}{5.3em}{Left to right} \\
+   & \verb|+  -| &  \\
+   & \verb|<  >  <=  >=| &  \\
+   & \verb|==  !=| &  \\
+   & \verb|&&| &  \\
+   & \verb$||$ &  \\
+  Ternary Operator & \verb|predicate ? consequent : alternative| & Right to left\\
+  Assignment Operators & \verb|=  +=  -=  *=  /=  %=| & Right to left\\
+  \bottomrule
+\end{tabular}
+\begin{remark}
+  In C, the operator \verb|%| calculates the remainder \verb|a%b| as follows:
+  \[\left(a/b\right)*b+a\ \%\ b=a.\] 
+\end{remark}
+\begin{remark}
+  There is no Boolean type in ANSI C. We use \verb|0| to represent
+  \textit{false}, and any other value to represent \text{true}.
+\end{remark}
+Mixed-typed arithmetic operations:
+\begin{multicols}{2}
+\begin{itemize}
+  \item \verb|int  m = 10/4; // m = 2|
+  \item \verb|float p = 10/4; // p = 2.0|
+  \item \verb|int n = 10/4.0; // n = 2|
+  \item \verb|float q = 10/4.0; // q = 2.5|
+\end{itemize}
+\begin{itemize}
+  \item \verb|int r = -10/4.0; // r = -2|
+  \item \verb|float pp = (float) aa/4; // pp = 1.5|
+  \item \verb|int nn = (int) ff / aa; // nn = 2|
+  \item \verb|int qq = (float) (aa/4); // qq = 1.0|
+\end{itemize}
+\end{multicols}
+
+\subsubsection{Math Library}
+With inclusion of the \verb|<math.h>| library, compiled with the \verb|-lm|
+option, we are able to use the following common math functions:
+\begin{multicols}{2}
+  \begin{itemize}
+    \item \verb|int abs(int x)|
+    \item \verb|double fabs(double x)|
+    \item \verb|double ceil(double x)|
+    \item \verb|double floor(double x)|
+    \item \verb|double exp(double x)|
+    \item \verb|double pow(double x, double y)|
+  \end{itemize}
+  \begin{itemize}
+    \item \verb|double log(double x)|
+    \item \verb|double log10(double x)|
+    \item \verb|double sqrt(double x)|
+    \item \verb|double cos(double x)| (radians)
+    \item \verb|double sin(double x)| (radians)
+    \item \verb|double tan(double x)| (radians)
+  \end{itemize}
+\end{multicols}
+
+\subsection{Pointers}
+Using pointers, we are able to directly manipulate memory contents. We are able
+to modify the value of variables outside of a function's scope within the
+function, by passing in the pointer into the function.
+\begin{definition}[Pointer]
+  A variable that contains the address of another variable is known as a
+  pointer, or a pointer variable.
+\end{definition}
+To work with addresses, we have the unary \textit{address operator} \verb|&| to
+obtain the address of a given variable and \textit{dereferencing/indirection
+operator} \verb|*| to access the value of a given address.
+
+To declare a pointer to a variable of \verb|type|, we use the syntax
+\begin{lstlisting}
+  type *variable_ptr; // Convention to name pointer with suffix _ptr or _p
+\end{lstlisting}
+
+\begin{remark}
+  Using the address of an uninitialised variable is well-defined behaviour, but using
+  a uninitialised pointer is undefined behaviour.
+  \begin{lstlisting}
+    char x;
+    printf("%p\n", &x); // Prints address of x
+    char *y;
+    printf("%p\n", y); // Issues warning
+  \end{lstlisting}
+\end{remark}
+
+Using pointers can lead to issues relating to correctness and security, such as:
+\begin{itemize}
+  \item \textbf{Aliasing}: When two pointers point to the same object and we
+    might not be able to tell.
+  \item \textbf{Invalid/NULL pointer dereferencing}: Inability to check validity of a pointer.
+  \item \textbf{Dangling Pointers}: When the memory object being pointed has
+    been freed/is no longer available.
+\end{itemize}
+
+\begin{remark}
+  Since all pointers have the same size and can point to the storage of no
+  type, we can create a \textit{generic pointer}
+  \[\verb|void *ptr|.\]
+   This allows for a pointer that refers to a value that has unknown type, or
+   several possible types, and is often used as a parameter of generic
+   functions. They should be \textit{typecast} before valid usage.
+\end{remark}
+
+\subsubsection{Pointer Arithmetic}
+When a pointer is incremented, the address is incremented by the size of the
+pointer's type. For instance, a int pointer will be incremented by 4 bytes,
+while a char pointer will be incremented by 1 byte.
+
+\subsubsection{Dynamic Storage Allocation}
+During runtime, we may allocate storage by using the \verb|void *malloc(size)|
+system call. It exists as a pair to the \verb|free((void *)ptr)| system call to
+free the pointer. However, this requires caution as it may result in dangling
+pointers and hence undefined behaviour.
+
+\subsection{Arrays, Strings and Structures}
+To further organise data beyond the basic data types, with more logical
+representations and greater ease of manipulations, we may use arrays, strings
+and structs in C.
+\subsubsection{Arrays}
+Arrays are defined by the \textit{element type, array name and maximum size}. They
+occupy \textbf{contiguous} memory locations and are accessed through indexing.
+The array name itself is a pointer, which refers to the address of the
+first element of that array. That is,
+\[\verb|arr|\equiv \verb|&arr[0]|.\] 
+Additionally, it is a \textbf{fixed pointer}. It is hence \textit{illegal} to
+alter the value of this variable.
+\begin{remark}
+  Arrays can only be initialised \textit{at the time of declaration}.
+  \begin{lstlisting}
+    int arr[3] = {1, 2, 3};
+  \end{lstlisting}
+\end{remark}
+As a function parameter, arrays can be taken as both a pointer or an array.
+\begin{lstlisting}
+  int sumArray(int *arr, int size) { ... }
+  int sumArray(int arr[], int size) { ... }
+\end{lstlisting}
+Since the array name is a pointer, the function is able to modify the contents
+of the passed array.
+
+\paragraph{Multi-Dimensional Arrays} Given a array of type \verb|T|:
+\[\verb|T a[D1][D2]|\ldots\verb|[Dn];|,\] 
+where \verb|Dj| is the size of dimension $j$. $A_0$ is the address of the first
+element \verb|a[0][0]|\ldots\verb|[0]|, and $S$ the size of each element of \verb|T|. We have
+the address of the element \verb|a[i1][i2]|\ldots\verb|[in]| given by
+\[A_0+S\times \left( \left( \left( \left( \verb|i1|\times \verb|D2|+\verb|i2| \right) \times \verb|D3|+\verb|i3| \right)\cdots \right)\times \verb|Dn|+\verb|in| \right) .\] 
+
+\subsubsection{Strings}
+A string is an \textit{array of characters terminated by a null character}
+`\textbackslash0'. It can be defined by assigning each character to an array of
+characters, or initialising the string directly:
+\begin{multicols}{2}
+  \begin{lstlisting}
+    char str[6];
+    str[0] = 'e';
+    str[1] = 'g';
+    str[2] = 'g';
+    str[3] = '\0';
+  \end{lstlisting}
+  \begin{lstlisting}
+    char str[] = "egg";
+    char str[] = {'e', 'g', 'g', '\0'}
+  \end{lstlisting}
+  \vfill\null
+\end{multicols}
+Similarly, the string itself is a pointer referring to the address of the first
+character of the string.
+
+\begin{remark}
+  We may include \verb|<string.h>| for string manipulation functions:
+    \begin{itemize}
+      \item \verb|int strlen(char *s)|
+      \item \verb|int strcmp(char *s1, char *s2)|: s1 $-$ s2
+      \item \verb|int strncmp(char *s1, char *s2, int n)|
+      \item \verb|char *strcpy(char *s1, char *s2)|: s2 $\to$ s1
+      \item \verb|char *strncpy(char *s1, char *s2, int n)|
+    \end{itemize}
+  It is typically preferred to use the functions with predefined maximum
+  lengths $n$ to prevent exploits.
+\end{remark}
+
+\paragraph{String I/O}
+In addition to the usual functions \verb|scanf("%s", str)| and
+\verb|printf("%s\n", str)|,
+strings can be read and printed using the\\
+\centering
+\verb|fgets(str, size, stdin)| and \verb|puts(str)| functions.\\
+\raggedright
+\begin{remark}
+  \verb|fgets| also reads in the newline character, which may need to be
+  replaced with the null character.
+\end{remark}
+
+\subsubsection{Structures}
+\textit{Structure types} allow for grouping of heterogeneous members, and even
+of other groups themselves.
+\begin{lstlisting}
+  typedef struct {
+    type_1 x;
+    type_2 y;
+  } type_name;
+\end{lstlisting}
+\begin{remark}
+  Structure types are definitions of types, not a declaration of a variable. No
+  memory is allocated until a variable is declared.
+\end{remark}
+\begin{example}[Nested Structure Variable]
+  Structure variables can then be initialised similarly to array
+  initialisation, and members accessed using the dot \verb|.| operator:
+  \begin{multicols}{2}
+    \begin{lstlisting}
+    typedef struct {
+      int day, month, year;
+    } date_t;
+
+    typedef struct {
+      int cardNum;
+      date_t expiry;
+    } card_t;
+    \end{lstlisting}
+    \begin{lstlisting}
+      card_t card = {12345, {7, 10, 2025}};
+      card.expiry.year = 2026;
+      scanf("%d", &card.cardNum);
+
+      // Assignments with structures are legal.
+      card_t card_1 = {1, {1, 1, 1}};
+      card_1 = card;
+    \end{lstlisting}
+    \vfill\null
+  \end{multicols}
+\end{example}
+\begin{remark}
+  Due to \textit{pass-by-value}, structures, when passed into a function, are
+  \textbf{copied} into the formal parameters.
+  To modify structure variables, the address of the variable is passed instead.
+\end{remark}
+We define the arrow operator \verb|->| as a ``shortcut'' syntax to access
+members of a pointer to a structure variable:
+\[\verb|(*struct_ptr).member|\equiv\verb|struct_ptr->member|\] 
+
+\subsubsection{Unions and Enum}
+Unions are a special type of structures in which the fields occupy the same
+memory storage (that of the field requiring the greatest memory storage). That
+is, only one of the fields can be defined in a union for defined behaviour.
+
+Enum is a similar type that represents a group of integer constants, to
+constrain options and choices.

@@ -1,0 +1,215 @@
+\section{Data Representation and Number Systems}
+Data is internally represented as a sequence of bits (binary digits). How it is
+represented depends on the data type, and certain bit strings can have
+different values when taken as different data types.
+\begin{definition}[Units of Data Representation]
+  Each \textbf{byte} is 8 bits, each \textbf{nibble} is 4 bits, and each
+  \textbf{word} is multiple bytes depending on computer architecture. For
+  example, 64-bit architecture uses 8 bytes and 32-bit architecture uses 4
+  bytes as the word size.
+\end{definition}
+$N$ bits can represent up to $2^{N}$ values. To represent $M$ values,
+$\lceil\log_2 M\rceil$ bits are required. 
+\subsection{Number Systems}
+We consider a weighted-positional number system, in the usual \textit{base} (or
+radix) 10.
+\begin{definition}[Weighted-Positional Number System]
+  We consider a weighted-positional number system, in \textit{base} (or \textit{radix}) R:\@
+  Then we have the \textit{symbols}/\textit{digits}$=\left\{ 0,1,2,\ldots,R-1 \right\}$
+  and each position has a weight of power of R.
+  \[{\left( a_{n}a_{n-1}\cdots a_0.f_1f_2\cdots f_m \right)}_R=\]
+  \[(a_{n}\times 10^{n})+(a_{n-1}\times 10^{n-1})+\cdots+(a_0\times 10^{0})+(f_1\times 10^{-1})+(f_2\times 10^{-2})+\cdots+(f_m\times 10^{-m})\]
+\end{definition}
+\begin{notation}[Number Systems Notations]
+  In certain programming languages, we can specify certain bases of numbers as follows:
+  \begin{multicols}{3}
+    \begin{itemize}
+      \item In \verb|C|:
+      \begin{itemize}
+        \item Prefix \verb|0| for octal
+        \item Prefix \verb|0x| for hexadecimal
+      \end{itemize}
+      \vfill\null%
+      \columnbreak%
+    \item In \verb|QTSpim|:
+      \begin{itemize}
+        \item Prefix \verb|0x| for hexadecimal
+      \end{itemize}
+      \vfill\null%
+      \columnbreak%
+    \item In \verb|Verilog|:
+      \begin{itemize}
+        \item Prefix \verb|8'b| for binary
+        \item Prefix \verb|8'h| for hexadecimal
+        \item Prefix \verb|8'd| for decimal
+      \end{itemize}
+    \end{itemize}
+  \end{multicols}
+\end{notation}
+\subsubsection{Conversion}
+To convert any base-R number to decimal, we sum the symbols, with each scaled
+by a weight of power of R corresponding to its position.
+\begin{example}[From Base-5 to Decimal]
+  \[341.24_5=3\times 5^{2}+4\times 5^{1}+1\times 5^{0}+2\times 5^{-1}+4\times 5^{-2}=96.56_{10}.\]
+\end{example}
+To convert a whole decimal number to any base-R number, we use
+\textbf{successive division by $R$} until the quotient is 0. Each remainder
+forms the answer, with the first remainder as the \textit{Least Significant
+Bit} (LSB) and the last as the \textit{Most Significant Bit} (MSB).
+\begin{example}[Decimal Whole Number to Binary]
+  \[43_{10}=(1 \bmod 2)(2 \bmod 2)(5 \bmod 2)(10 \bmod 2)(21 \bmod 2)(43 \bmod 2)=101011_2.\] 
+\end{example}
+To convert a decimal fraction to any base-R number, we use \textbf{repeated
+multiplication by $R$}, until the fractional product is 0 or the required
+precision is achieved. The \textit{carries} produce the answer, with the first
+carry as the MSB and the last as the LSB.%
+\begin{example}[Decimal Fraction to Binary]
+  \[0.3125_{10}=(0.3125\times 2\bmod 1)(0.625\times 2\bmod 1)(0.25 \times 2\bmod 1)(0.5\times 2\bmod 1)=0.0101.\] 
+\end{example}
+In general, to convert between non-decimal bases $R$ and $S$, we convert first
+to decimal and then to the desired base.
+\begin{remark}
+  However, we may convert between binary, octal, and hexadecimal by grouping
+  symbols together or expanding into multiple symbols directly.
+\end{remark}
+
+\subsection{Data Representation}
+\subsubsection{Character Representation}
+ASCII code and Unicode is used to represent characters. Each character is
+$8$ bits in ASCII, consisting $7$ bits and $1$ parity bit. Hence characters take
+ASCII code values from $0$ to $127$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{ascii-table.png}
+\end{figure}
+
+\subsubsection{Integer Representation}
+Numbers in C can either be unsigned or signed.\ \textit{Unsigned Numbers} can
+only take non-negative values. In this case, the range of values it can take
+would be from $0$ to $2^{n}-1$, where $n$ is the number of bits used.
+\textit{Signed Numbers} can take both positive and negative values. However,
+with the same number of bits, the range of values would hence be smaller (since
+information on the sign has to be stored with a bit). There are three common
+representations, namely \textbf{Sign-and-Magnitude}, \textbf{1s Complement},
+and \textbf{2s Complement}. 
+
+\paragraph{Sign-and-Magnitude}
+We may represent a negative number using the MSB as a `sign bit', with $0$ for $+$ and
+$1$ for $-$. We hence have, for $8$-bit integers:
+In general, the range is $-2^{n-1}+1$ to $+2^{n-1}-1$ for a $n$-bit integer. We
+negate a number by simply inverting the sign bit.
+\[\text{Range: }11111111_2=-127_{10}\text{ to }01111111_2=+127_{10}\]
+\[\text{Zeros: }00000000=+0_{10}\text{ and }10000000=-0_{10}\]
+
+\paragraph{1s Complement}
+Given a positive number $x$, its additive inverse is given in 1s-complement representation by
+\[-x=2^{n}-x-1.\]
+\begin{example}[$12_{10}$]
+  With an $8$-bit number $00001100_2$, its negated value expressed in 1s-complement is:
+  \begin{align*}
+    -{\left( 00001100 \right)}_2&=(2^{8}-12-1)\\
+                                &=243\\
+                                &={11110011}_{1s}
+  \end{align*}
+\end{example}
+In general, the range is $-2^{n-1}+1$ to $+2^{n-1}-1$ for a $n$-bit integer. We
+negate a number by inverting all of its bits. The MSB still represents the sign
+of the integer.
+\[\text{Range: }10000000_{1s}=-127_{10}\text{ to }01111111_{1s}=+127_{10}\]
+\[\text{Zeros: }00000000=+0_{10}\text{ and }11111111=-0_{10}\]
+When performing \textbf{addition of integers in 1s complement}, add the `carry out' of
+the MSB to the LSB\@. Overflow occurs if the result is opposite sign of $A$ and
+$B$.
+
+\paragraph{2s Complement}
+Given a positive number $x$, its additive inverse is given in  2s-complement representation by
+\[-x=2^{n}-x.\] 
+\begin{example}[$12_{10}$]
+  With an $8$-bit number $00001100_2$, its negated value expressed in 2s-complement is:
+  \begin{align*}
+    -{\left( 00001100 \right)}_2&=(2^{8}-12)\\
+                                &=244\\
+                                &={11110100}_{2s}
+  \end{align*}
+\end{example}
+In general, the range is $-2^{n-1}$ to $+2^{n-1}-1$ for a $n$-bit integer. We
+negate a number by inverting all of its bits, then add $1$. The MSB still represents the sign
+of the integer.
+\[\text{Range: }10000000_{1s}=-128_{10}\text{ to }01111111_{1s}=+127_{10}\]
+\[\text{Zeros: }00000000=+0_{10}\text{ and }11111111=-0_{10}\]
+When performing \textbf{addition of integers in 2s complement}, the carry out of the MSB is ignored.
+Overflow occurs if the `carry in' and the `carry out' of the
+MSB is different, or if the result is opposite sign of $A$ and $B$.
+\begin{definition}[Sign Extension]
+  To convert a $n$-bit \textbf{signed} integer to a $m$-bit signed integer
+  (where $m>n$), we copy the MSB $m-n$ times to the left of the $n$-bit number.
+  That is, we copy the `sign' bit of the integer.  This is
+  \textit{value-preserving} only for 2s complement.
+\end{definition}
+
+\paragraph{Excess-$k$ Representation} 
+Given a number in excess-$k$ representation, we may obtain its value in decimal
+by taking the number as binary, and then subtracting $k$.
+\begin{example}[Excess-$8$]
+  For $4$-bit numbers, excess-$8$ is as shown below:
+
+\centering
+\begin{tabular}{c c c c c c c c c}
+  \toprule
+  Excess-$8$ Representation & $0000$ & $0001$ & $0010$ & $0011$ & $0100$ & $0101$ & $0110$ & $0111$ \\
+  \midrule
+                           Value & $-8$ & $-7$ & $-6$ & $-5$ & $-4$ & $-3$ & $-2$ & $-1$\\
+                           \bottomrule
+\end{tabular}
+\begin{tabular}{c c c c c c c c c}
+  \toprule
+  Excess-$8$ Representation& $1000$ & $1001$ & $1010$ & $1011$ & $1100$ & $1101$ & $1110$ & $1111$\\
+  \midrule
+  Value & $0$ & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$\\
+  \bottomrule
+\end{tabular}
+\end{example}
+\raggedright%
+
+\subsection{Real Number Representation}
+In \textbf{fixed-point representation}, we fix the number of bits allocated for
+the integer and fractional parts. 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{fixed-point.jpeg}
+\end{figure}\\
+We extend the limited range of fixed-point representation with
+\textbf{floating-point representation}, allowing us to represent very large or
+very small numbers.
+\paragraph{IEEE 754 Floating-Point Representation}
+The floating-point representation comprises 3 components: \textit{sign},
+\textit{exponent}, and \textit{mantissa} (fraction).
+\begin{itemize}
+  \item Single-precision (32 bits): 1-bit sign, 8-bit exponent in excess-127, 23-bit mantissa
+  \item Double-precision (64 bits): 1-bit sign, 11-bit exponent in excess-1023, 52-bit mantissa
+\end{itemize}
+The sign bit has $0$ for $+$, and $1$ for $-$. The exponent has an implicit
+base $2$, and is stored in excess representation, whereas the mantissa is normalised
+with an implicit leading bit 1. That is, the mantissa only stores the bits
+after the binary point.
+\[v={\left( -1 \right)} ^{sign}\times 1.fraction\times 2^{exponent-bias}.\] 
+\begin{example}[$-6.5_{10}$]
+  To represent a given value, we first convert into binary, and normalise the mantissa:
+  \[-6.5_{10}=-110.1_2=-1.101_2\times 2^{2}.\]
+  We hence have the sign bit $=1$, exponent
+  $=2_{10}=10000001_{\text{excess-}127}$, mantissa $=10100000000000000000000$.
+\end{example}
+\begin{definition}[Underflow and Overflow]
+  With the discrete representation of numbers, we have numbers that are
+  non-representable on the number line, as shown:
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{floating-under-overflow.png}
+  \end{figure}
+  As such, associativity is not preserved, since 
+  \[\left( A \cdot B \right) \cdot C=round{\left( round{\left( A \cdot B \right)} \cdot C \right) }.\]
+\end{definition}
+Depending on implementation, rounding can be to the nearest (default), towards
+zero, towards positive infinity, or negative infinity. The operation is done
+with 3 extra bits (guard, round, sticky), and then rounded to the nearest
+representable number.

@@ -1,0 +1,871 @@
+\section{Circuit Design}
+\paragraph{Circuit Types}
+We focus on digital circuits design with the advantages over analog circuits:
+\begin{itemize}
+  \item More reliable, with simpler circuits and less noise-prone
+  \item Specified accuracy (determinable)
+  \item Abstraction can be applied using boolean algebra
+  \item Simpler design, analysis and simplification
+\end{itemize}
+Among digital circuits, we have \textit{combinational circuits} (with no
+memory, and output depends solely on the input) and \textit{sequential
+circuits} (where output depends on both input and current state of memory).
+
+\subsection{Boolean Algebra}
+\subsubsection{Operations}
+\begin{notation}
+  In Boolean Algebra, True is denoted as $T$ or $1$, and False as $F$ or $0$.
+  We denote conjunction (AND) as $A\cdot B$ or $A\wedge B$, disjunction (OR) as
+  $A+B$ or $A\vee B$, and negation (NOT) as $A'$, $\bar{A}$ or $\neg{A}$. 
+  \begin{remark}
+    In CS2100, we use $1$ for True, $0$ for false, $\cdot$ for conjunction, $+$
+    for disjunction and $'$ for negation.
+  \end{remark}
+\end{notation}
+\paragraph{Precedence of Operators}
+There is no convention for boolean algebra in general. We define the precedence
+of operators from higher to lowest (for CS2100):
+\begin{enumerate}
+  \item Not ($'$)
+  \item And ($\cdot$)
+  \item Or ($+$)
+\end{enumerate}
+\subsubsection{Results of Boolean Algebra}
+We have the following laws of boolean algebra:
+
+\centering
+\begin{tabular}{c c c}
+  \toprule
+  Law & Disjunction & Conjunction\\
+  \midrule
+  Identity Laws & $A+0=0+A=A$ & $A\cdot 1=1\cdot A = A$ \\
+  Inverse/Complement Laws & $A+A'=A'+A=1$ & $A\cdot A'=A'\cdot A=0$ \\
+  Commutative Laws & $A+B=B+A$ & $A\cdot B=B\cdot A$ \\
+  Associative Laws & $A+(B+C)=(A+B)+C$ & $A\cdot(B\cdot C)=(A\cdot B)\cdot C$ \\
+  Distributive Laws & $A\cdot (B+C)=(A\cdot B)+(A\cdot C)$ & $A+(B\cdot C)=(A+B)\cdot(A+C)$ \\
+  \bottomrule
+\end{tabular}\\
+\vspace{4mm}
+\raggedright%
+and the following theorems:\\
+\vspace{2mm}
+
+\centering
+\begin{tabular}{c c c}
+  \toprule
+  Theorem & Disjunction & Conjunction \\
+  \midrule
+  Idempotency & $X+X=X$ & $X\cdot X=X$ \\
+  One Element / Zero Element & $X+1=1$ & $X\cdot 0 = 0$ \\
+  Involution & \multicolumn{2}{c}{$\left( X' \right)'=X $ } \\
+  Absorption 1 & $X+X\cdot Y=X$ & $X\cdot (X+Y)=X$ \\
+  Absorption 2 & $X+X'\cdot Y=X+Y$ & $X\cdot (X'+Y)=X\cdot Y$ \\
+  De Morgan's Laws & $(X+Y)'=X'\cdot Y'$ & $(X\cdot Y)'=X'+Y'$ \\
+  \multirow{2}{4em}{Consensus} & \multicolumn{2}{c}{$X\cdot Y+X'\cdot Z + Y\cdot Z=X\cdot Y+X'\cdot Z$}\\
+  & \multicolumn{2}{c}{$(X+Y)\cdot(X'+Z)\cdot(Y+Z)=(X+Y)\cdot(X'+Z)$} \\
+  \bottomrule
+\end{tabular}
+
+\raggedright%
+\paragraph{Duality} Each result comes in pairs. If each AND/OR operator and
+identity element 0/1 in a boolean equation is interchanged, it remains valid. This
+is known as \textit{duality}.
+
+\subsubsection{Standard Forms}
+\paragraph{Definitions}
+\begin{definition}[Terms]
+  A boolean variable, or its complemented form is known as a \textit{literal}.
+  A single literal, or a logical product (AND) of literals is a \textit{product
+  term}. Similarly, a single literal, or a logical sum (OR) of literals is a
+  \textit{sum term}.
+\end{definition}
+We define two standard forms of boolean expressions, to the end of desirable
+circuits for implementation:
+\begin{itemize}
+  \item \textit{Sum-of-Products (SOP)}: A product term, or a logical sum (OR) of several product terms.
+  \item \textit{Product-of-Sums (POS)}: A sum term, or a logical product (AND) of several sum terms.
+\end{itemize}
+\begin{remark}
+  All boolean expressions can be expressed in SOP and POS form.
+\end{remark}
+\begin{definition}[Minterm, Maxterm]
+  A \textit{minterm} of $x$ variables is a product term containing $x$
+  literals, denoted m0 to m$(2^{n}-1)$. A \textit{maxterm} of $x$ variables is a
+  sum term containing $x$ literals, denoted M0 to M$(2^{n}-1)$.
+\end{definition}
+\begin{example}[Number of min-, maxterms]
+  Given $n$ variables, we have up to $2^{n}$ minterms and $2^{n}$ maxterms.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{min-max-terms.png}
+  \end{figure}
+\end{example}
+\textbf{Each minterm is the complement of the corresponding maxterm.}
+To find the m(x) minterm, where $x={(b_1b_2\cdots b_{n})}_2$, we have the
+product of $n$ literals of which each literal $a_i=\begin{cases}a_i'&b_i=0\\a_i&b_i=1\end{cases}$. The M(x) maxterm is then the sum of $n$ literals where
+each literal $a_i =\begin{cases}a_i&b_i=0\\a_i'&b=1\end{cases}$
+
+Using minterms and maxterms, we may then obtain a \textbf{canonical/normal
+form}, which ensures uniqueness of the SOP or POS\@.
+
+A \textit{sum-of-minterms} is the canonical SOP, denoted $\sum m(k_1,k_2,\ldots
+k_i)$. It can be obtained by gathering the minterms with which the output is 1.
+A \textit{product-of-maxterms} is the canonical POS, denoted $\prod
+M(k_1,k_2,\ldots,k_i)$. It can be obtained by gathering the maxterms with which
+the output is 0.
+
+Additionally, each function $F=\sum m(k_1,k_2,\ldots,k_i)=\prod M(l_1,l_2,\ldots,l_j)$
+where $\left\{ 0,\ldots,n-1 \right\}\setminus\left\{ k_1,k_2,\ldots k_i
+\right\}=\left\{ l_1,l_2,\ldots l_j \right\} $.
+
+
+\subsection{Circuit Simplification}
+Given a boolean expression, we may then simplify to obtain a circuit that uses
+fewer logic gates, such that it is cheaper, uses less power and (sometimes)
+faster. We do this with various simplification techniques, namely
+\textbf{algebraic simplification}, \textbf{Karnaugh Maps}, and
+the \textbf{Quine-McCluskey Technique}.
+
+\subsubsection{Algebraic Simplification}
+By application of the boolean algebra results and theorems, we are able to
+minimise the number of literals and number of terms. However, these two
+minimisations may sometimes be in conflict, in which case we have to opt to
+adapt the tradeoff within the constraints in our context. \\
+
+Algebraic manipulation allows us to adapt the technique, but is sometimes
+challenging, requiring strong algebraic manipulation skills.
+
+\subsubsection{Karnaugh Maps}
+\begin{definition}[Gray Code]
+  An ordering of the binary numerals is a \textit{Gray code} if every two
+  successive values differ in only one bit.
+\end{definition}
+A Gray code is an unweighted code, and every of the $n$-bits are usually
+utilised to have a sequence of $2^n$ values. The $n$-bit standard gray code can
+be obtained inductively from the $(n-1)$-bit standard gray code.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.26\textwidth]{gray-code}
+\end{figure}\\
+Given $n$-bits, there are multiple possible Gray code cycles, from which the
+standard Gray code uniquely specifies one. For instance, we have the $4$-bit
+standard gray code as shown.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{4-gray-code}
+\end{figure}\\
+Within a universal set $U$ of minterms, we can partition the minterms, from
+which a boolean function is a subset where we obtain the SOP expression. We may
+use venn diagrams to analyse boolean expressions.
+\begin{definition}[Karnaugh Maps]
+  A \textit{K-Map} is an abstract form of a Venn diagram organised as a matrix
+  of cells where
+  \begin{itemize}
+    \item Each cell represents a minterm
+    \item Adjacents cell differ by one literal
+  \end{itemize}
+\end{definition}
+We define K-maps up to 6 variables. For each K-map, we fill each cell with $1$
+if it corresponds to a minterm of the function, $d$ if it corresponds to a
+dont-care term, and $0$ otherwise. Given an arbitrary Boolean function, we can
+convert it to a SOP form, where we can then fill the K-map directly, or
+construct the truth table to obtain the minterms.
+\paragraph{n-Variable K-Maps} Given n variables $a,b$, we have the K-maps as
+shown below, with axes each Gray codes representing the status of the
+variables, and where each cell has n neighbours.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.15\textwidth]{kmap2}
+  \includegraphics[width=0.25\textwidth]{kmap3}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{kmap4}
+\end{figure}\\
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.73\textwidth]{kmap5}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{kmap6}
+\end{figure}
+\vspace{16mm}
+Given a filled K-map, we may obtain valid groupings of adjacent cells as follows:
+\begin{itemize}
+  \item Each cell may be grouped with any of its neighbouring cell
+  \item Each group has size in powers of two
+  \item Each group correspond to a product term
+  \item Each don't-care term can be taken to be $1$ or $0 $ to obtain a simpler
+    expression
+\end{itemize}
+\begin{remark}
+  Each grouping of $2^{n}$ cells eliminates $n$ variables from the product
+  terms.
+\end{remark}
+\begin{definition}[Prime Implicants]
+  A product term that is obtained by combining the maximum number of minterms
+  from adjacent squares in the map is known as a \textit{prime implicant}.
+\end{definition}
+\begin{definition}[Essential Prime Implicant]
+  A prime implicant that includes at least one minterm that is not covered by
+  any other prime implicant is known as a \textit{essential prime implicant}.
+\end{definition}
+Given the K-map, we may then find a \textbf{simplified SOP expression} to the
+function with the following algorithm.
+\begin{enumerate}
+  \item Identify PIs of the function by finding all largest possible groupings.
+  \item Within the PIs, identify the EPIs that must exist in the expression.
+  \item Select a minimum subset of the remaining PIs to complete the cover.
+\end{enumerate}
+
+Alternatively, we may find a \textbf{simplified POS expression} to the function
+by grouping the maxterms. This is equivalent to grouping the minterms in the
+K-map of the function's complement. We can then obtain the POS expression by
+taking the inverse of the SOP expression found from this grouping.\\
+
+By using K-Maps, we can minimise the number of product terms and literals. They
+are easy to use, but limits us to 5 to 6 variables.
+
+
+\subsubsection{Quine-McCluskey Technique}
+With $n$ variables, in the Quine-McCluskey Technique, we denote each product
+term as a $n$-length string, with $1, 0$ for the literals, and $-$ for an
+absence of a variable. We can obtain a simplified expression using an iterative
+algorithm. Given a sum-of-minterms expression, 
+\begin{enumerate}
+  \item Arrange the terms in groups according to the number of $1$s.
+  \item Combine terms from adjacent groups which differ by only $1$ bit.
+  \item Iterate step $2$ until no further combinations are possible.
+\end{enumerate}
+When terms are combined, we indicate them as such with a tick. When the program
+terminates, terms that have not been combined are the PIs. We then find a cover
+using a PI chart, to find the EPIs given by columns with a single $X$, and then
+a reduced PI chart to find a minimum cover for the remaining minterms.
+\begin{example}
+  Given a $4$-variable function
+  \[F(A,B,C,D)=\sum m\left( 2,4,6,8,9,10,12,13,15 \right)\] 
+  we have the following table from applying the algorithm.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{quine-mccluskey}
+  \end{figure}\\
+  From this, we have the PI chart and then the reduced PI chart.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{quine-pi}
+    \includegraphics[width=0.3\textwidth]{quine-reducedpi}
+  \end{figure}
+  As such, we have the minimal SOP expression
+  \[F=A\cdot C'+A\cdot B\cdot D+B'\cdot C\cdot D+A'\cdot B\cdot D'.\] 
+\end{example}
+This technique guarantees to produce a minimal standard form, and can be
+applied to functions on many variables. However, it is highly tedious and more
+suited for automation.
+
+
+\subsection{Logic Circuits}
+A logic circuit is composed of logic gates, represented as shown. We call the number of inputs of a gate the \textbf{fan-in}. Gates can have a fan-in more than 2.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{logic-gates.png}
+\end{figure}
+\begin{remark}
+  By De Morgan's laws, we have the NAND $\equiv$ Negative-OR gate, and NOR $\equiv$ Negative-AND.
+\end{remark}
+Given a boolean expression, we may implement it as a logic circuit.
+Additionally, given a logic circuit, we may obtain its logic expression.
+We call the set $\left\{ AND, OR, NOT \right\} $ a \textbf{complete set of logic}. It is
+sufficient for building any boolean function.
+\begin{definition}[Universal Gates]
+  A \textbf{Universal Gate} is a gate that itself is a complete set of logic. We may
+  prove a specified gate is a universal gate by implementing a complete set of
+  logic with the gate.
+\end{definition}
+\begin{example}[NAND]
+  NAND is a universal gate.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\textwidth]{nand-universal}
+  \end{figure}
+\end{example}
+\begin{example}[NOR]
+  NOR is a universal gate.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.25\textwidth]{nor-universal}
+  \end{figure}
+\end{example}
+We may implement a given a SOP expression using a 2-level AND-OR circuit or a
+2-level NAND circuit.
+\begin{proof}
+  With a SOP expression $F=A_0\cdot A_1 \cdot\ldots \cdot A_{n}+\cdots+Z_0\cdot
+  Z_1\cdot\ldots\cdot Z_{n}$, we obtain each product term with AND gates for
+  each product term, and obtain the final expression with a single OR gate.  By
+  negating the output of each AND gate, and then negating the input to the OR
+  gate, we obtain a 2-level circuit of NAND gates.\qed
+\end{proof}\\
+Similarly, we may implement a given a POS expression using a 2-level OR-AND
+circuit or a 2-level NOR circuit.
+
+\subsubsection{Propagation Delay}
+\begin{definition}[Propagation Delay]
+  The \textbf{gate delay} or \textbf{propagation delay} of a given gate is the
+  average transition time taken for the output signal of the gate to change in
+  response to changes in the input signals:
+  \[t_{PD}=\left( t_{PHL} +t_{PLH}\right)/2 ,\] 
+  where $t_{PHL}$ is the propagation delay time when the output changes from
+  high to low, and $t_{PLH}$ that when the output changes from low to high.
+\end{definition}
+In general, given an $n$-input logic gate with delay $T$ and its inputs stable
+at times $t_1,t_2,\ldots,t_{n}$, the earliest time in which the output is
+stable is $max\left\{ t_1,t_2,\ldots,t_{n} \right\} +T$.
+
+\begin{definition}[Circuit Delay]
+  The \textbf{circuit delay} is the ``propagation of the entire circuit'', the
+  longest time it takes for the input signals to propagate to the outputs.
+\end{definition}
+\begin{example}[Circuit Delay]
+  Given a circuit, we can calculate the circuit delay by propagating the inputs
+  forward past each logic gate or component to obtain the final delay.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{circuit-delay}
+  \end{figure}
+\end{example}
+
+\subsubsection{Alternative Logic Circuits}
+\paragraph{Integrated Circuit}
+\begin{definition}[Integrated Circuit]
+  An \textbf{Integrated Circuit }(IC), also known as a chip or microchip, is a
+  semiconductor device in which transistors, capacitors and resistors are
+  fabricated.
+\end{definition}
+ICs can be categorised according to the number of components they contain,
+\begin{itemize}
+  \item \textit{Small Scale Integration}: Up to 100 electronic components
+  \item \textit{Medium-Scale Integration}: From 100 to 3,000 electronic components
+  \item \textit{Large-Scale Integration}: From 3,000 to 100,000 electronic components
+  \item \textit{Very Large-Scale Integration}: From 100,000 to 1,000,000 electronic components
+  \item \textit{Ultra Large-Scale Integration}: More than 1,000,000 electronic components
+\end{itemize}
+or according to its capabilities and limitations, into different logic families:
+\begin{itemize}
+  \item \textit{Transistor-Transistor Logic}: Uses bipolar junction transistors
+  \item \textit{Complementary Metal-Oxide Semiconductor}: Uses metal-oxide
+    semiconductor field effect transistors, consumes less power and has higher
+    packing density, but is very sensitive to static electricity
+  \item \textit{Emitter-Coupled Logic}: Uses bipolar circuit technology,
+    designed for very high speed operations, but has high power consumption.
+  \item among many others…
+\end{itemize}
+
+\begin{example}[TTL]
+  The Transistor-Transistor Logic family is the largest, consisting various
+  versions: \textit{standard TTL, low-power TTL, Schottky TTl, low-power
+  Schottky TTL, advanced Schottky TTL,} etc. These ICs are encoded by four- to
+  five-digit part numbers, with a two-digit prefix (usually 54 or 74) followed
+  by a two- or three-digit code for the gate. Between the prefix and the gate
+  code is a letter code indicating the TTL version.
+\end{example}
+
+\paragraph{Programming Logic Array}
+\begin{definition}[Programming Logic Array]
+  A \textbf{Programming Logic Array }(PLA) is a programmable integrated circuit
+  that implements SOP circuits with multiple outputs using a 2-level AND-OR
+  circuit.
+\end{definition}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{pla.png}
+\end{figure}
+
+\paragraph{Read Only Memory}
+\begin{definition}[Read Only Memory]
+  A \textbf{Read-Only Memory} is similar to PLA with a set of inputs
+  (addresses) and a set of outputs, with a programmable mapping between inputs
+  and outputs.
+\end{definition}
+A ROM is fully decoded and able to implement any mapping, in contrast to PLA
+which may not have enough minterms.
+
+\subsubsection{MSI Components}
+In addition, we have various common medium-scale integration (MSI) components
+that are used in circuit design, namely the \textit{decoders},
+\textit{encoders}, \textit{demultiplexers}, and \textit{multiplexers}.
+
+\paragraph{Decoders}
+\begin{definition}[Decoders]
+  A $n$-to-$m$-line, $n:m$, or $n\times m$ \textit{decoder}, converts binary
+  information from $n$ input lines to $m\le 2^{n}$ output lines. Given an input
+  of $k_{10}={\left( X_{n}X_{n-1}\cdots X_1 \right)}_2$, the decoder selects
+  the $k$-th output line.
+\end{definition}
+\begin{remark}
+  Each output is the minterm of all the variables, since every code uniquely
+  identifies an output line to be selected.
+\end{remark}
+\begin{definition}[Enable]
+  In these components, we may have an \textit{enable control} sigal, such that
+  the device is only activated when the enable $E=1$. We say that the device is
+  one-enable.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{decoder-enable}
+  \end{figure}\\
+  Enables may be implemented with an AND gate for each of the outputs.
+\end{definition}
+\begin{definition}[Active High/Low Outputs]
+  A device has normal outputs if it has active high outputs, and negated
+  outputs if it has active low outputs.
+\end{definition}
+\begin{remark}
+  Most Standard MSI Decoders are zero-enabled, and have active-low outputs.
+  \begin{example}[74138 $3:8$ Decoder]
+    We illustrate the representations of a standard 74138 decoder, a
+    zero-enabled, active-low output, $3:8$ decoder.
+    \begin{figure}[h!]
+      \centering
+      \includegraphics[width=0.5\textwidth]{decoder-74138}
+      \includegraphics[width=0.4\textwidth]{decoder-74138-2}
+    \end{figure}
+  \end{example}
+\end{remark}
+Additionally, decoders can also be cascaded to construct larger decoders.
+\begin{example}[$3:8$ Decoder]
+  We can construct a $3:8$ decoder from two $2:4$ decoders with one-enable and
+  an inverter.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{decoder-cascade}
+  \end{figure}
+\end{example}
+Decoders allow us to implement any function, by generating all the individual
+minterms, and using an appropriate gate to implement the function. In general, for
+a function $f=\sum m\left( a_1,a_2,\ldots,a_k \right)=\prod M\left(
+b_1,b_2,\ldots,b_l \right)  $:
+\begin{itemize}
+  \item Decoder with active-high outputs
+    \begin{itemize}
+      \item with an OR gate:
+        \[f=m_{a_1}+m_{a_2}+\cdots+m_{a_k}\]
+      \item with a NOR gate:
+        \[f=\left( m_{b_1}+m_{b_2}+\cdots+m_{b_l} \right)'\left[ =M_{b_1}\cdot
+        \cdots \cdot M_{b_l} \right] \]
+    \end{itemize}
+  \item Decoder with active-low outputs
+    \begin{itemize}
+      \item with a NAND gate:
+        \[f=\left( m_{a_1}'\cdot m_{a_2}'\cdot \cdots \cdot m_{a_k}\right)'\] 
+      \item with an AND gate:
+        \[f=m_{b_1}'\cdot m_{b_2}'\cdot \cdots \cdot m_{b_l}'.\] 
+    \end{itemize}
+\end{itemize}
+They hence best lend themselves to circuits of many outputs, each a sum of a
+few minterms. In general, any combinational circuit with $n$ inputs and $m$
+outputs can be implemented with a $n:2^{n}$ decoder and $m$ logic gates. 
+
+\paragraph{Encoders}
+\begin{definition}[Encoders]
+  A $m$-to-$n$-line, $m:n$, or $m\times n$ \textit{encoder}, converts binary
+  information from $m<2^{n}$ input lines to $n$ output lines. If the $k$-th
+  input line is active, the encoder outputs $\left( D_{n}D_{n-1}\cdots D_1
+  \right)_2=k_{10}$. Behaviour is only defined for input lines of which exactly
+  one is active.
+\end{definition}
+Encoders compute the inverse of decoders and can be implemented with $n$ OR
+gates.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{encoder-truth}
+  \includegraphics[width=0.4\textwidth]{encoder-circuit}
+\end{figure}
+
+\begin{definition}[Priority Encoders]
+  A \textit{priority encoder} is an encoder with priority. If two or more
+  outputs are active, the input with the highest priority takes precedence. If
+  all inputs are inactive, behaviour is undefined.
+\end{definition}
+
+\paragraph{Demultiplexers}
+\begin{definition}[Demultiplexers]
+  Given an input line and a set of selection lines, a
+  \textit{demultiplexer} directs data from the input to one selected output line
+  by the control signals.
+\end{definition}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{demultiplexer}
+\end{figure}
+The demultiplexer circuit is identical to a decoder with enable, by taking the
+enable as the input and the input lines as the control.
+
+\paragraph{Multiplexers}
+\begin{definition}[Multiplexers]
+  A \textit{multiplexer}, or data-selector, has $2^{n}$ input lines, $n$
+  selection or control lines, and one output line. It directs data from the
+  specified input line to the output line.
+\end{definition}
+It may be implemented with a $n:2^{n}$decoder, and getting each of the $2^{n}$
+output's  product with the corresponding input line.
+
+\begin{example}[74151A $8:1$ Multiplexer]
+  We illustrate the representations of a standard 74151A multiplexer.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{multiplexer}
+    \includegraphics[width=0.4\textwidth]{multiplexer-2}
+  \end{figure}
+\end{example}
+
+Multiplexers can also be cascaded to construct larger multiplexers.
+\begin{example}[$8:1$ Multiplexer] We can construct a $8:1$ multiplexer from
+  smaller multiplexers as shown.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{multiplexer-cascade}
+    \includegraphics[width=0.45\textwidth]{multiplexer-cascade-2}
+  \end{figure}
+\end{example}
+
+Multiplexers also allow us to implement any function, by having each of the
+variables as a selection line, and setting each input to be $1$ if it is the
+$k$-th line, where $m(k)$ is a minterm of the function and $0$ otherwise. We
+may also implement a $n$-variable function with a $2^{n-1}:1$ multiplexer, by
+setting one of the variables to be input and the others the selection lines. We
+do so by drawing the truth table, grouping by selection line values, and then
+comparing the input variable to the function output.\\
+
+We illustrate this with the following example, where $f(A,B,C)=\sum m\left(
+0,1,3,6 \right) $.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.35\textwidth]{multiplexer-imp-2}
+  \includegraphics[width=0.45\textwidth]{multiplexer-imp}
+\end{figure}
+
+
+\subsection{Combinational Circuits}
+Within logic circuits, we first consider the class of combinational circuits,
+where each output depends on only the immediate inputs. We may implement
+combinational circuits with logic gates in the \textbf{gate-level design
+method}, or functional blocks in the \textbf{block-level design method}.\\
+
+\subsubsection{Gate-Level (SSI) Design}
+In gate-level design, we follow the design procedure of (1) Stating the
+problem, (2) Determining and labelling the inputs and outputs, (3) Drawing the
+truth table, (4) Obtaining simplified Boolean expressions, (5) Drawing the
+logic diagram.
+
+\begin{example}[Full Adder] We demonstrate the design procedure with the Full
+  Adder component.
+  \begin{definition}[Half Adders]
+    A \textit{Half Adder} is a circuit that adds 2 single bits $X$ and $Y$ to
+    produce a result the carry-out bit $C$ and the sum bit $S$.
+  \end{definition}
+  From the truth table and algebraic simplification, we derive the simplified
+  expressions for $C$ and $S$
+  \[C=X\cdot Y,\qquad S=S'\cdot Y+X\cdot Y'=X\oplus Y.\]
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[height=0.15\textwidth]{half-adder-block}
+    \includegraphics[height=0.15\textwidth]{half-adder-truth}
+    \includegraphics[height=0.15\textwidth]{half-adder-circuit}
+  \end{figure}\\
+  We aim to obtain a full-adder to be able to add 3 single bits, which we call
+  $X$, $Y$, and a carry-in bit $Z$. Using the K-map, we have the simplified SOP
+  forms
+  \[C=X\cdot Y+X\cdot Z+Y\cdot Z=X\cdot Y+\left( X\oplus Y \right)\cdot Z\]
+  \[S=X'\cdot Y'\cdot Z+X'\cdot Y\cdot Z'+X\cdot Y'\cdot Z'+X\cdot Y\cdot Z=X\oplus\left( Y\oplus Z \right).\] 
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[height=0.2\textwidth]{full-adder-block}
+    \includegraphics[height=0.2\textwidth]{full-adder-truth}
+    \includegraphics[height=0.2\textwidth]{full-adder-circuit}
+  \end{figure}\\
+  We hence have the full adder constructed from two half-adders and an OR gate.
+\end{example}
+
+\subsubsection{Block-Level Design}
+For more complex circuits, we may employ block-level design, where we decompose
+the main problem to sub-problems recursively to be directly solved by blocks of
+circuits.
+
+\begin{example}[Parallel Adder] We demonstrate the block-level design procedure
+  with the paralllel adder component.
+  \begin{definition}[Parallel Adders]
+    A \textit{parallel adder} is a circuit that adds two $4$-bit numbers $X=X_4
+    X_3 X_2 X_1$ and $Y=Y_4 Y_3 Y_2 Y_1$ and a carry-in bit $C_1$ to produce a
+    $5$-bit result $R=C_5S_4S_3S_2S_1$
+  \end{definition}
+  Rather than drawing a truth table with $9$-bit inputs, we notice the addition
+  formula for each pair of bits with carry-in has the same function as a full
+  adder
+  \[C_{i+1} S_i=X_i+Y_i+C_i\]
+  \[C_{i+1}=X_i\cdot Y_i+\left( X_i\oplus Y_i \right)\cdot  C_i,\qquad
+  S_i=X_i\oplus Y_i\oplus C_i.\] 
+  This allows us to cascade full adders via their carries to create a
+  \textit{parallel adder} (or \textit{ripple-carry adder}).
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[height=0.2\textwidth]{parallel-adder-block}
+    \includegraphics[height=0.2\textwidth]{parallel-adder-circuit}
+  \end{figure}\\
+\end{example}
+Given the $4$-bit parallel adder, we may much more easily
+implement a BCD to Excess-$k$ converter (by adding $k$ to a given BCD), or a
+$4n$-bit parallel adder (by similarly cascading $n$ parallel adders).
+\begin{remark}
+  The circuit delay of a ripple-carry parallel adder is proportional to the
+  number of bits it handles, since the carry bits has to propagate through each
+  full adder.
+\end{remark}
+
+\begin{example}[Magnitude Comparator]
+  Alternatively, to design a more complicated circuit, we may analyse the
+  formulae or algorithms in its computation.
+  \begin{definition}[Magnitude Comparators]
+    A $n$-bit \textit{magnitude comparator} is a circuit that, given two
+    $n$-bit numbers $A$ and $B$, compares and returns either $A>B$, $A=B$, or
+    $A<B$.
+  \end{definition}
+  Given two unsigned values $A$ and $B$, we are only required to compare the
+  MSB of the two values to conclude $A<B$ or vice versa, and check the next MSB
+  only if the current MSB is equal. We hence may obtain the following circuit,
+  where $A=A_3A_2A_1A_0$, $B=B_3B_2B_1B_0$, and $x_i=A_i\cdot B_i+A_i'\cdot
+  B_i'$.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[height=0.3\textwidth]{compa-block}
+    \includegraphics[height=0.3\textwidth]{compa-circuit}
+  \end{figure}
+\end{example}
+
+
+\subsection{Sequential Circuits}
+Other than combinational circuits, we now consider the class of sequential
+circuits, where each output depends not only on the present inputs, but also on
+the current state.
+
+\begin{definition}[Synchronous/Asynchronous Circuits]
+  \textit{Synchronous circuits} are sequential circuits where outputs change
+  only at a specific time, and \textit{asynchronous circuits} are that where
+  outputs change at any time.
+\end{definition}
+
+\begin{definition}[Multivibrators]
+  \textit{Multivibrators} are a family of sequential circuits, within which we
+  distinguish bistable (2 stable states), monostable (1 stable state) and
+  astable (no stable state) circuits.
+\end{definition}
+
+\begin{definition}[Memory Elements]
+  A \textit{memory element} is a device which comprises state indefinitely, or
+  can change state based on its inputs.
+\end{definition}
+
+The memory elements in a sequential circuit are implemented using bistable
+logic devices, namely \textbf{latches} and \textbf{flip-flops}. Memory elements
+can also be controlled by a \textbf{clock}, typically a square wave consisting
+positive and negative edges, and positive pulses.
+
+\subsubsection{Latches}
+Latches are memory devices that are pulse-triggered. It is ON for the duration
+of positive pulses, during which it would respond to inputs for state
+transitions, and preserve its state when it is OFF
+
+\paragraph{S-R Latch}
+A S-R Latch takes in two inputs $S$ (SET) and $R$ (RESET) and provides two
+complementary outputs $Q$ and $Q'$. The latch is in a SET state when $Q=$HIGH
+and RESET state when $Q=$LOW.
+
+In an active-high input S-R latch, the next state is determined by the input
+carrying the high signal.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{sr-high}
+  \includegraphics[width=0.35\textwidth]{sr-high-2}
+\end{figure}\\
+In an active-low input S-R latch, the next state is determined by the input
+carrying the low signal.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{sr-low}
+  \includegraphics[width=0.35\textwidth]{sr-low-2}
+\end{figure}
+
+A pulse-triggered latch gated S-R latch is a S-R latch with an enable input.
+Outputs of the latch change only if the enable input is high.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{sr-gated}
+\end{figure}
+\vspace{-4mm}
+\paragraph{D Latch}
+The gated D latch eliminates the invalid command in the S-R latch by
+constraining the inputs for an S-R latch to be $D$ and $D'$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{d-gated}
+  \includegraphics[width=0.3\textwidth]{d-gated-2}
+\end{figure}
+\vspace{-4mm}
+\subsubsection{Flip-Flops}
+Flip-flops are synchronous bistable memory devices that are edge-triggered.
+That is, state is updated at a specified point on the clock signal, either at
+the positive (rising) edge, or at the negative (falling) edge.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.65\textwidth]{flipflops}
+\end{figure}
+\vspace{-8mm}
+\paragraph{S-R Flip-Flop} A positive-edge triggered S-R Flip-Flop behaves as a
+synchronous version of an active-high input S-R latch. $Q^{+}=S+R'\cdot Q$ where $S\cdot R=0$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.38\textwidth]{srff}
+\end{figure}
+\vspace{-8mm}
+\paragraph{D Flip-Flop} A positive-edge triggered D flip-flop behaves as a
+synchronous version of an active-high input D latch. $Q^{+}=D$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.35\textwidth]{dff}
+\end{figure}
+\vspace{-8mm}
+\paragraph{J-K Flip-Flop} In a J-K flip-flop, $Q$ and $Q'$ are fed back to the
+pulse-steering NAND gates. We eliminate the invalid state, which becomes a toggle
+state. $Q^{+}=J\cdot Q'+K'\cdot Q$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{jkff}
+  \includegraphics[width=0.38\textwidth]{jkff2}
+\end{figure}
+\vspace{-8mm}
+\paragraph{T Flip-Flop} The T flip-flop is a single input version of the J-K
+flip-flop where $J=K=T$, which triggers the toggle state. $Q^{+}=T\cdot Q'+T'\cdot Q$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.35\textwidth]{tff}
+\end{figure}
+\vspace{-4mm}
+\begin{definition}[Synchronous/Asynchronous Inputs]
+  A \textit{synchronous input} is one where data is transferred to the output
+  only at a specific time, and an \textit{asynchronous input} is one that
+  affects the state independent of the clock.
+\end{definition}
+\begin{example}[Flip-Flops]
+  For the flip-flops, we have the synchronous inputs $S$-$R$, $D$, and $J$-$K$.
+  We may also have the asynchronous inputs $PRE$ or $SD$ (Preset/Direct Set),
+  $CLR$ or $RD$ (Clear/Direct Reset). When $PRE=$HIGH, $Q=$HIGH
+  \textit{immediately} and when $CLR=$HIGH, $Q=$LOW \textit{immediately}.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.55\textwidth]{async-ff}
+  \end{figure}
+\end{example}
+
+\subsubsection{Sequential Circuit Analysis}
+Given a sequential circuit, we analyse its behaviour by deriving its state
+table and state diagram. We do so with the following procedure:
+\begin{enumerate}
+  \item Derive flip-flop input functions for each flip-flop. We denote each
+    flip-flop input with two letters, the input's name and the flip-flop's
+    name. We algebraically describe the inputs to the flip-flops.
+  \item Using the characteristic tables, obtain state equations for each
+    flip-flop.
+  \item Derive output functions for each non-flip-flop output of the circuit.
+  \item Draw and fill the state table consisting all possible binary
+    combinations of present states and inputs, to show the outputs and next
+    state. This consists $2^{m+n}$ rows for $m$ flip-flops and $n$-inputs.
+  \item The state table can be optionally drawn more compactly by representing
+    the current state of multiple variables in a single column.
+  \item Derive the state diagram, where each of the $2^{m}$ node denotes a
+    state, an arrow denotes a transition of state and a label of the form $a/b$
+    is attached to an arrow where $a$ denotes the inputs and $b$ the outputs of
+    the circuit in that transition.
+\end{enumerate}
+\begin{example}[Sequential Circuit Analysis]
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{seq-an}
+  \end{figure}
+  With the given sequential circuit, we obtain the flip-flop input functions
+  for flip-flops $A$ and $B$:
+  \[DA=A\cdot x+B\cdot x,\qquad DB=A'\cdot x.\] 
+  Using the characteristic table of the $D$ flip-flop, we hence have the state
+  equations and output function of $y$
+  \[A^{+}=A\cdot x+B\cdot x,\qquad B^{+}=A'\cdot x,\qquad y=\left( A+B \right)
+  \cdot x'.\]
+  With these equations and functions, we obtain the state tables and diagram of
+  the circuit.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.33\textwidth]{seq-an1}
+    \includegraphics[width=0.3\textwidth]{seq-an2}
+    \includegraphics[width=0.33\textwidth]{seq-an3}
+  \end{figure}
+\end{example}
+\vspace{-8mm}
+\subsubsection{Sequential Circuit Design}
+\vspace{-4mm}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{seq-des}
+\end{figure}
+\vspace{-4mm}
+Given a set of specifications in the form of state equations, state table, or
+state diagram, we may derive a logic circuit fulfilling the specifications with
+the following procedure:
+\begin{enumerate}
+  \item Derive the state table of the sequential circuit.
+  \item Reduce states if necessary, removing duplicate states having
+    identical outputs and next states.
+  \item Assign a unique binary value to each state, if the given specifications
+    depict states as labels (such as $X$, $Y$, $Z$)
+  \item Determine the number of flip-flops required and label them. In general,
+    a circuit with $n$ states require $\lceil{\log_2 n}\rceil$ flip-flops
+  \item Using the excitation tables and the state tables, choose the
+    appropriate type(s) of flip-flops to be used.
+  \item Simplify the expressions of the flip-flop input functions and outputs.
+  \item Draw the logic diagram of the circuit.
+\end{enumerate}
+\subsection{Memory}
+Given these sequential circuits, we may implement a memory unit of $2^{k}$
+words, each word consisting $n$ bits. The memory unit takes in $n$ data input
+lines, a $k$-bit address and a $Read/\bar{Write}$ control signal, and provides
+a $n$-bit data output.\\
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{memory-unit}
+\end{figure}
+To conduct a Write operation, we have to transfer the address of the desired
+word to the address lines, the data bits to be stored to the data input lines,
+and the Write control line. Similarly, to conduct a Read operation, we have to
+transfer the address of the desired word to the address lines, and activate the
+Read control line.
+
+\paragraph{RAM} In general, there are two types of RAM: static RAMs that uses
+flip-flops as memory cells, and dynamic RAMs that use capacitor charges to
+represent data. DRAMs are simpler in circuitry but have to be constantly
+refreshed.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.49\textwidth]{ram}
+  \includegraphics[width=0.5\textwidth]{ram2}
+\end{figure}\\
+A $4\times 3$ RAM (4 addresses and word size 3) can be constructed with a
+circuit with a decoder and OR gates for outputs.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{ram3}
+  \includegraphics[width=0.5\textwidth]{ram4}
+\end{figure}\\
+With smaller memory units, we can build bigger memory with an array of RAM
+chips, by using decoders to select the correct RAM chip using the Chip select
+control signals. This arrangement allows us to use more decoders and RAM chips
+to arbitrarily expand our RAM storage.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{ram5}
+\end{figure}
