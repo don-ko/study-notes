@@ -1,0 +1,90 @@
+\documentclass[10pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage{fix-cm}        % scale one design size, as OT1 does --- keeps the title bold
+\usepackage[T1]{fontenc}   % accented French terms kept inline in the prose
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{pdfpages}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{arrows,calc,decorations.markings,patterns}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{titlesec}
+\titleformat*{\subsubsection}{\large\bfseries\sffamily}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0in} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily ECE 3TC21: Propagation et Antennes }\\
+\vspace{24pt}
+%{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+%\vspace{6pt}
+%{\fontsize{12}{12} \selectfont \ttfamily dkkl1137@gmail.com} \\
+%\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt
+  Antennes \& propagation dans les systèmes radiofréquences. The module
+  covers what a radio link is made of and why it is engineered the way it is:
+  the plane monochromatic wave in a linear, homogeneous, isotropic medium and
+  the Maxwell equations behind it; transmission-line theory, from the
+  telegrapher's equations to characteristic impedance, the reflection
+  coefficient and standing waves; impedance matching by quarter-wave
+  transformer, stub and lumped elements, and the scattering parameters that
+  describe a matched network at RF; antennas --- input impedance, radiation
+  pattern, directivity, gain, polarisation --- and the usual families, wire,
+  aperture, reflector, printed and array; and finally the link budget, the
+  Friis equation and the atmospheric and terrain effects that degrade it.
+
+  \medskip
+  Prose is in English; the French terms the poly, the TDs and the exam actually
+  use are kept inline, so the vocabulary stays findable in both languages.
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\input{chapters/1-systemes-telecom-rf.tex}
+\input{chapters/2-propagation-oem.tex}
+\input{chapters/3-lignes-transmission.tex}
+\input{chapters/4-adaptation-parametres-s.tex}
+\input{chapters/5-antennes-bilan-liaison.tex}
+\input{chapters/6-operateurs-milieux-metamateriaux.tex}
+\end{document}
