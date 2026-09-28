@@ -69,8 +69,9 @@ more LaTeX documents gives each its own subdirectory, named by kind —
 ## Conventions
 
 - **Self-contained documents.** Each document keeps its own `custom.sty` (where
-  it uses one), `chapters/` and `src/` (or `figures/`), and builds with `latexmk -pdf` run in
-  its own directory. Nothing refers to a path outside its directory.
+  it uses one), its `chapters/`, and its images (in `src/`, `figures/`, `images/`,
+  or beside the main file), and builds with `latexmk -pdf` run in its own
+  directory. Nothing refers to a path outside its directory.
 - **File names.** `<code>-<slug>-<kind>[-<variant>].<ext>`. `kind` is
   `cheatsheet`, `notes`, or the exam the sheet was made for (`midterms`,
   `finals`, `pe0`, `pe1`); `variant` is `annotated` (a hand-annotated export) or
