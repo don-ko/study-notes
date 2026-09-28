@@ -1,0 +1,126 @@
+\documentclass[10pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage{fix-cm}        % scale one design size, as OT1 does --- keeps the title bold
+\usepackage[T1]{fontenc}   % accented French terms kept inline in the prose
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{arrows,automata,positioning,calc}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% code listings: three languages appear in this module --- x86-64 GAS assembly,
+% C and OCaml --- so the bare \begin{lstlisting} of the reference notes is given
+% a style and a per-listing language rather than left at the package default.
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  breaklines=true,
+  captionpos=b,
+  xleftmargin=12pt,
+}
+\lstdefinelanguage{gas}{
+  morekeywords={movq,movl,movw,movb,movzbl,movsbl,movabs,lea,leaq,add,addq,addl,
+    sub,subq,subl,imul,imulq,idiv,idivq,cqo,cltq,inc,incq,dec,decq,neg,negq,
+    and,andq,or,orq,xor,xorq,not,notq,shl,shlq,shr,shrq,sar,sarq,cmp,cmpq,cmpl,
+    test,testq,jmp,je,jne,jz,jnz,jg,jge,jl,jle,ja,jae,jb,jbe,js,jns,
+    call,ret,push,pushq,pop,popq,syscall,int,nop,cmove,cmovne,sete,setne},
+  morekeywords=[2]{\%rax,\%rbx,\%rcx,\%rdx,\%rsi,\%rdi,\%rsp,\%rbp,
+    \%r8,\%r9,\%r10,\%r11,\%r12,\%r13,\%r14,\%r15,
+    \%eax,\%ebx,\%ecx,\%edx,\%esi,\%edi,\%al,\%bl,\%cl,\%dl},
+  morekeywords=[3]{.text,.data,.bss,.rodata,.global,.globl,.section,.byte,.word,
+    .long,.quad,.ascii,.asciz,.string,.space,.align,.type,.size},
+  sensitive=true,
+  morecomment=[l]{\#},
+  morestring=[b]",
+}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{titlesec}
+\titleformat*{\subsubsection}{\large\bfseries\sffamily}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0in} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily ECE 3TC32: Compilation }\\
+\vspace{24pt}
+%{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+%\vspace{6pt}
+%{\fontsize{12}{12} \selectfont \ttfamily dkkl1137@gmail.com} \\
+%\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt
+  A compiler is a program that translates a program from one language into
+  another while preserving its semantics. This module builds one, and the
+  academic content is the pipeline it is made of: \textit{lexeur},
+  \textit{parseur}, assembler and logic circuits. It starts from the bottom ---
+  x86-64 assembly, the memory model, the stack and the calling convention, and
+  the C that compiles down to them --- and then climbs back up through formal
+  grammars, ambiguity and parsing to regular languages, automata and lexical
+  analysis.
+
+  \medskip
+  These notes cover the séances taught so far: séance 1 (introduction
+  générale, premiers pas en x86), séance 2 (rappels de C, suite x86 et
+  libC) and séance 3 (analyse lexicale, with the grammar and parsing material
+  that precedes it). The remaining séances of the séquençage ---
+  parseur, portes logiques combinatoires and synchrones, génération de code,
+  and the projet compilateur --- are not held yet and get chapters when they
+  are taught.
+
+  \medskip
+  Prose is in English; the French terms the decks, the TP and the exam actually
+  use are kept inline, so the vocabulary stays findable in both languages.
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\setcounter{section}{-1}
+\input{chapters/0-prerequis.tex}
+\input{chapters/1-introduction-compilateurs.tex}
+\input{chapters/2-assembleur-x86.tex}
+\input{chapters/2a-aide-memoire-x86-64.tex}
+\input{chapters/3-rappels-c.tex}
+\input{chapters/4-fonctions-pile-libc.tex}
+\input{chapters/5-grammaires-analyse-syntaxique.tex}
+\input{chapters/6-langages-reguliers-analyse-lexicale.tex}
+\end{document}

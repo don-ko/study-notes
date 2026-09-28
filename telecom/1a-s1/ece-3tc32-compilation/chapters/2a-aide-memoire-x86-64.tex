@@ -1,0 +1,369 @@
+% The x86-64 reference sheet: after chapter 2, on pages of its own, on the model
+% of Stanford CS107's x86-64 Reference Sheet. Unnumbered, so chapters 3--6 keep
+% their numbers. Content and verification:
+% docs/superpowers/specs/2026-09-21-ece-3tc32-x86-reference-sheet-design.md
+%
+% Every tabularx whose first column is instruction or directive syntax is
+% preceded by the line "% syntax-table": the verification script reads those
+% rows and requires each mnemonic to have been assembled.
+\clearpage
+\newgeometry{hmargin=0.6in, top=0.9in, bottom=0.6in, headheight=14pt}
+\setlength{\headwidth}{\textwidth}
+\phantomsection
+\section*{Aide-mémoire x86-64}
+\addcontentsline{toc}{section}{Aide-mémoire x86-64}
+\markright{\textsf{Aide-mémoire x86-64}}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\setlength{\columnsep}{18pt}
+\setlength{\belowbottomsep}{3pt}          % keep a note clear of a table's \bottomrule
+\renewcommand{\tabularxcolumn}[1]{>{\raggedright\arraybackslash}p{#1}}   % no stretched cells
+\raggedcolumns
+\raggedright                              % a reference sheet: no stretched prose lines
+\microtypesetup{protrusion=false}         % keep typewriter text inside its column
+\newcommand{\sheethead}[1]{%
+  \par\medskip\noindent{\small\sffamily\bfseries #1}\par\nopagebreak\smallskip}
+
+\noindent GAS / AT\&T syntax: \texttt{op src, dst}. \texttt{M[a]} is the memory at
+address \texttt{a}, \texttt{S} a registre or memory operand, and \texttt{\textit{CC\nocorr}}
+a condition code from the condition-code table.
+
+\begin{multicols}{2}
+\sheethead{Copie de données}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{mov src, dst} & \texttt{dst = src}; \texttt{dst} is never an immediate, and an instruction has at most one memory operand \\
+\texttt{movsbl src, \%r32} & byte $\to$ int, sign-extend \\
+\texttt{movzbl src, \%r32} & byte $\to$ int, zero-fill \\
+\texttt{movs\textit{XY\nocorr} src, \%reg} & sign-extend from size \texttt{\textit{X\nocorr}} to size \texttt{\textit{Y\nocorr}} (\texttt{b w l q}): \texttt{movswq}, \texttt{movslq} \\
+\texttt{movz\textit{XY\nocorr} src, \%reg} & zero-extend: \texttt{movzbw}, \texttt{movzwq}; no \texttt{movzlq}, since \texttt{movl src, \%r32} already zeroes bits 32--63 \\
+\texttt{lea addr, \%reg} & \texttt{\%reg = addr}, reading no memory; \mbox{\texttt{lea x(\%rip), \%rsi}} is \texttt{\&x} \\
+\texttt{cmov\textit{CC\nocorr} S, \%reg} & \texttt{if (\textit{CC\nocorr}) \%reg = S}, but \texttt{S} is always read, and a 32-bit \texttt{\%reg} always has bits 32--63 zeroed; never~8~bits \\
+\end{tabularx}
+
+\sheethead{Arithmétique}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{add src, dst} & \texttt{dst += src} \\
+\texttt{sub src, dst} & \texttt{dst -= src} \\
+\texttt{imul src, \%reg} & \texttt{\%reg *= src}, truncated to the registre: the same bits signed or unsigned; \texttt{src} may be \texttt{\$imm} \\
+\texttt{inc dst} & \texttt{dst += 1}; CF unchanged \\
+\texttt{dec dst} & \texttt{dst -= 1}; CF unchanged; \texttt{dec} then \texttt{jnz} is a counted loop \\
+\texttt{neg dst} & \texttt{dst = -dst} \\
+\end{tabularx}
+
+\sheethead{Multiplication et division sur 128 bits}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{imulq S} & signed \texttt{\%rdx:\%rax = \%rax * S} \\
+\texttt{mulq S} & unsigned, same effect \\
+\texttt{idivq S} & signed \texttt{\%rax = \%rdx:\%rax / S}, truncated toward 0, and \texttt{\%rdx = \%rdx:\%rax \% S}, with the sign of the dividend: C's \texttt{/} and \texttt{\%} \\
+\texttt{divq S} & unsigned, same effect \\
+\texttt{cqto} & \texttt{\%rdx:\%rax = sign-extend(\%rax)}; alias \texttt{cqo}; run it before \texttt{idivq}; before \texttt{divq}, set \texttt{\%rdx = 0} \\
+\end{tabularx}\par\smallskip
+\texttt{\%rdx:\%rax} is one 128-bit value, high half first. \texttt{S} is a registre
+or memory, never an immediate; with memory the \texttt{q} is compulsory. Division
+by 0, or a quotient that does not fit, raises the divide error: \texttt{SIGFPE} on
+Linux.
+
+\sheethead{Manipulation bit-à-bit}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{and src, dst} & \texttt{dst \&= src} \\
+\texttt{or src, dst} & \texttt{dst |= src} \\
+\texttt{xor src, dst} & \texttt{dst \textasciicircum{}= src}; \texttt{xor \%reg, \%reg} zeroes \texttt{\%reg} \\
+\texttt{not dst} & \texttt{dst = \textasciitilde{}dst} \\
+\texttt{sal k, dst} & \texttt{dst <{}<= k} \\
+\texttt{shl k, dst} & \texttt{dst <{}<= k}: the same instruction as \texttt{sal} \\
+\texttt{sar k, dst} & \texttt{dst >{}>= k}, arithmetic: copies of the sign bit shift in \\
+\texttt{shr k, dst} & \texttt{dst >{}>= k}, logical: zeros shift in \\
+\end{tabularx}\par\smallskip
+\texttt{k} is \texttt{\$imm8} or \texttt{\%cl} --- no other registre --- or omitted
+for 1. It is taken mod 64 for \texttt{q}, mod 32 otherwise.
+
+\sheethead{Comparaisons et \texttt{set\textit{CC\nocorr}}}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{cmp a, b} & \texttt{b - a}: sets the flags, stores nothing; a following \texttt{j\textit{CC\nocorr}} reads as ``\texttt{b \textit{CC\nocorr} a}''; \texttt{b} is never an immediate: \mbox{\texttt{cmp \$1, \%rax}} \\
+\texttt{test a, b} & \texttt{a \& b}: sets the flags, stores nothing \\
+\texttt{set\textit{CC\nocorr} d8} & \texttt{d8 = \textit{CC\nocorr} ? 1 : 0}, one byte: any 8-bit registre or a byte of memory \\
+\end{tabularx}
+
+\sheethead{Sauts, instructions conditionnelles}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{jmp label} & \texttt{\%rip = label}; a bare label, never \texttt{label(\%rip)} \\
+\texttt{jmp *\%reg} & \texttt{\%rip = \%reg}; \texttt{jmp *(\%reg)} takes the target from memory \\
+\texttt{j\textit{CC\nocorr} label} & \texttt{if (\textit{CC\nocorr}) \%rip = label}, else fall through \\
+\end{tabularx}
+
+\smallskip
+\begin{tabularx}{\linewidth}{@{}llp{2.6cm}X@{}}
+\toprule
+\texttt{\textit{CC\nocorr}} & also & flags & reads as \\
+\midrule
+\texttt{e}  & \texttt{z}   & ZF=1             & equal, zero \\
+\texttt{ne} & \texttt{nz}  & ZF=0             & not equal, non-zero \\
+\texttt{s}  &              & SF=1             & negative \\
+\texttt{ns} &              & SF=0             & not negative \\
+\texttt{g}  & \texttt{nle} & ZF=0 and SF=OF   & $>$ signed \\
+\texttt{ge} & \texttt{nl}  & SF=OF            & $\ge$ signed \\
+\texttt{l}  & \texttt{nge} & SF$\ne$OF        & $<$ signed \\
+\texttt{le} & \texttt{ng}  & ZF=1 or SF$\ne$OF & $\le$ signed \\
+\texttt{a}  & \texttt{nbe} & CF=0 and ZF=0    & $>$ unsigned (\textit{above}) \\
+\texttt{ae} & \texttt{nb}  & CF=0             & $\ge$ unsigned \\
+\texttt{b}  & \texttt{nae} & CF=1             & $<$ unsigned (\textit{below}) \\
+\texttt{be} & \texttt{na}  & CF=1 or ZF=1     & $\le$ unsigned \\
+\texttt{p}  & \texttt{pe}  & PF=1             & parity even \\
+\texttt{np} & \texttt{po}  & PF=0             & parity odd \\
+\bottomrule
+\end{tabularx}
+An \texttt{n} negates a base code. \texttt{g}/\texttt{l} compare signed,
+\texttt{a}/\texttt{b} unsigned: values whose top bits differ order oppositely
+($-1 < 1$ signed, $2^{64}-1 > 1$ unsigned), so the wrong family is a silent bug.
+
+\sheethead{La pile et les appels}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{push src} & \texttt{\%rsp -= 8; M[\%rsp] = src} (\texttt{pushw}: 2 bytes) \\
+\texttt{pop dst} & \texttt{dst = M[\%rsp]; \%rsp += 8} \\
+\texttt{call fn} & push the return address --- the next instruction's --- then \texttt{\%rip = fn} \\
+\texttt{ret} & pop the return address into \texttt{\%rip} \\
+\texttt{leave} & \texttt{movq \%rbp, \%rsp; popq \%rbp} \\
+\texttt{enter \$N, \$0} & \texttt{pushq \%rbp; movq \%rsp, \%rbp; subq \$N, \%rsp} \\
+\end{tabularx}\par\smallskip
+\texttt{push} and \texttt{pop} change no flags.
+
+\sheethead{Drapeaux}
+\begin{tabularx}{\linewidth}{@{}lrX@{}}
+\toprule
+flag & bit & set when \\
+\midrule
+CF & 0  & retenue --- carry out of, or borrow into, the top bit: unsigned overflow \\
+PF & 2  & the low byte of the result has an even number of 1s \\
+ZF & 6  & nul --- the result is 0 \\
+SF & 7  & the top bit of the result is 1: negative, read as signed \\
+OF & 11 & débordement --- signed overflow \\
+\bottomrule
+\end{tabularx}
+Set by \texttt{add}, \texttt{sub}, \texttt{neg}, \texttt{inc}, \texttt{dec},
+\texttt{cmp}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{test} and the shifts
+(CF = the last bit out; OF undefined unless the count is 1; a count of 0 changes none);
+\texttt{and}, \texttt{or}, \texttt{xor} and \texttt{test} clear CF and OF, and
+\texttt{inc} and \texttt{dec} keep CF. Unchanged by \texttt{mov}, \texttt{lea},
+\texttt{not}, \texttt{push} and \texttt{pop}. Read by \texttt{j\textit{CC\nocorr}},
+\texttt{set\textit{CC\nocorr}} and \texttt{cmov\textit{CC\nocorr}}.
+
+\sheethead{Modes d'adressage}
+Example source operands to \texttt{mov}:
+
+\smallskip
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+mode & operand & value \\
+\midrule
+immediate     & \texttt{\$42}, \texttt{\$0x2A} & the constant \\
+registre      & \texttt{\%rax}              & the registre's contents \\
+direct        & \texttt{0x4033d0}           & \texttt{M[0x4033d0]} --- no \texttt{\$} \\
+indirect      & \texttt{(\%rax)}            & \texttt{M[\%rax]} \\
+displacement  & \texttt{8(\%rax)}           & \texttt{M[\%rax + 8]} \\
+scaled index  & \texttt{D(\%rb,\%ri,s)}     & \texttt{M[\%rb + D + s*\%ri]} \\
+\texttt{\%rip}-relative & \texttt{x(\%rip)} & \texttt{M[x]} for a label \texttt{x}, position-independent; no index \\
+\bottomrule
+\end{tabularx}
+In a scaled index such as \texttt{8(\%rsp,\%rcx,4)}, the scale \texttt{s} is 1, 2, 4 or 8; any
+part may be omitted (\texttt{D} = 0, \texttt{s} = 1, as in \texttt{(,\%rcx,4)}),
+and \texttt{\%ri} is never \texttt{\%rsp}. A number \texttt{D} in \texttt{D(\%rip)} means
+\texttt{M[\%rip + D]}, \texttt{\%rip} = the next instruction's address. Each access reads or writes 1, 2, 4 or
+8 consecutive bytes. x86-64 is petit-boutien: the low
+byte sits at the lowest address.
+\end{multicols}
+
+\clearpage
+\sheethead{Registres généraux, sous-registres}
+\begin{tabularx}{\linewidth}{@{}lllllXl@{}}
+\toprule
+64 bits & 32 & 16 & 8 high & 8 low & role & sauvegardé par \\
+\midrule
+\texttt{\%rax} & \texttt{\%eax} & \texttt{\%ax} & \texttt{\%ah} & \texttt{\%al} & Accumulator: valeur de retour; syscall number and result; implicit in \texttt{mulq}, \texttt{divq}, \texttt{cqto}; \texttt{\%al}~=~an upper bound on the vector registres a variadic call uses & l'appelant \\
+\texttt{\%rbx} & \texttt{\%ebx} & \texttt{\%bx} & \texttt{\%bh} & \texttt{\%bl} & Base & l'appelé \\
+\texttt{\%rcx} & \texttt{\%ecx} & \texttt{\%cx} & \texttt{\%ch} & \texttt{\%cl} & Counter: 4th integer argument; shift count; destroyed by \texttt{syscall} & l'appelant \\
+\texttt{\%rdx} & \texttt{\%edx} & \texttt{\%dx} & \texttt{\%dh} & \texttt{\%dl} & Data: 3rd integer argument; high half and remainder of \texttt{mulq}, \texttt{divq} & l'appelant \\
+\texttt{\%rsi} & \texttt{\%esi} & \texttt{\%si} & & \texttt{\%sil} & Source index: 2nd integer argument & l'appelant \\
+\texttt{\%rdi} & \texttt{\%edi} & \texttt{\%di} & & \texttt{\%dil} & Destination index: 1st integer argument & l'appelant \\
+\texttt{\%rbp} & \texttt{\%ebp} & \texttt{\%bp} & & \texttt{\%bpl} & Base pointer: the base of the frame & l'appelé \\
+\texttt{\%rsp} & \texttt{\%esp} & \texttt{\%sp} & & \texttt{\%spl} & Stack pointer: the top of the pile & l'appelé \\
+\texttt{\%r8}  & \texttt{\%r8d}  & \texttt{\%r8w}  & & \texttt{\%r8b}  & 5th integer argument & l'appelant \\
+\texttt{\%r9}  & \texttt{\%r9d}  & \texttt{\%r9w}  & & \texttt{\%r9b}  & 6th integer argument & l'appelant \\
+\texttt{\%r10} & \texttt{\%r10d} & \texttt{\%r10w} & & \texttt{\%r10b} & 4th syscall argument & l'appelant \\
+\texttt{\%r11} & \texttt{\%r11d} & \texttt{\%r11w} & & \texttt{\%r11b} & destroyed by \texttt{syscall} & l'appelant \\
+\texttt{\%r12} & \texttt{\%r12d} & \texttt{\%r12w} & & \texttt{\%r12b} & --- & l'appelé \\
+\texttt{\%r13} & \texttt{\%r13d} & \texttt{\%r13w} & & \texttt{\%r13b} & --- & l'appelé \\
+\texttt{\%r14} & \texttt{\%r14d} & \texttt{\%r14w} & & \texttt{\%r14b} & --- & l'appelé \\
+\texttt{\%r15} & \texttt{\%r15d} & \texttt{\%r15w} & & \texttt{\%r15b} & --- & l'appelé \\
+\bottomrule
+\end{tabularx}
+\begin{itemize}[nosep, leftmargin=10pt]
+  \item \texttt{\%rip}, the pointeur d'instruction, holds the address of the
+    \emph{next} instruction. It is usable only as a base: \texttt{label(\%rip)} or \texttt{D(\%rip)}.
+  \item Writing a 32-bit registre zeroes bits 32--63 of the 64-bit one; writing an
+    8- or 16-bit one leaves the other bits unchanged.
+  \item \texttt{\%ah}--\texttt{\%dh} cannot appear in an instruction that needs a REX prefix: one
+    with \texttt{\%sil}, \texttt{\%dil}, \texttt{\%spl}, \texttt{\%bpl}, \texttt{\%r8}--\texttt{\%r15} or a
+    \texttt{q} size (\mbox{\texttt{movzbq \%ah, \%rax}} is illegal).
+\end{itemize}
+
+\begin{multicols}{2}
+\sheethead{Tailles et suffixes}
+\begin{tabularx}{\linewidth}{@{}lXlll@{}}
+\toprule
+suffix & name & bytes & C & directive \\
+\midrule
+\texttt{b} & octet (\textit{byte})          & 1 & \texttt{char}           & \texttt{.byte} \\
+\texttt{w} & mot (\textit{word})            & 2 & \texttt{short}          & \texttt{.word} \\
+\texttt{l} & mot~long (\textit{long, doubleword}) & 4 & \texttt{int}      & \texttt{.long} \\
+\texttt{q} & quad (\textit{quadword})       & 8 & \texttt{long}, pointeur & \texttt{.quad} \\
+\bottomrule
+\end{tabularx}
+\begin{itemize}[nosep, leftmargin=10pt]
+  \item For \texttt{\%r8}--\texttt{\%r15} the 4-byte name ends in \texttt{d} (\texttt{\%r8d}); the
+    instruction suffix is \texttt{l}.
+  \item The suffix may be dropped when a registre operand fixes the size
+    (\texttt{\%rax} $\Rightarrow$ \texttt{q}, \texttt{\%eax} $\Rightarrow$
+    \texttt{l}). It is compulsory when none does: \mbox{\texttt{movq \$1, (\%rsp)}},
+    \texttt{incq (\%rsp)}, \mbox{\texttt{cmpb \$0, (\%rsi)}}, \texttt{idivq (\%rax)}.
+    \texttt{push} and \texttt{pop} default to 8 bytes.
+  \item With \texttt{q}, an immediate is at most 32 bits, sign-extended to 64: \mbox{\texttt{movq \$-1, (\%rax)}} stores all ones. Only
+    \mbox{\texttt{mov \$imm, \%r64}} takes a full 64-bit
+    immediate.
+\end{itemize}
+
+\sheethead{Directives}
+% syntax-table
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{.text} & code: executable, not writable \\
+\texttt{.data} & modifiable data \\
+\texttt{.bss} & modifiable data, initialised to 0 \\
+\texttt{.section .rodata} & read-only data: \texttt{gcc}'s constant chaînes de caractères \\
+\texttt{.globl sym} & make \texttt{sym} global: \texttt{\_start} (entry, no libc), \texttt{main} (with libc), or a data label \\
+\texttt{.byte .word .long .quad v} & emit 1, 2, 4, 8 bytes \\
+\texttt{.ascii "s"} & the characters, no NUL \\
+\texttt{.asciz "s"}, \texttt{.string "s"} & the characters and a NUL \\
+\texttt{.type .size .file .ident} & metadata that \texttt{gcc -S} emits, like the \texttt{.cfi\_\dots} lines; skip it when reading \\
+\end{tabularx}\par\smallskip
+\texttt{.section .note.GNU-stack,"",@progbits} declares a non-executable pile. The
+linker warns without it; by convention it is the last line.
+
+\sheethead{Syntaxe GAS}
+\begin{itemize}[nosep, leftmargin=10pt]\interlinepenalty=10000
+  \item \texttt{op src, dst}; Intel syntax writes \texttt{op dst, src}.
+  \item Data labels: \texttt{x(\%rip)}, address \texttt{lea x(\%rip)}; a bare \texttt{x} or \texttt{\$x} is
+    absolute, and \texttt{gcc}'s default PIE édition de liens refuses it.
+  \item \texttt{\%} before a registre, \texttt{\$} before an immediate. A bare
+    number is a memory address.
+  \item Numbers: \texttt{42}, \texttt{0x2A}, \texttt{0b101010}. A leading
+    \texttt{0} means octal: \texttt{\$010} is 8.
+  \item \texttt{\#} starts a comment. \texttt{;} separates two statements on one
+    line --- it is \emph{not} a comment.
+  \item \texttt{name:} defines a label, the address of what follows; \texttt{gcc}'s own
+    are \texttt{.L2}, \texttt{.LC0}. A dot-name without \texttt{:} is a directive.
+  \item Chaînes de caractères go in \texttt{"\dots"}, with C escapes.
+\end{itemize}
+
+\sheethead{Appels système}
+\texttt{syscall}: the number in \texttt{\%rax}, the arguments in \texttt{\%rdi},
+\texttt{\%rsi}, \texttt{\%rdx}, \texttt{\%r10}, \texttt{\%r8}, \texttt{\%r9}, the
+result in \texttt{\%rax}. It destroys \texttt{\%rcx} and \texttt{\%r11} and
+preserves every other registre.
+
+\smallskip
+\begin{tabularx}{\linewidth}{@{}rlllX@{}}
+\toprule
+\texttt{\%rax} & call & \texttt{\%rdi} & \texttt{\%rsi} & \texttt{\%rdx} \\
+\midrule
+0  & \texttt{read}  & fd      & \texttt{char *buf} & count \\
+1  & \texttt{write} & fd      & \texttt{char *buf} & count \\
+12 & \texttt{brk}   & address &                    & \\
+60 & \texttt{exit}  & status  &                    & \\
+\bottomrule
+\end{tabularx}
+Descripteurs de fichiers: 0 stdin, 1 stdout, 2
+stderr. \texttt{write} takes a pointeur, so a registre's value must be stored to
+memory first. \texttt{exit(0)} is \texttt{mov~\$60,~\%rax; xor~\%rdi,~\%rdi;
+syscall}. \texttt{write(1, s, n)} is \texttt{lea~s(\%rip),~\%rsi; mov~\$1,~\%rdi;
+mov~\$n,~\%rdx; mov~\$1,~\%rax; syscall}.
+
+\sheethead{Convention d'appel (System V AMD64)}
+\begin{itemize}[nosep, leftmargin=10pt]
+  \item \textbf{Arguments}: integers and pointeurs in \texttt{\%rdi}, \texttt{\%rsi},
+    \texttt{\%rdx}, \texttt{\%rcx}, \texttt{\%r8}, \texttt{\%r9}; floating point in
+    \texttt{\%xmm0}--\texttt{\%xmm7}, counted separately; then the pile.
+  \item \textbf{Valeur de retour}: \texttt{\%rax}, or \texttt{\%rdx:\%rax} for 128 bits;
+    floating point in \texttt{\%xmm0}.
+  \item \textbf{Sauvegardés par l'appelant}:
+    \texttt{\%rax}, \texttt{\%rcx}, \texttt{\%rdx}, \texttt{\%rsi}, \texttt{\%rdi},
+    \texttt{\%r8}--\texttt{\%r11} and every \texttt{\%xmm}. \textbf{Sauvegardés par l'appelé}: \texttt{\%rbx}, \texttt{\%rbp}, \texttt{\%rsp},
+    \texttt{\%r12}--\texttt{\%r15}.
+  \item \textbf{L'appelant}: saves the registres sauvegardés par l'appelant
+    it still needs, places the arguments, \texttt{call}s, removes its arguments
+    from the pile, and restores.
+  \item \textbf{La fonction appelée}: prologue, body, epilogue,
+    \texttt{ret}.
+  \item \textbf{Prologue}: \texttt{pushq~\%rbp; movq~\%rsp,~\%rbp}; \texttt{pushq} of any registres sauvegardés par l'appelé; \texttt{subq~\$N,~\%rsp} (so not \texttt{enter}, which subtracts first). \textbf{Epilogue}: \texttt{leave; ret}, after
+    \texttt{addq~\$N,~\%rsp} and \texttt{popq} of those pushed registres, in reverse order.
+  \item \textbf{Frame}: \texttt{16(\%rbp)} the first argument on the pile,
+    \texttt{8(\%rbp)} the return address, \texttt{0(\%rbp)} the appelant's
+    \texttt{\%rbp}; below, the pushed registres sauvegardés par l'appelé, then the locals.
+  \item \textbf{Alignement}: \texttt{\%rsp} is a multiple of 16 when \texttt{call}
+    runs, so it is \mbox{$\equiv 8 \pmod{16}$} on entry. After \texttt{pushq \%rbp},
+    further pushes plus the \texttt{subq} must total a multiple of 16.
+  \item \textbf{Variadic calls} (\texttt{printf}, \texttt{scanf}): \texttt{\%al}
+    is an upper bound on the number of \texttt{\%xmm} arguments ---
+    \mbox{\texttt{movl \$0, \%eax}} when there are none.
+  \item \textbf{Zone rouge}: the 128 bytes below \texttt{\%rsp} may be used without
+    moving it, for data not needed across a call.
+  \item \interlinepenalty=10000 \textbf{Entry}: \texttt{main} or \texttt{\_start}. With libc, \texttt{main} is a
+    function that libc's startup code calls, returning its status in
+    \texttt{\%eax} with \texttt{ret}. With \mbox{\texttt{gcc -nostdlib}}, \texttt{\_start}
+    has no appelant and ends with the \texttt{exit} syscall.
+\end{itemize}
+\medskip\noindent\begin{minipage}[t]{\linewidth}
+Calling \texttt{printf}, following the schéma général:
+\begin{lstlisting}[language=gas, xleftmargin=0pt]
+        .data
+fmt:    .string "%d\n"
+        .text
+        .globl main
+main:   pushq %rbp              # %rsp now 16-aligned
+        movq  %rsp, %rbp
+        leaq  fmt(%rip), %rdi   # 1st argument: the format
+        movq  $42, %rsi         # 2nd argument
+        movl  $0, %eax          # no vector arguments
+        call  printf
+        movl  $0, %eax          # main returns 0
+        leave
+        ret
+        .section .note.GNU-stack,"",@progbits
+\end{lstlisting}
+\end{minipage}
+
+\sheethead{Chaîne de compilation}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\texttt{gcc -S a.c} & C to \texttt{a.s}, at the default \texttt{-O0}; \texttt{-fverbose-asm} adds comments \\
+\texttt{as -o a.o a.s} & assemble to an ELF fichier objet \\
+\texttt{gcc a.s -o a} & assemble and link with libc; entry \texttt{main} \\
+\texttt{gcc -nostdlib a.s -o a} & no libc, no \texttt{crt0}; entry \texttt{\_start} \\
+\texttt{objdump -d a.o} & disassemble \\
+\texttt{objdump -S a} & disassembly with the C source interleaved (build with \texttt{-g}) \\
+\texttt{objdump -s -j .data a} & hex dump of a section's contents \\
+\end{tabularx}\par\smallskip
+\texttt{gcc} runs \texttt{cc1} (C to assembly), \texttt{as} (to an ELF fichier objet) and
+\texttt{collect2} (édition de liens). ELF is the \textit{Executable and Linkable Format}.
+\end{multicols}
+\endgroup
+
+\clearpage
+\restoregeometry
+\setlength{\headwidth}{\textwidth}

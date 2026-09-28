@@ -1,0 +1,683 @@
+\section{Langages réguliers et analyse lexicale}
+The chapter on analyse syntaxique ended by narrowing grammaires non
+contextuelles until nothing much was left: les CFG où toutes les productions
+sont de la forme
+\[
+  N \;\to\; \Sigma \times N \;\cup\; \epsilon ,
+\]
+that is, a terminal followed by a single non-terminal, or nothing at all. That
+class has a name --- \emph{les langages réguliers}. This chapter is that class
+seen from three sides at once: as expressions régulières, which a human
+writes; as automates, which a machine runs; and as the front end of the
+compilateur which uses both, the \textit{lexeur}. It closes on writing a lexeur
+from scratch.
+
+\subsection{Langages réguliers}
+\begin{definition}[Diverses définitions]
+  On peut définir les langages réguliers de diverses manières :
+  \begin{itemize}
+    \item via les \textbf{opérations rationnelles} (\textit{rational
+      operations}) ;
+    \item par les expressions régulières ;
+    \item par les automates ;
+    \item comme image inverse de \textbf{monoïdes finis} (\textit{finite
+      monoids}) ;
+    \item par la \textbf{logique} (\textit{logic}) ;
+    \item etc.
+  \end{itemize}
+\end{definition}
+
+\begin{remark}
+  The list is not padding. A class of languages with one definition is a
+  curiosity; a class with five unrelated-looking definitions that all pick out
+  the same sets is a robust object, and each definition is good at a different
+  job. The right-linear grammars above are a sixth entry, reached from the side
+  of analyse syntaxique. Only two of them are developed here, and they are
+  chosen for opposite reasons: expressions because they are what one writes,
+  automates because they are what one runs.
+\end{remark}
+
+\subsection{Expressions régulières}
+\subsubsection{Syntaxe}
+\begin{definition}[Expressions régulières, inductivement]
+  On définit inductivement les expressions régulières :
+  \[
+    \begin{array}{r@{\;}l@{\qquad}l}
+      r \mathrel{\Coloneqq} & \emptyset      & \text{langage vide --- the empty language} \\
+                            & \epsilon       & \text{mot vide --- the empty word} \\
+                            & c              & c \text{ un caractère --- a character} \\
+                            & [c_1 - c_2]    & \text{une classe de caractères --- a character class} \\
+                            & r \mid r       & \text{union} \\
+                            & r\,r           & \text{concaténation} \\
+                            & r{*}           & \text{répétition (zéro ou plus)} \\
+                            & r{+}           & \text{répétition (au moins une fois)}
+    \end{array}
+  \]
+\end{definition}
+
+Eight cases, of which the first four are atoms and the last four are
+constructors. Note that this is a definition of \emph{syntax} only: at this
+stage $r{*}$ is a tree node with one child, nothing more. What it denotes comes
+next, and is a separate definition.
+
+\begin{remark}
+  $\emptyset$ and $\epsilon$ are not the same expression and not the same
+  language. $\emptyset$ denotes the language with no words at all;
+  $\epsilon$ denotes the language whose single word is the word of length zero.
+  Concatenating anything with $\emptyset$ gives $\emptyset$; concatenating
+  anything with $\epsilon$ changes nothing. The distinction matters as soon as
+  one writes a lexeur rule that can match nothing.
+\end{remark}
+
+\subsubsection{Le langage associé}
+\begin{definition}[Langage associé]
+  On peut aussi définir le \textbf{langage associé} (\textit{associated
+  language}) :
+  \[
+    \begin{array}{r@{\quad}l}
+      \text{Expression } r & \text{Langage } L(r) \\[2pt]
+      \emptyset    & \emptyset \\
+      \epsilon     & \{\epsilon\} \\
+      c            & \{c\} \\
+      {}[c_1 - c_2]  & \{ c \mid c_1 \le c \le c_2 \} \\
+      r_a \mid r_b & L(r_a) \union L(r_b) \\
+      r_a r_b      & \{ w_a w_b \mid w_a \in L(r_a),\, w_b \in L(r_b) \} \\
+      r{*}         & \{ w_1 \ldots w_k \mid k \ge 0 \wedge \forall i,\, w_i \in L(r) \} \\
+      r{+}         & \{ w_1 \ldots w_k \mid k \ge 1 \wedge \forall i,\, w_i \in L(r) \}
+    \end{array}
+  \]
+\end{definition}
+
+The whole table is one structural recursion: the language of a compound
+expression is built out of the languages of its parts, so $L$ is total and
+unambiguous on the syntax above.
+
+\begin{remark}
+  The star and the plus differ in exactly one character of the definition,
+  $k \ge 0$ against $k \ge 1$, so $r{+}$ is redundant: $L(r\,r{*}) = L(r{+})$.
+  It is kept because it is the case one actually writes --- an integer literal
+  is $[0-9]{+}$, never $[0-9][0-9]{*}$ --- and an implementation that omits
+  the constructor simply builds it, writing \texttt{Concat(digit, Star(digit))}
+  for \texttt{digits}, as in the examples below.
+\end{remark}
+
+\begin{remark}
+  The character class $[c_1 - c_2]$ is defined by the \emph{order} on
+  characters, $c_1 \le c \le c_2$: it is a range in the character encoding, not
+  an arbitrary set. That is why \texttt{[a-z]} and \texttt{[A-Z]} have to be
+  written as two classes joined by a union --- in ASCII they are not contiguous.
+\end{remark}
+
+\subsubsection{Des exemples}
+The examples are given not as chaînes de caractères in concrete syntax but as
+constructor calls: an expression is a value of an algebraic data type with one
+constructor per line of the grammar.
+
+\begin{lstlisting}[language=Python]
+digit = CharRange('0','9') # one digit
+digits = Concat(digit, Star(digit))
+letter = Union(CharRange('a','z'),CharRange('A','Z'))
+let_tok = Concat(Char('l'), Concat(Char('e'),Char('t')))
+in_tok = Concat(CharRange('i','i'),CharRange('n','n'))
+opp = Char('+')
+opf = Char('*')
+opm = Char('-')
+ope = Char('=')
+ident = Concat(letter,Star(Union(digit,letter)))
+space = Union(Char(' '),Char('\t'))
+\end{lstlisting}
+
+These are the very definitions that the lexeur written at the end of this
+chapter starts from. Two details of the encoding are worth
+reading. \texttt{let\_tok} shows that concatenation is binary, so a three-letter
+keyword is a nest of two \texttt{Concat}s; the surface syntax \texttt{let} hides
+an association choice that the data type must make explicit. And
+\texttt{in\_tok} uses \texttt{CharRange('i','i')} where \texttt{Char('i')} would
+do --- a degenerate class of one character, harmless because $c \le c \le c$.
+
+\begin{remark}
+  The constructor set is \texttt{Char}, \texttt{CharRange}, \texttt{Union},
+  \texttt{Concat}, \texttt{Star}: five of the eight cases of the grammar. There
+  is no constructor for $\emptyset$, none for $\epsilon$ and none for $r{+}$, so
+  an implementation of the lexeur only has to handle five cases --- with $r{+}$
+  spelled \texttt{Concat(r, Star(r))} as in \texttt{digits}.
+\end{remark}
+
+\subsection{Les reconnaître}
+Knowing what $L(r)$ \emph{is} does not say how to test membership. A
+recogniser can work directly on the syntax tree, by mutual recursion over a
+fixed word.
+
+\begin{definition}[La fonction match]
+  Étant donné un mot $w_0 \ldots w_{n-1}$ fixé on définit
+  \[
+    \operatorname{match}(R, i) \;=\; \{\, j \mid w_i \ldots w_{j-1} \in L(R) \,\}
+  \]
+  --- the set of positions at which a factor of $w$ starting at $i$ and matched
+  by $R$ may end. On a alors :
+  \[
+    \begin{array}{r@{\;}c@{\;}l}
+      \operatorname{match}(\epsilon, i)      &=& \{i\} \\[2pt]
+      \operatorname{match}(c, i)             &=& \{ i+1 \mid \text{si } w_i = c \} \\[2pt]
+      \operatorname{match}([c_1, c_2], i)    &=& \{ i+1 \mid \text{si } w_i \in [c_1, c_2] \} \\[2pt]
+      \operatorname{match}(R_a \mid R_b, i)  &=& \operatorname{match}(R_a, i) \union \operatorname{match}(R_b, i) \\[2pt]
+      \operatorname{match}(R_a / R_b, i)     &=& \bigcup_{j \in \operatorname{match}(R_a, i)} \operatorname{match}(R_b, j) \\[2pt]
+      \operatorname{match}(R{*}, i)          &=& \text{point fixe}_X \Big( \{i\} \cup_{j \in X} \operatorname{match}(R, j) \Big)
+    \end{array}
+  \]
+\end{definition}
+
+\begin{notation}
+  The fifth line is the concatenation case: it writes $R_a / R_b$ where the
+  grammar writes $R_a R_b$, the slash standing in for the invisible
+  concatenation operator. One may also write $\mathit{matches}(R, w, j)$ with
+  the word passed explicitly; since $w$ is fixed throughout, it is the same
+  function as $\operatorname{match}(R, j)$. Note also that the word is indexed
+  here from $0$, as $w_0 \ldots w_{n-1}$, whereas the automate and the lexeur
+  below index it from $1$, as $w_1 \ldots w_n$. Neither convention is wrong;
+  only mixing them inside one implementation is.
+\end{notation}
+
+The shape of these equations is what makes them implementable. Every case
+returns a \emph{set} of end positions, not a yes/no answer, because an
+expression régulière can match several prefixes of the same suffix at once, and the appelant
+--- the lexeur --- is going to want the largest of them. Union takes the union
+of the two sets. Concatenation is a relational composition: run $R_a$ from $i$,
+and from every place it can stop, run $R_b$.
+
+\begin{example}[Several answers at once]
+  Take $w = \mathtt{let}$ (so $n = 3$) and
+  $R = \mathtt{ident} = \mathit{letter}\,(\mathit{digit} \mid \mathit{letter}){*}$.
+  Then $\operatorname{match}(\mathit{letter}, 0) = \{1\}$, and starring the tail
+  from position $1$ reaches $1$, $2$ and $3$, so
+  \[
+    \operatorname{match}(R, 0) = \{1, 2, 3\},
+  \]
+  because \texttt{l}, \texttt{le} and \texttt{let} are all identifiers. The
+  recogniser answers ``it matches, and here is every place it could stop''; it
+  is the lexeur that will pick $3$.
+\end{example}
+
+\begin{remark}
+  The star case is stated as a point fixe in $X$ rather than as a recursive
+  call, and that is not stylistic. The naive reading --- ``$\operatorname{match}(R{*},i)$
+  is $\{i\}$ together with $\operatorname{match}(R{*}, j)$ for every
+  $j \in \operatorname{match}(R,i)$'' --- fails to terminate whenever
+  $\epsilon \in L(R)$, since then $i \in \operatorname{match}(R,i)$ and the
+  recursion calls itself at the same position for ever. Reading it as the
+  \emph{least} point fixe of a monotone map on subsets of
+  $\{0, \ldots, n\}$ fixes this: one starts from $\{i\}$ and saturates, adding
+  end positions until nothing new appears. The set is finite and the map only
+  grows, so the iteration stops after at most $n+1$ rounds.
+\end{remark}
+
+\begin{remark}
+  Working directly on the expression tree is correct but not cheap: on a word of
+  length $n$ each position may be visited once per node of the tree, and the
+  concatenation case may fan out over a whole set of intermediate positions.
+  This is precisely the inefficiency that the automate view removes.
+\end{remark}
+
+\subsection{Automates}
+\begin{definition}[Automate fini déterministe (\textit{deterministic finite automaton})]
+  Un \textbf{automate} (\textit{automaton}) fini déterministe c'est :
+  \begin{itemize}
+    \item un ensemble d'\textbf{états} (\textit{states}) $Q$ ;
+    \item un ensemble d'\textbf{états finaux} (\textit{final states})
+      $F \subseteq Q$ ;
+    \item un \textbf{état initial} (\textit{initial state}) $i \in Q$ ;
+    \item une \textbf{fonction de transition} (\textit{transition function})
+      $\delta : Q \times \Sigma \to Q$.
+  \end{itemize}
+  Un mot $w_1 \ldots w_n$ est \textbf{accepté} (\textit{accepted}) par
+  l'automate si $q_n \in F$ avec $q_0 = i$ et $q_{i+1} = \delta(q_i, w_{i+1})$.
+\end{definition}
+
+Acceptance is thus a single left-to-right pass with one variable holding the
+état: read a character, replace the état by
+$\delta(\text{state}, \text{character}), $ and at the end ask whether it is an
+état final. The cost is exactly one transition lookup per character, whatever
+the expression behind the automate looked like.
+
+\begin{remark}
+  $\delta$ is a \emph{function} on all of $Q \times \Sigma$, so it is total:
+  every état has an outgoing transition for every character of the alphabet,
+  and the run never gets stuck --- it simply may end outside $F$. In a drawing
+  one does not draw the transitions that lead nowhere useful; they all go to an
+  implicit non-final \textbf{état puits} (\textit{sink state}) that loops on
+  every character. Determinism is the other half of the definition: one target
+  état per pair, hence one run per word, hence no backtracking.
+\end{remark}
+
+\begin{example}[The two automates behind the example lexeur]
+  The rules \texttt{[0-9]+} and \texttt{[a-z]([a-z]|[0-9])*} of the worked
+  example below become these two automates. Double circles are états finaux;
+  the état puits is not drawn.
+  \begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[shorten >=1pt, node distance=2.9cm, on grid, auto,
+      every state/.style={draw, minimum size=7mm, inner sep=1pt, font=\small},
+      font=\small]
+      \node[state, initial, initial text={}] (a0) {$q_0$};
+      \node[state, accepting, right=of a0] (a1) {$q_1$};
+      \path[->]
+        (a0) edge node {$[0\text{-}9]$} (a1)
+        (a1) edge [loop above] node {$[0\text{-}9]$} ();
+      \node[below=1.05cm of a0, anchor=north, font=\footnotesize] {$[0-9]{+}$};
+
+      \node[state, initial, initial text={}, right=5.6cm of a0] (b0) {$p_0$};
+      \node[state, accepting, right=of b0] (b1) {$p_1$};
+      \path[->]
+        (b0) edge node {$[a\text{-}z]$} (b1)
+        (b1) edge [loop above] node {$[a\text{-}z] \mid [0\text{-}9]$} ();
+      \node[below=1.05cm of b0, anchor=north, font=\footnotesize]
+        {$[a-z]([a-z] \mid [0-9]){*}$};
+    \end{tikzpicture}
+  \end{figure}
+  Both have two useful états, and both spend one transition per character.
+  Compare with running $\operatorname{match}$ over the syntax tree of the same
+  expressions: the automate has already done that work, once, at construction
+  time.
+\end{example}
+
+\subsubsection{Comparaison}
+\begin{center}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    \textbf{Automates} & facile à manipuler pour l'ordinateur (union,
+      intersection, test d'appartenance, etc.) ; difficile à comprendre pour un
+      humain \\
+    \midrule
+    \textbf{Expressions régulières} & facile à comprendre pour un humain ; moins
+      efficace algorithmiquement \\
+    \bottomrule
+  \end{tabularx}
+\end{center}
+
+\begin{conclusion}
+  \emph{Ce que l'on veut : écrire des expressions régulières puis les compiler
+  en automates !} One writes the notation that is readable and compiles it into
+  the representation that is fast --- which is the same division of labour the
+  whole module is about, one level down.
+\end{conclusion}
+
+\subsection{Analyse lexicale : le lexeur}
+The \textit{lexeur} --- the analyseur lexical, the first pass of the
+compilateur --- is the first real consumer of all of this.
+
+\begin{definition}[Règles et actions]
+  Une manière de faire des analyseurs lexicaux consiste à utiliser une liste
+  d'expressions régulières $e_1 \ldots e_k$ et une liste d'actions
+  $a_1 \ldots a_k$. Le lexeur va découper le mot en \textbf{lexèmes}
+  $t_1 \ldots t_\ell$ et pour le lexème $t_j$ reconnu par $e_i$ il va faire
+  l'action $a_i(t_j)$.
+\end{definition}
+
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[font=\small, node distance=0.6cm]
+    \node[draw, rounded corners=3pt, minimum height=1.5cm, text width=3.1cm,
+          align=center] (rules)
+      {list of pairs\\ $(e_i, a_i)_{i=1..k}$\\ \footnotesize expression, action};
+    \node[draw, rounded corners=3pt, minimum height=1.5cm, text width=2.4cm,
+          align=center, right=1.6cm of rules] (lex) {\textbf{lexeur}};
+    \node[draw, rounded corners=3pt, minimum height=1.5cm, text width=3.1cm,
+          align=center, right=1.6cm of lex] (out)
+      {lexèmes $t_1 \ldots t_\ell$\\ \footnotesize with $a_i(t_j)$ performed};
+    \node[above=0.75cm of lex, font=\footnotesize] (src) {the word $w$ (the source text)};
+    \path[->, >=latex]
+      (rules) edge (lex)
+      (lex) edge (out)
+      (src) edge (lex);
+  \end{tikzpicture}
+\end{figure}
+
+\subsubsection{Un exemple}
+One text is run through one rule table, in order. Texte :
+\begin{center}
+  \texttt{let y\ \ \ = 42 in zzz+1\ \ \ \ 2+my\_var}
+\end{center}
+and the rules, \emph{in this order}, are
+
+\begin{center}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Expression & Action($x$) \\
+    \midrule
+    $[0-9]{+}$                        & Afficher \texttt{INT}($x$) \\
+    \texttt{let}                      & Afficher \texttt{LET} \\
+    \texttt{in}                       & Afficher \texttt{IN} \\
+    \texttt{=}                        & Afficher \texttt{EQ} \\
+    \texttt{'\ '}                     & Ignorer \\
+    \texttt{+}                        & Afficher \texttt{PLUS} \\
+    $[a-z]([a-z] \mid [0-9]){*}$      & Afficher \texttt{VAR}($x$) \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+\noindent
+Affichage :
+\[
+  \begin{array}{l}
+    \texttt{LET},\;
+    \texttt{VAR("y")},\;
+    \texttt{EQ},\;
+    \texttt{INT("42")},\;
+    \texttt{IN},\;
+    \texttt{VAR("zzz")},\;
+    \texttt{PLUS}, \\[2pt]
+    \texttt{INT("1")},\;
+    \texttt{INT("2")},\;
+    \texttt{PLUS},\;
+    \texttt{VAR("my")},\;
+    \textbf{ERREUR}.
+  \end{array}
+\]
+
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[font=\ttfamily\small, node distance=0pt]
+    \tikzset{
+      tok/.style={draw, rounded corners=2pt, minimum height=0.62cm,
+                  inner xsep=3pt, anchor=west},
+      ign/.style={draw, densely dotted, rounded corners=2pt,
+                  minimum height=0.62cm, inner xsep=3pt, anchor=west},
+      lab/.style={font=\sffamily\scriptsize, rotate=90, anchor=east, yshift=-3pt},
+    }
+    \node[tok] (t1) at (0,0) {let};
+    \node[ign, right=1pt of t1] (s1) {\textvisiblespace};
+    \node[tok, right=1pt of s1] (t2) {y};
+    \node[ign, right=1pt of t2] (s2) {\textvisiblespace\textvisiblespace\textvisiblespace};
+    \node[tok, right=1pt of s2] (t3) {=};
+    \node[ign, right=1pt of t3] (s3) {\textvisiblespace};
+    \node[tok, right=1pt of s3] (t4) {42};
+    \node[ign, right=1pt of t4] (s4) {\textvisiblespace};
+    \node[tok, right=1pt of s4] (t5) {in};
+    \node[ign, right=1pt of t5] (s5) {\textvisiblespace};
+    \node[tok, right=1pt of s5] (t6) {zzz};
+    \node[tok, right=1pt of t6] (t7) {+};
+    \node[tok, right=1pt of t7] (t8) {1};
+    \node[ign, right=1pt of t8] (s6) {\textvisiblespace\textvisiblespace\textvisiblespace\textvisiblespace};
+    \node[tok, right=1pt of s6] (t9) {2};
+    \node[tok, right=1pt of t9] (t10) {+};
+    \node[tok, right=1pt of t10] (t11) {my};
+    \node[tok, right=1pt of t11, draw=red, thick] (t12) {\_var};
+
+    \node[lab] at (t1.south) {LET};
+    \node[lab] at (t2.south) {VAR};
+    \node[lab] at (t3.south) {EQ};
+    \node[lab] at (t4.south) {INT};
+    \node[lab] at (t5.south) {IN};
+    \node[lab] at (t6.south) {VAR};
+    \node[lab] at (t7.south) {PLUS};
+    \node[lab] at (t8.south) {INT};
+    \node[lab] at (t9.south) {INT};
+    \node[lab] at (t10.south) {PLUS};
+    \node[lab] at (t11.south) {VAR};
+    \node[lab, text=red] at (t12.south) {ERREUR};
+  \end{tikzpicture}
+\end{figure}
+
+Dotted boxes are the matches whose action is \emph{Ignorer}; they consume input
+and emit nothing. The run stops at the underscore: no rule of the table matches
+a prefix beginning with \verb|_|, so \texttt{my\_var} comes out as
+\texttt{VAR("my")} followed by an error rather than as one identifier.
+
+\subsubsection{L'algorithme, formellement}
+\begin{definition}[La boucle du lexeur]
+  Formellement, l'analyseur procède sur le mot $w = w_1 \ldots w_n$ de la façon
+  suivante :
+  \begin{itemize}
+    \item s'il a fini de lire le mot ($n = 0$) il s'arrête ;
+    \item sinon il regarde le \textbf{plus grand préfixe} $w_1 \ldots w_k$ du
+      mot qui est reconnu par une des expressions $e_i$ ;
+    \item si aucune expression ne reconnaît de préfixe, on déclenche une
+      erreur ;
+    \item parmi les expressions $e_i$ qui reconnaissent le préfixe
+      $w_1 \ldots w_k$, il choisit celle avec le $i$ le \textbf{plus petit} ;
+    \item il effectue $a_i(w_1 \ldots w_k)$ ;
+    \item et continue sur le mot $w_{k+1} \ldots w_n$.
+  \end{itemize}
+\end{definition}
+
+Two tie-breaks, applied in this order and only in this order. First the length:
+the longest prefix matched by \emph{any} rule wins, whichever rule that is ---
+le \textbf{plus grand préfixe} (\textit{maximal munch}). Only then, among the
+rules that match that same longest prefix, the earliest in the list wins ---
+la \textbf{priorité de la règle} (\textit{rule priority}). Everything a lexeur
+specification does is arranged by these two.
+
+\begin{example}[Priorité de la règle : why \texttt{let} is not a variable]
+  At the start of the text, the prefix \texttt{let} is matched by rule $2$
+  (\texttt{let}) and by rule $7$ ($[a-z]([a-z] \mid [0-9]){*}$), both of length
+  $3$, and no rule matches anything longer --- the next character is a space.
+  Length does not separate them; the priorité de la règle does, and rule $2$
+  wins, so the lexème is \texttt{LET} and not \texttt{VAR("let")}. A keyword is
+  simply a rule placed above the identifier rule.
+\end{example}
+
+\begin{example}[Plus grand préfixe : why \texttt{lettre} is not a keyword]
+  Reverse the situation and feed the lexeur the text \texttt{lettre}. Rule $2$
+  matches the prefix \texttt{let}, of length $3$; rule $7$ matches
+  \texttt{lettre}, of length $6$. The first tie-break is the length, and $6 > 3$,
+  so the priorité de la règle is never consulted: the lexème is
+  \texttt{VAR("lettre")}. This is the whole reason the length test comes first
+  --- with the priorité de la règle first, no identifier could ever begin with a
+  keyword.
+\end{example}
+
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[shorten >=1pt, node distance=2.35cm, on grid, auto,
+    every state/.style={draw, minimum size=7mm, inner sep=1pt, font=\small},
+    font=\small]
+    \node[state, initial, initial text={}] (s) {$s$};
+    \node[state, accepting, right=of s] (A) {$A$};
+    \node[state, accepting, right=of A] (B) {$B$};
+    \node[state, accepting, right=of B] (C) {$C$};
+    \node[state, accepting, below=2.4cm of B] (I) {$I$};
+    \path[->]
+      (s) edge node {$\mathtt{l}$} (A)
+      (A) edge node {$\mathtt{e}$} (B)
+      (B) edge node {$\mathtt{t}$} (C)
+      (s) edge [bend right=20] node[swap, pos=0.42] {other $[a\text{-}z]$} (I)
+      (A) edge node[swap, pos=0.35] {other} (I)
+      (B) edge node[pos=0.4] {other} (I)
+      (C) edge [bend left=20] node[pos=0.42] {$[a\text{-}z]\mid[0\text{-}9]$} (I)
+      (I) edge [loop below] node {$[a\text{-}z]\mid[0\text{-}9]$} ();
+  \end{tikzpicture}
+\end{figure}
+
+The picture is the two rules \texttt{let} and $[a-z]([a-z]\mid[0-9]){*}$ merged
+into one automate, which is what a lexeur generator actually builds; the edges
+marked ``other'' carry every letter or digit except the one that continues the
+keyword. The états $A$, $B$, $I$ are final for the identifier rule only, so
+reaching them means \texttt{VAR}; $C$ is final for both rules at once, and it is
+there that the priorité de la règle decides in favour of \texttt{LET}. The
+scanner does not test the rules one after another --- it runs this single
+automate, remembers the last état final it passed and which rules were
+satisfied there, and on getting stuck falls back to that position. That is the
+plus grand préfixe and the priorité de la règle, compiled.
+
+\begin{remark}
+  The rule \texttt{'\ '} of the table is a single quoted space --- one character,
+  not one or more. Since its action is \emph{Ignorer}, a run of several spaces
+  simply goes round the loop several times, which is why the four-space run in
+  \texttt{zzz+1\ \ \ \ 2} costs four iterations and produces nothing (and the
+  three-space gap before the \texttt{=} costs three). The
+  \texttt{ocamllex} version below writes \texttt{[' ' '\textbackslash t'
+  '\textbackslash n']+} instead, folding the repetition into the expression and
+  also accepting tabs and newlines.
+\end{remark}
+
+\begin{remark}
+  The error case is the only place the lexeur can fail, and it fails on a
+  \emph{character}, not on a structure: it reports that no rule can start here.
+  Everything about how the lexèmes fit together --- that \texttt{let} must be
+  followed by a variable, that \texttt{+} needs two operands --- is beyond the
+  lexeur's reach and is the parser's problem.
+\end{remark}
+
+\subsubsection{ocamllex}
+Rather than write the loop by hand, one declares the rule table in a
+\texttt{.mll} file and lets a generator emit the automate and the scanner.
+
+\begin{lstlisting}[language=Caml]
+{ open Lexing }
+
+rule token = parse
+  | ['0'-'9']+ as s { `INT (int_of_string s) }
+  | "let"     { `LET }
+  | "in"      { `IN }
+  | '+'       { `PLUS }
+  | '='       { `EQ }
+  | [' ' '\t' '\n']+ { token lexbuf }
+  | ['a'-'z']['a'-'z''0'-'9']* as id { `VAR id }
+  | eof       { `EOF }
+\end{lstlisting}
+
+À mettre dans \texttt{lexer.mll} puis compiler avec \texttt{ocamllex lexer.mll}
+--- \emph{utile pour votre compilateur !}\\
+
+The correspondence with the table of the worked example is exact: each
+\texttt{|} line is a pair $(e_i, a_i)$, the expression on the left in the
+concrete syntax of the tool, the action on the right as an OCaml expression
+between braces. Three points are specific to the tool.
+
+\begin{itemize}
+  \item \verb|as s| binds the matched text --- what the definition calls
+    $w_1 \ldots w_k$, the argument $x$ of the action --- to a variable, so
+    \texttt{INT} and \texttt{VAR} can carry it. Rules whose action ignores the
+    text, such as \texttt{"let"}, need no binding.
+  \item The whitespace rule's action is \texttt{token lexbuf}: it calls the
+    scanner again on the rest of the input and returns whatever that returns.
+    A recursive call \emph{is} how one writes \emph{Ignorer} when every rule has
+    to produce a lexème.
+  \item \texttt{eof} is an extra pattern the tool provides for end of input,
+    turning the loop's termination condition into an ordinary rule; here it
+    yields \texttt{`EOF}, a lexème the parser can match on.
+\end{itemize}
+
+\begin{remark}
+  The results are backtick-prefixed --- \texttt{`INT}, \texttt{`LET} --- so they
+  are OCaml \emph{polymorphic variants}: they need no type declared in advance,
+  which is convenient for a type of lexèmes that grows as the compilateur does.
+  The order of the lines is still load-bearing: \texttt{"let"} sits above the
+  identifier rule for exactly the reason of the priorité de la règle example
+  above.
+\end{remark}
+
+\subsubsection{Pourquoi un lexeur ?}
+\begin{conclusion}
+  Tout ce que le lexeur fait peut souvent être fait dans la grammaire mais ça :
+  \begin{itemize}
+    \item permet de décomposer le problème ;
+    \item permet d'utiliser des expressions régulières ;
+    \item simplifie beaucoup l'écriture et la lecture des grammaires ;
+    \item diminue la complexité des grammaires.
+  \end{itemize}
+\end{conclusion}
+
+The first clause is the honest one: a grammaire non contextuelle can generate
+identifiers and integer literals character by character, so the lexeur is not a
+necessity. It is a separation of concerns that pays. A grammar written over
+lexèmes rather than characters has no rules for whitespace anywhere, does not
+have to encode the plus grand préfixe as grammar rules, and --- since the
+langages réguliers are a strict subclass of the languages of grammaires non
+contextuelles --- hands the cheap part of the work to the cheap machine.
+
+\subsection{Écrire un lexeur}
+\begin{problem}[Objectif]
+  Vous devez écrire du code qui implémente un petit lexeur, c'est-à-dire qui :
+  \begin{itemize}
+    \item récupère une liste de paires (expression régulière, nom) ;
+    \item une chaîne de caractères ;
+    \item et renvoie le résultat de l'analyse lexicale.
+  \end{itemize}
+\end{problem}
+
+\noindent
+\emph{Travailler avec méthode} : vous pouvez écrire les fonctions dans l'ordre
+en testant chacune ; pensez à l'algorithme et s'il est correct ; réfléchissez à
+ce qui est nécessaire au niveau du code.
+
+\subsubsection{L'interface du lexeur}
+Two extension files, \texttt{parser.ml} and \texttt{parser.py} --- the
+continuation \emph{pour aller plus loin}, described in the last remark of this
+chapter --- are written against the finished lexeur, so they pin down its
+interface exactly. The rule list is the table of the worked example reordered
+and slightly widened --- a rule for \texttt{*} is added, \texttt{INT} moves
+below \texttt{ID}, \texttt{ident} also accepts capitals and \texttt{space} also
+accepts a tab --- with a name in place of an action:
+
+\begin{lstlisting}[language=Python]
+rules = [
+    (let_tok, "LET"), (in_tok, "IN"), (ope, "EQ"), (opp, "PLUS"),
+    (opf, "FOIS"), (ident, "ID"), (digits, "INT"),
+    (space, "SPACE")    # as in the worked example
+]
+\end{lstlisting}
+
+\noindent
+and it is consumed by a single function:
+
+\begin{lstlisting}[language=Python]
+list_tokens = lexer(rules, input_string)
+rev_list_of_tokens = [("EOF","")] + list(reversed(
+    [e for e in list_tokens if e[0] != "SPACE"]))
+\end{lstlisting}
+
+\begin{lstlisting}[language=Caml]
+let token = ref ((lexer rules input_string
+                  |> List.filter (fun (x,_) -> x != `SPACE))
+                 @ [(`EOF,"")])
+\end{lstlisting}
+
+So \texttt{lexer} takes the rule list and the input chaîne de caractères and
+returns a \emph{list of pairs} (name, matched text), in order of appearance ---
+the OCaml version using polymorphic variants \texttt{`LET}, \texttt{`ID} as
+names where the Python version uses chaînes de caractères. Three consequences
+for the implementation.
+
+\begin{itemize}
+  \item The action of a rule is not a callback: it is just the name attached to
+    the lexème, and the appelant decides what to do. \emph{Ignorer} is therefore
+    not implemented in the lexeur at all --- \texttt{SPACE} lexèmes are produced
+    like any other and the appelant filters them out, which is exactly what both
+    snippets do before the analyse syntaxique.
+  \item The matched text must be returned alongside the name, since the parser
+    needs \texttt{"42"} to build the integer and the identifier's spelling to
+    look it up in its environment (\texttt{Hashtbl.create 17} in OCaml,
+    \texttt{dict()} in Python).
+  \item The position of a rule in \texttt{rules} is the index $i$ of its
+    priorité de la règle, so the list must be traversed in order: \texttt{LET}
+    and \texttt{IN} precede \texttt{ID}, and an implementation that returns the
+    first rule matching
+    \emph{any} prefix, instead of the first rule matching the \emph{longest}
+    prefix, will lex \texttt{lettre} as \texttt{LET} followed by
+    \texttt{ID("tre")}.
+\end{itemize}
+
+\begin{remark}
+  The natural shape of the code follows the two definitions of this chapter, in
+  order: a \texttt{match} over the expression tree in the sense of the
+  recognition equations, returning the set of end positions from a given start;
+  then the loop of the lexeur, which at each position asks every rule for its
+  end positions, keeps the largest $k$ over all rules, breaks ties by the
+  smallest $i$, emits the pair and restarts at $k$. The error case is the one
+  where every rule returns an empty set.
+\end{remark}
+
+\begin{remark}
+  Une extension naturelle consiste à utiliser votre lexeur pour faire de
+  l'analyse syntaxique. Vous pouvez utiliser les fichiers \texttt{parser.ml} ou
+  \texttt{parser.py} à compléter pour avoir un parseur d'un langage contenant
+  des entiers, des expressions \texttt{+}, \texttt{*} et des variables
+  introduites par la syntaxe : \texttt{let \ldots = \ldots in \ldots}. The
+  parser evaluates the expression to a number and fails if it is not parsable
+  or uses an undefined variable. The skeleton they give --- a mutable list of
+  lexèmes with \texttt{peek\_type} and \texttt{eat}, a hash table for the
+  environment --- is a recursive-descent parser of exactly the kind the grammar
+  chapter builds, which is why the grammar it is aimed at is the one that
+  chapter asks to be made LL(1).
+\end{remark}
