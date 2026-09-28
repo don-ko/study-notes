@@ -1,0 +1,37 @@
+\section{Codes}
+BSC codes: $\mathbf u\in\{0,1\}^k\mapsto\mathbf x\in\{0,1\}^n$, $\mathbf y=\mathbf x\oplus\mathbf z$, decoder outputs $\hat{\mathbf u}$. Rate $R=k/n$.
+
+\subsection{Linear Codes}
+\paragraph{Generator matrix} $\mathbf x=\mathbf u\mathbf G$ in mod-2 arithmetic, $\mathbf G\in\{0,1\}^{k\times n}$.
+\begin{itemize}
+  \item \textcolor{Blue}{\textbf{Systematic}}: $\mathbf G=[\mathbf I_k\ \mathbf P]$; first $k$ bits are $\mathbf u$, remaining $n-k$ are parity checks. Any general $\mathbf G$ reduces to systematic via row-swaps + mod-2 Gaussian elim.
+  \item \textcolor{Bittersweet}{Linearity}: $\mathbf x\oplus\mathbf x'$ is also a codeword; $\mathbf 0\in\mathcal C$. \textcolor{Bittersweet}{Storage} $nk$ bits (vs.\ $n2^{nR}$ random).
+\end{itemize}
+\paragraph{Examples}
+\textcolor{ForestGreen}{Repetition $(n,1)$}: $\mathbf G{=}[1\,\cdots\,1]$, majority-vote; $R{=}1/n$, $d_{\min}{=}n$, corrects $\lfloor(n{-}1)/2\rfloor$ flips.
+\textcolor{ForestGreen}{Hamming order $r$}: $n{=}2^r{-}1$, $k{=}2^r{-}r{-}1$, $\mathbf G{=}[\mathbf I_k\,\mathbf B]$ with rows of $\mathbf B$ = all length-$r$ vectors of weight $\ge 2$; $d_{\min}{=}3$, corrects 1 flip; syndrome $\mathbf y\mathbf H$ = binary address of erred bit.
+\textcolor{ForestGreen}{$(7,4)$ instance}: $\mathbf G_{\text{Ham}}{=}\!\left[\begin{smallmatrix}1&0&0&0&1&1&0\\0&1&0&0&1&0&1\\0&0&1&0&0&1&1\\0&0&0&1&1&1&1\end{smallmatrix}\right]$, 16 codewords.
+
+\paragraph{Parity-check matrix} $\mathbf H\in\{0,1\}^{n\times(n-k)}$: $\mathbf x\mathbf H=\mathbf 0\iff\mathbf x\in\mathcal C$. If $\mathbf G=[\mathbf I_k\ \mathbf P]$ then $\mathbf H=\left[\begin{smallmatrix}\mathbf P\\ \mathbf I_{n-k}\end{smallmatrix}\right]$. \textcolor{Bittersweet}{$\mathbf H$ checks} without $O(2^k)$ enumeration.
+
+\subsection{Distance Properties}
+Hamming distance $d_H(\mathbf x,\mathbf x')=\#\{i:x_i\neq x'_i\}$, weight $w(\mathbf x)=\#\{i:x_i=1\}$. Min distance $d_{\min}=\min_{\mathbf x\neq\mathbf x'}d_H$.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Linear}: $d_{\min}=\min_{\mathbf x\neq\mathbf 0}w(\mathbf x)$.
+  \item \textcolor{Bittersweet}{Correction}: up to $d_{\min}-1$ erasures, $\lfloor(d_{\min}-1)/2\rfloor$ flips (disjoint Hamming balls).
+  \item \textcolor{Bittersweet}{BSC success} ($t$-flip-corr., $t{=}\lfloor(d_{\min}{-}1)/2\rfloor$): $P_{\text{succ}}\ge\sum_{i=0}^{t}\binom{n}{i}\delta^i(1{-}\delta)^{n-i}$; $t{=}1$: $(1{-}\delta)^n+n\delta(1{-}\delta)^{n-1}$.
+  \item \textcolor{ForestGreen}{Hamming $(7,4)$}: $d_{\min}=3$, corrects 1 flip.
+\end{itemize}
+\subsection{Minimum-Distance Decoding}
+\paragraph{ML $=$ min-distance (BSC)}
+For uniform $m$, ML ($\arg\max_j P(\mathbf y|\mathbf x^{(j)})$) minimises $P_e$. On BSC$(\delta<\tfrac12)$: $\log P(\mathbf y|\mathbf x)=n\log(1-\delta)-d_H(\mathbf x,\mathbf y)\log\tfrac{1-\delta}{\delta}$, so ML $=\arg\min_j d_H(\mathbf x^{(j)},\mathbf y)$.
+
+\paragraph{Syndrome} $\mathbf S=\mathbf y\mathbf H=\mathbf z\mathbf H$ (depends only on error).
+\begin{itemize}
+  \item Decode: $\hat{\mathbf z}=\arg\min_{\tilde{\mathbf z}\mathbf H=\mathbf S} w(\tilde{\mathbf z})$, $\hat{\mathbf x}=\mathbf y\oplus\hat{\mathbf z}$.
+  \item \textcolor{Bittersweet}{Algorithm}: $\mathbf S=\mathbf 0\Rightarrow\hat{\mathbf x}=\mathbf y$; else try $\tilde{\mathbf z}$ of weight $1,2,\dots$ until $\tilde{\mathbf z}\mathbf H=\mathbf S$.
+  \item \textcolor{ForestGreen}{Hamming $(7,4)$}: rows of $\mathbf H$ are the 7 nonzero length-3 vectors; each single-bit error has a unique syndrome $\Rightarrow$ direct lookup.
+\end{itemize}
+
+\paragraph{Hamming bound} A $(n,k)$ code correcting all weight-$\le t$ errors needs $\sum_{i=0}^{t}\binom{n}{i}\le 2^{n-k}$ (distinct syndromes).
+

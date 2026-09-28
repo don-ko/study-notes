@@ -1,0 +1,48 @@
+\section{Continuous RVs \& Gaussian Channel}
+\subsection{Differential Entropy}
+\textcolor{Blue}{Differential entropy}: for continuous $X$ with PDF $f_X$,
+\[h(X)=\mathbb E_{f_X}\!\left[\log_2\tfrac{1}{f_X(X)}\right]=-\!\!\int_{\mathbb R}\!f_X(x)\log_2 f_X(x)\,dx.\]
+\textcolor{Blue}{Joint} and \textcolor{Blue}{Conditional} versions:
+\[h(X,Y)=\mathbb E\!\left[\log_2\tfrac{1}{f_{XY}(X,Y)}\right],\]
+\[h(Y|X)=\int\!f_X(x)\,h(Y|X\!=\!x)\,dx.\]
+\paragraph{Properties that still hold}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Chain rule}: $h(X_1,\dots,X_n)=\sum_i h(X_i|X_1,\dots,X_{i-1})$.
+  \item \textcolor{Bittersweet}{Conditioning reduces}: $h(X|Y)\le h(X)$.
+  \item \textcolor{Bittersweet}{Sub-additivity}: $h(X_1,\dots,X_n)\le\sum_i h(X_i)$.
+  \item \textcolor{Bittersweet}{Translation}: $h(X+c)=h(X)$.
+\end{itemize}
+\paragraph{Properties that fail}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Non-negativity}: $h$ can be negative.
+  \item \textcolor{Bittersweet}{Scaling}: $h(cX)=h(X)+\log_2|c|$ (so not invariant under 1-1 maps); $h$ not comparable to discrete $H$.
+\end{itemize}
+\paragraph{Standard forms}
+\textcolor{ForestGreen}{Uniform}$[a,b]$: $h=\log_2(b-a)$.\\
+\textcolor{ForestGreen}{Gaussian}\ $\mathcal N(\mu,\sigma^2)$: $h=\tfrac12\log_2(2\pi e\sigma^2)$.\\
+\textcolor{ForestGreen}{Laplace}($b$): $h=\log_2(2be)$.
+
+\subsection{KL Divergence \& Mutual Information}
+\[D(f\|g)=\int f(x)\log_2\tfrac{f(x)}{g(x)}\,dx,\]
+\begin{align*}
+  I(X;Y) &= D(f_{XY}\|f_X f_Y)\\
+         &= h(Y)-h(Y|X)=h(X)-h(X|Y).
+\end{align*}
+\begin{itemize}
+  \item All discrete-case properties hold: \textcolor{Bittersweet}{Non-negativity} ($D\ge 0$, $I\ge 0$), \textcolor{Bittersweet}{Chain rule}, \textcolor{Bittersweet}{DPI}.
+  \item $I(X;Y)=I(\phi(X);\psi(Y))$ for invertible $\phi,\psi$.
+\end{itemize}
+
+\subsection{Gaussian Maximises Entropy}
+$h(X)\le\tfrac12\log_2(2\pi e\,\mathrm{Var}[X])$, equality iff \textcolor{ForestGreen}{Gaussian}.\\
+\textcolor{Bittersweet}{Multivariate}: $h(\mathbf X)\le\tfrac12\log_2\det(2\pi e\,\mathrm{Cov}[\mathbf X])$, tight for $\mathcal N(\boldsymbol\mu,\boldsymbol\Sigma)$.
+
+\subsection{Additive White Gaussian Noise (AWGN) Channel}
+$Y=X+Z$, $Z\sim\mathcal N(0,\sigma^2)$ independent of $X$. Without a constraint $C=\infty$. Consider $\mathbb E[X^2]\le P$. Capacity $C(P)=\max_{f_X:\,\mathbb E[X^2]\le P}I(X;Y)$:
+\[\boxed{\ C(P)=\tfrac12\log_2\!\left(1+\tfrac{P}{\sigma^2}\right)\ \text{bits/use}\ }\]
+achieved by $X\sim\mathcal N(0,P)$.
+\paragraph{Derivation} $I(X;Y)=h(Y)-h(Z)$ (shift + indep.); $\mathrm{Var}[Y]\le P+\sigma^2$, so $h(Y)\le\tfrac12\log_2(2\pi e(P+\sigma^2))$, tight iff $X\sim\mathcal N(0,P)$.
+\paragraph{Behaviour} Depends only on \textcolor{Blue}{SNR}$=P/\sigma^2$.\\
+\textcolor{Bittersweet}{Low SNR}: $C\approx\tfrac{P}{2\sigma^2}\log_2 e$.\\
+\textcolor{Bittersweet}{High SNR}: $C\approx\tfrac12\log_2(P/\sigma^2)$ (doubling $P$ adds $\tfrac12$ bit).
+

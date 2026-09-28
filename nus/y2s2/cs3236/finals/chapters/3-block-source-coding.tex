@@ -1,0 +1,75 @@
+\section{Block Source Coding}
+\paragraph{Setup}
+\textcolor{Blue}{Fixed-to-fixed} length source coding: take a length-$n$
+block $\mathbf{X}=(X_1,\ldots,X_n)\in\mathcal{X}^n$ from a
+\textcolor{Blue}{DMS}, apply
+\begin{itemize}
+  \item \textcolor{Blue}{Encoder} $f:\mathcal X^n\to\{1,\ldots,M\}$, \textcolor{Blue}{output} $m=f(\mathbf X)$;
+  \item \textcolor{Blue}{Decoder} $g:\{1,\ldots,M\}\to\mathcal X^n$, \textcolor{Blue}{estimate} $\hat{\mathbf X}=g(m)$.
+\end{itemize}
+If $\log_2 M<n\log_2|\mathcal X|$ some sequences \emph{must} be decoded wrongly: unavoidable errors, unlike variable-length coding.
+\textcolor{Bittersweet}{Error probability} $P_e=\mathbb{P}[\hat{\mathbf X}\neq\mathbf X]$; \textcolor{Bittersweet}{Rate} $R=\tfrac{1}{n}\log_2 M$ (bits per source symbol).
+
+\subsection{Fixed-Length Source Coding Theorem}
+For a DMS with per-symbol entropy $H(X)$:
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Achievability}: if $R>H(X)$, then $\forall\varepsilon>0$
+    there exist (sufficiently large) $n$, encoder $f$, decoder $g$ of rate $R$ with
+    $P_e\le\varepsilon$.
+  \item \textcolor{Bittersweet}{Converse}: if $R<H(X)$, then $\exists\varepsilon>0$ such
+    that \emph{every} code of rate $R$ has $P_e>\varepsilon$ (for all $n$).
+  \item \textcolor{Bittersweet}{Strong converse}: $P_e\to 1$ as $n\to\infty$ when $R<H(X)$.
+\end{itemize}
+
+\subsection{Typical Set \& AEP}
+For some fixed small constant $\varepsilon>0$, the \textcolor{Blue}{typical set} is
+\[\mathcal{T}_n(\varepsilon)=\left\{\mathbf x\in\mathcal X^n:\ \Big|\tfrac{1}{n}\sum_{i=1}^{n}\log_2\tfrac{1}{P_X(x_i)}-H(X)\Big|\le\varepsilon\right\}.\]
+\paragraph{Typical set properties}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Probability bounds}: $2^{-n(H(X)+\varepsilon)}\le P_{\mathbf X}(\mathbf x)\le 2^{-n(H(X)-\varepsilon)}$ for $\mathbf x\in\mathcal T_n(\varepsilon)$.
+  \item \textcolor{Bittersweet}{High probability}:
+    $\mathbb{P}[\mathbf{X}\in\mathcal{T}_n(\varepsilon)]\to 1$ as $n\to\infty$
+    (LLN on i.i.d.\ $\log_2\tfrac{1}{P_X(X_i)}$, mean $H(X)$).
+  \item \textcolor{Bittersweet}{Cardinality upper bound}:
+    $|\mathcal{T}_n(\varepsilon)|\le 2^{n(H(X)+\varepsilon)}$ (since
+    $1\ge\sum_{\mathbf{x}\in\mathcal T_n}P_{\mathbf X}(\mathbf x)\ge|\mathcal T_n|\cdot 2^{-n(H(X)+\varepsilon)}$).
+  \item \textcolor{Bittersweet}{Cardinality lower bound}:
+    $|\mathcal{T}_n(\varepsilon)|\ge(1-o(1))\,2^{n(H(X)-\varepsilon)}$.
+\end{itemize}
+\textcolor{Bittersweet}{Asymptotic Equipartition Property (AEP)}: with high probability (w.h.p.) $\mathbf X$ is one of $\approx 2^{nH(X)}$ nearly-equiprobable sequences; $P_{\mathbf X}(\mathbf X)^{1/n}\!\to\!2^{-H(X)}$, and $(\prod_i f(X_i))^{1/n}\!\to\!2^{\mathbb E[\log_2 f(X)]}$. \textcolor{ForestGreen}{Ex (biased $p$)}: $\mathbf x$ with $m$ ones typical iff $|(\tfrac{m}{n}{-}p)\log_2\tfrac{1-p}{p}|\le\varepsilon$; $p{=}\tfrac12$: all $2^n$ strings typical.
+\paragraph{Strong typicality} \textcolor{Blue}{$\mathcal T_n^{s}(\varepsilon)=\{\mathbf x: nP_X(x)(1{-}\varepsilon)\le n_x(\mathbf x)\le nP_X(x)(1{+}\varepsilon)\ \forall x\}$}. \textcolor{Bittersweet}{Lemma}: $\mathbf x\in\mathcal T_n^{s}\!\Rightarrow(1{-}\varepsilon)\mathbb E[a(X)]\le\tfrac1n\sum_i a(x_i)\le(1{+}\varepsilon)\mathbb E[a(X)]$ for $a\ge 0$; $a{=}\log_2\tfrac{1}{P_X}$ recovers weak typicality.
+
+\paragraph{Achievability via typicality}
+Assign a distinct index in $\{1,\ldots,M-1\}$ to each
+$\mathbf{x}\in\mathcal{T}_n(\varepsilon)$, reserve $M$ as a ``dummy'' (error) for
+$\mathbf{x}\notin\mathcal{T}_n(\varepsilon)$.
+\[M=|\mathcal T_n(\varepsilon)|+1\le 2^{n(H(X)+\varepsilon)}+1,\]
+$R=\tfrac{1}{n}\log_2 M\to H(X)+\varepsilon$; $P_e\to 0$.
+
+\subsection{Fano's Inequality}
+For discrete $X,\hat X$ on a common finite alphabet $\mathcal{X}$ with
+$P_e=\mathbb{P}[\hat X\neq X]$,
+\[\boxed{\;H(X\mid\hat X)\le H_2(P_e)+P_e\log_2(|\mathcal{X}|-1)\;}\]
+where $H_2(\alpha)=\alpha\log_2\tfrac1\alpha+(1-\alpha)\log_2\tfrac{1}{1-\alpha}$.\\
+\textcolor{Bittersweet}{Intuition}: first ask ``is $\hat X=X$?'' (cost $H_2(P_e)$);
+if not, $X$ lies in the remaining $|\mathcal X|-1$ values (cost $\le\log_2(|\mathcal X|-1)$, weighted by $P_e$).\\
+\textcolor{Bittersweet}{Proof sketch}: With $E=\mathbf 1\{X\neq\hat X\}$,
+\begin{align*}
+  H(X|\hat X) &= H(X,E|\hat X) = H(E|\hat X)+H(X|\hat X,E)\\
+              &\le H(E)+P_e\log_2(|\mathcal X|-1).
+\end{align*}
+\textcolor{Bittersweet}{Weaker form} (using $H_2(P_e)\le 1$ and $|\mathcal X|-1\le|\mathcal X|$):
+\[H(X\mid\hat X)\le 1+P_e\log_2|\mathcal{X}|.\]
+\textcolor{ForestGreen}{Equality example}: e.g.\ $\hat X$ uniform on $\mathcal X$
+with $P(X=\hat x|\hat X=\hat x)=1-P_e$ and the other $|\mathcal X|-1$ values equiprobable.
+
+\subsection{Fano Converse}
+Apply weaker Fano with $(X,\hat X)\leftarrow(\mathbf X,\hat{\mathbf X})$ on alphabet
+$\mathcal X^n$: $H(\mathbf X|\hat{\mathbf X})\le 1+P_e\cdot n\log_2|\mathcal X|$.
+\begin{align*}
+nR &\ge H(\hat{\mathbf X})\\
+   &\ge I(\mathbf X;\hat{\mathbf X})\\
+   &\ge nH(X)-P_e\cdot n\log_2|\mathcal X|-1.
+\end{align*}
+\[\therefore\ P_e\ge\frac{1}{\log_2|\mathcal X|}\Big(H(X)-R-\tfrac{1}{n}\Big).\]
+So $R<H(X)\Rightarrow P_e\not\to 0$.

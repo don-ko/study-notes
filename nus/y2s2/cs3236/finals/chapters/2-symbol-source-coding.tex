@@ -1,0 +1,127 @@
+\section{Symbol-wise Source Coding}
+\paragraph{Setup}
+We denote the set of all symbols (the \textcolor{Blue}{alphabet}) by
+$\mathcal{X}$. Consider a \textcolor{Blue}{discrete memoryless source (DMS)} $X\sim P_X$ over finite $\mathcal X$ (blocks: $P_{\mathbf X}(\mathbf x)=\prod_i P_X(x_i)$).
+
+We encode each string $x\in \mathcal{X}^{*}$ into a decodeable binary string
+$C(x)$, of length $\ell(x)$. The goal is to minimize the
+\textcolor{Blue}{expected codeword length} of the code $C$:
+\[L(C)=\mathbb{E}_{X\sim P_X}\left[ \ell\left(X\right) \right]=\sum_{x\in\mathcal{X}} P_X(x)\cdot\ell\left(x\right),\]
+\vspace{-4mm}
+\subsection{Symbol-Wise Coding}
+\textcolor{Blue}{Symbol-wise coding} encodes \textcolor{Bittersweet}{each
+symbol} $x\in\mathcal{X}$ into a codeword $C(x)$, and
+\textcolor{Bittersweet}{encodes a string} $x_1\cdots x_n$ by concatenating the
+codewords $C(x_1)\cdots C(x_n)$.
+
+\paragraph{Decodeability Conditions}
+\textcolor{Blue}{Non-singular codes}: A code is non-singular if all codewords
+are distinct.
+\[\forall x,x'\in \mathcal{X}, x\neq x' \implies C(x)\neq C(x').\] 
+
+\textcolor{Blue}{Uniquely decodable codes}: A code is uniquely decodable if any
+concatenation of codewords can be uniquely parsed into codewords. That is, for
+distinct $x_1\cdots x_n,x'_1\cdots x'_m\in \mathcal{X}^{*}$,
+\[C(x_1)\cdots C(x_{n})\neq C(x_1')\cdots C(x_m').\]
+Uniquely decodeability is \textcolor{Bittersweet}{non-trivial to verify}.
+
+\textcolor{Blue}{Prefix-free codes}: A code is
+prefix-free if no codeword is a prefix of another codeword.
+\[C\text{ is prefix-free}\implies C\text{ is uniquely decodeable}.\]
+Additionally, prefix-free codes can be decoded
+\textcolor{Bittersweet}{instantaneously}, without needing to wait for the
+entire string to be received.
+
+\paragraph{Kraft's inequality}
+{Kraft's inequality} states that for any prefix-free code $C$,
+\[\sum_{x\in \mathcal{X}} 2^{-\ell(x)}\le 1.\]
+Any prefix-free code can be \textcolor{Bittersweet}{represented as a
+binary tree}, where each codeword corresponds to a leaf. The depth of
+the leaf is the codeword length. It follows, by random traversal of the tree,
+that the \textcolor{Bittersweet}{probability of reaching a leaf is
+$2^{-\ell(x)}$}.
+
+\textcolor{Bittersweet}{Existence (converse)}: for any lengths
+$\left\{\ell(x)\right\}_{x\in \mathcal{X}}$ satisfying Kraft's inequality,
+there exists a prefix-free code with these codeword lengths.
+
+\textcolor{Blue}{McMillan's extension}: the inequality $\sum_x 2^{-\ell(x)}\le 1$ also holds for uniquely decodable codes, so \textcolor{Bittersweet}{prefix-free codes lose nothing in $L(C)$}.
+
+\paragraph{Entropy lower bound}
+Entropy provides a fundamental \textcolor{Bittersweet}{limit on the expected
+codeword length} of any uniquely decodable code:
+\[L(C)\ge H(X),\]
+with equality iff ${P_X(x)}=2^{-\ell(x)}$ for all $x\in \mathcal{X}$.
+\textcolor{Bittersweet}{Proof sketch}: let $Z=\sum_x 2^{-\ell(x)}\le 1$ (Kraft/McMillan) and $Q_X(x)=2^{-\ell(x)}/Z$; then $L(C)-H(X)=\log_2\tfrac{1}{Z}+D(P_X\|Q_X)\ge 0$.
+
+Using the entropy lower bound, \textcolor{ForestGreen}{Shannon-Fano
+coding} is a simple method to construct a \textcolor{Bittersweet}{prefix-free
+code for a given distribution} $P_X$ by rounding up the ideal length:
+\[\ell(x)=\left\lceil \log_2\tfrac{1}{P_X(x)} \right\rceil.\]
+These lengths satisfy Kraft (since $\sum_x 2^{-\lceil\log 1/P_X(x)\rceil}\le
+\sum_x P_X(x)=1$), so a prefix-free code with these lengths exists.
+
+A Shannon-Fano coding satisfies the \textcolor{Bittersweet}{expected codeword
+length} of
+\[H(X)\le L(C_{SF})< H(X)+1.\]
+The $+1$ penalty can be significant when $H(X)$ is small (e.g.\ a source with
+$H(X)=0.5$ bits still needs $L(C)\ge 1$ for any non-trivial code).
+
+\textcolor{Blue}{Mismatched coding}: lengths $\ell(x)=\lceil\log_2 1/Q_X(x)\rceil$ give
+\[H(X)+D(P_X\|Q_X)\le L(C_Q)< H(X)+D(P_X\|Q_X)+1;\]
+\textcolor{Bittersweet}{wrong distribution costs $D(P_X\|Q_X)$ extra bits}.
+
+\subsection{Huffman Coding}
+Huffman coding constructs an \textcolor{Bittersweet}{optimal prefix-free code}
+for a given distribution $P_X$. The \textbf{algorithm} is as follows:
+\begin{itemize}
+  \item Start with a forest of $|\mathcal{X}|$ trees, each consisting of a single node corresponding to a symbol $x\in \mathcal{X}$, with weight $P_X(x)$.
+  \item While there are more than one tree in the forest:
+    \begin{itemize}
+      \item Select the two roots with the smallest weights, say $T_1$ and $T_2$.
+      \item Merge $T_1$ and $T_2$ into a new tree $T$, where $T_1$ and $T_2$ are the left and right subtrees of $T$, respectively. The weight of $T$ is the sum of the weights of $T_1$ and $T_2$.
+    \end{itemize}
+  \item The remaining tree in the forest is the Huffman tree.
+\end{itemize}
+At each node, assign a binary digit to each branch. The code for a given symbol
+is the \textcolor{Bittersweet}{sequence of binary digits along the path} from
+the root to the leaf corresponding to that symbol.
+\vspace{-4mm}
+\begin{center}
+  \includegraphics[width=0.18\textwidth]{huffman.png}
+\end{center}
+\vspace{-4mm}
+\textcolor{Blue}{Optimality}: Huffman achieves the minimum $L(C)$ over all
+uniquely decodable codes:
+\[L(C_H)=\min_{C:\text{UD}} L(C),\quad H(X)\le L(C_H)< H(X)+1.\]
+\textcolor{Bittersweet}{Proof sketch (exchange argument)}: any optimal prefix-free code satisfies the invariants maintained by Huffman's merge step.
+
+\subsection{Extensions of Symbol-wise Coding}
+\textcolor{Blue}{Block coding}: Instead of encoding each symbol separately, we
+can \textcolor{Bittersweet}{encode blocks of $n$ symbols} together. We
+consider instead the \textcolor{Bittersweet}{alphabet $\mathcal{X}^n$}, and the
+distribution $P_{X^n}$.
+
+This allows us to achieve expected codeword lengths closer to the entropy, as
+$n$ increases. $\forall\varepsilon>0$, there exists a block code $C$ s.t.:
+\[L(C)<H(X)+\varepsilon.\] 
+
+\textcolor{ForestGreen}{Advantages of block coding:}
+\begin{itemize}
+  \item Encode sources with memory, by treating blocks as symbols.
+    \textcolor{ForestGreen}{P(apple) > P(ealpp)} despite containing the same characters.
+  \item Achieve expected codeword length arbitrarily close to the entropy. Even with
+    independent symbols,
+    \[NH(X)\le L(C)\le NH(X)+1.\] 
+    \[H(X)\le \text{Average length per symbol}\le H(X)+\frac{1}{N}.\] 
+\end{itemize}
+\textcolor{Bittersweet}{Disadvantages of block coding:}
+\begin{itemize}
+  \item Determining the product distribution $P_{X^n}$ can be difficult,
+    especially for sources with memory.
+  \item Encoding and decoding complexity grows exponentially with $n$. Requires
+    sorting $\left| \mathcal{X} \right| ^{n}$ symbols by probability, and
+    storing the codebook of size $\left| \mathcal{X} \right| ^{n}$.
+\end{itemize}
+
+

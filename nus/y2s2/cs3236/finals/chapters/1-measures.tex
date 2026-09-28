@@ -1,0 +1,65 @@
+\section{Measures}
+\subsection{Information}
+The \textcolor{Blue}{information content} of an event of probability $p$ is uniquely (up to base) determined by \textcolor{Bittersweet}{non-negativity}, \textcolor{Bittersweet}{$\psi(1)=0$}, \textcolor{Bittersweet}{continuity}, \textcolor{Bittersweet}{monotonicity}, and \textcolor{Bittersweet}{additivity under independence}:
+\[\psi(p)=\log_b\tfrac{1}{p},\quad p\in[0,1].\]
+
+
+\subsection{Shannon Entropy}
+Uniquely characterised by \textcolor{Bittersweet}{continuity}, \textcolor{Bittersweet}{maximality at uniform} (increasing in $N$), and the \textcolor{Bittersweet}{successive-decisions rule}:
+\[H(P_X)=\mathbb{E}_{X\sim P_X}\!\left[\log_2\tfrac{1}{P_X(X)}\right].\]
+\textcolor{ForestGreen}{Binary} $H_2(p)=-p\log_2 p-(1-p)\log_2(1-p)$;\\
+\textcolor{ForestGreen}{Uniform} over alphabet $\mathcal X$: $H=\log_2|\mathcal X|$.
+
+\textcolor{Blue}{Joint/conditional}:
+\begin{align*}
+  H(X,Y) & =\mathbb{E}\!\left[\log_2\tfrac{1}{P_{X,Y}(X,Y)}\right],\\
+  H(Y|X) & =\mathbb{E}\!\left[\log_2\tfrac{1}{P_{Y|X}(Y|X)}\right].
+\end{align*}
+$H(Y|X=x)$ may exceed $H(Y)$ for a particular $x$.
+
+\paragraph{Properties of Shannon entropy}
+\begin{itemize}
+  \item $0\le H(X)\le\log_2|\mathcal X|$, eq.\ iff deterministic / uniform.
+  \item \textcolor{Bittersweet}{Chain rule}: \mbox{$H(X_1,\ldots,X_n)=\sum_i H(X_i|X_1,\ldots,X_{i-1})$}.
+  \item $H(X|Y)\le H(X)$, eq.\ iff indep. ($H(X|Y=y)$ may exceed $H(X)$).
+  \item \textcolor{Bittersweet}{Sub-additivity}: \mbox{$H(X_1,\ldots,X_n)\le\sum_i H(X_i)$}, eq.\ iff indep.
+  \item \textcolor{Bittersweet}{Data processing inequality (DPI)}: \mbox{$H(X)\ge H(f(X))$}; eq.\ for bijection.
+  \item \textcolor{Bittersweet}{Concavity}: \mbox{$H(\lambda P+(1-\lambda)Q)\ge\lambda H(P)+(1-\lambda)H(Q)$}.
+\end{itemize}
+
+\subsection{KL Divergence}
+\textcolor{Blue}{KL divergence} between $P,Q$:
+\[D_{\mathrm{KL}}(P\|Q)=\mathbb{E}_{X\sim P}\!\left[\log_2\tfrac{P(X)}{Q(X)}\right].\]
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Gibbs}: $D\ge 0$, eq.\ iff $P=Q$; not symmetric, no triangle inequality.
+  \item \textcolor{Bittersweet}{Chain rule}: $D(P_{XY}\|Q_{XY})=D(P_X\|Q_X)+\sum_x P_X(x)D(P_{Y|x}\|Q_{Y|x})$.
+  \item \textcolor{Bittersweet}{DPI}: $D(P_X\|Q_X)\ge D(P_{f(X)}\|Q_{f(X)})$.
+\end{itemize}
+
+\subsection{Mutual Information}
+\textcolor{Blue}{Mutual information}:
+\[I(X;Y)=H(X)-H(X|Y)=H(Y)-H(Y|X).\]
+\textcolor{Blue}{Conditional}: $I(X;Y|Z)=H(X|Z)-H(X|Y,Z)$.\\
+\textcolor{Blue}{Joint}: $I(X;Y,Z)=H(X)-H(X|Y,Z)$.
+\[I(X;Y)=\mathbb{E}\!\left[\log_2\tfrac{P_{XY}(X,Y)}{P_X(X)P_Y(Y)}\right]=\mathbb{E}\!\left[\log_2\tfrac{P_{Y|X}(Y|X)}{P_Y(Y)}\right].\]
+\textcolor{Bittersweet}{Inclusion--exclusion}: $I(X;Y,Z)=I(X;Y)+I(X;Z|Y)$.
+\vspace{-4mm}
+\begin{center}
+  \includegraphics[width=0.12\textwidth]{venn-diagram.png}
+\end{center}
+\vspace{-4mm}
+\paragraph{Properties of mutual information}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Non-negativity}: $I(X;Y)\ge 0$, eq.\ iff indep.
+  \item $I(X;Y)\le H(X)\le\log_2|\mathcal X|$.
+  \item $I(X;Y)\le H(Y)\le\log_2|\mathcal Y|$.
+  \item $I(X;Y)=H(X)$ iff $X$ is a deterministic function of $Y$.
+  \item \textcolor{Bittersweet}{Symmetry}: $I(X;Y)=I(Y;X)$.
+  \item \textcolor{Bittersweet}{Chain rule}: $I(X_1,\ldots,X_n;Y)=\sum_i I(X_i;Y|X_1,\ldots,X_{i-1})$.
+
+  \item \textcolor{Bittersweet}{DPI}: $X\to Y\to Z\Rightarrow I(X;Z)\le I(X;Y),I(Y;Z)$; $W\to X\to Y\to Z\Rightarrow I(W;Z)\le I(X;Y)$. Eq.\ iff $X\to Z\to Y$ ($Z$ sufficient).
+  \item \textcolor{Bittersweet}{Info-preserving}: $Y$ depends on $X$ through $f(X)\Rightarrow I(X;Y)=I(f(X);Y)$.
+  \item \textcolor{Bittersweet}{Partial sub-add.}: $Y_i$ cond.\ indep.\ given $\mathbf X$, each $Y_i$ depends only on $X_i$ $\Rightarrow I(\mathbf X;\mathbf Y)\le\sum_i I(X_i;Y_i)$.
+  \item \textcolor{Bittersweet}{Convexity}: convex in $P_{Y|X}$ (fixed $P_X$), concave in $P_X$ (fixed $P_{Y|X}$).
+  \item \textcolor{Bittersweet}{Conditioning can increase MI}: $X,Y$ indep.\ Bernoulli, $Z=X\oplus Y$.
+\end{itemize}

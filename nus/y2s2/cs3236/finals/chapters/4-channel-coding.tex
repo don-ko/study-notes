@@ -1,0 +1,71 @@
+\section{Channel Coding}
+\textcolor{Blue}{Discrete memoryless channel} (DMC): triple $(\mathcal X,P_{Y|X},\mathcal Y)$; memoryless over $n$ uses: $P_{\mathbf Y|\mathbf X}(\mathbf y|\mathbf x)=\prod_i P_{Y|X}(y_i|x_i)$.\\
+\textcolor{Bittersweet}{Channel matrix} $Q_{j,i}=P_{Y|X}(j|i)$, so $P_Y=QP_X$.
+\paragraph{Setup} Uniform \textcolor{Blue}{Message} $m\in\{1,\ldots,M\}$; \textcolor{Blue}{Encoder} sends $\mathbf x^{(m)}\in\mathcal X^n$ from \textcolor{Blue}{Codebook} $\mathcal C$; \textcolor{Blue}{Decoder} $g:\mathcal Y^n\to\{1,\ldots,M\}$ outputs $\hat m$.\\
+\textcolor{Bittersweet}{Error} $P_e=\mathbb P[\hat m\neq m]$; \textcolor{Bittersweet}{Rate} $R=\tfrac{1}{n}\log_2 M$ so $M=2^{nR}$.
+
+\subsection{Channel Capacity}
+\textcolor{Blue}{Capacity} $C=\sup$ of rates $R$ such that\\
+$\forall\varepsilon>0,\ \exists n,\mathcal C$ with $M=2^{nR}$ and $P_e\le\varepsilon$.
+\paragraph{Channel Coding Theorem}
+\[\boxed{\;C=\max_{P_X} I(X;Y)\;}\]
+Any maximiser is a \textcolor{Bittersweet}{capacity-achieving input distribution}.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Achievability}: $R<C\Rightarrow\exists$ codes with $P_e\to 0$.
+  \item \textcolor{Bittersweet}{Converse}: $R>C\Rightarrow P_e$ bounded away from $0$.
+  \item \textcolor{Bittersweet}{Alphabet cap}: $C\le\min\{\log_2|\mathcal X|,\log_2|\mathcal Y|\}$; binary input $\Rightarrow C\le 1$ regardless of $|\mathcal Y|$.
+\end{itemize}
+
+\subsection{Example Channels}
+\begin{itemize}
+  \item \textcolor{ForestGreen}{Noiseless}, $Y=X$: $C=\log_2|\mathcal X|$.
+  \item \textcolor{ForestGreen}{Binary Symmetric Channel} (BSC)$(\delta)$: flip with probability $\delta$.
+    Uniform $P_X\Rightarrow$ Uniform $P_Y\Rightarrow H(Y)=1$.
+    \[C=1-H_2(\delta),\quad P_X(0)=P_X(1)=\tfrac12.\]
+  \item \textcolor{ForestGreen}{Binary Erasure Channel} (BEC)$(\varepsilon)$: $\mathcal Y=\{0,1,e\}$, erase with probability $\varepsilon$.
+    $H(X|Y\!=\!0)=H(X|Y\!=\!1)=0$, $H(X|Y\!=\!e)=H(X)$\\
+    $\Rightarrow I(X;Y)=H(X)-H(X|Y)=(1-\varepsilon)H(X)$.
+    \[C=1-\varepsilon,\quad P_X\text{ Uniform}.\]
+  \item \textcolor{ForestGreen}{Symmetric channels} (rows/cols of $Q$ are permutations of each
+    other): $H(Y|X)$ constant in $x$, Uniform $P_X$ is capacity-achieving, and
+    $C=\log_2|\mathcal Y|-H(\text{row of }Q)$.
+  \item \textcolor{ForestGreen}{Mod-sum}: $Y=(X+Z)\bmod m$, $Z\in\{0,1\}$ Bernoulli($\alpha$). Uniform $P_X\Rightarrow C=\log_2 m-H_2(\alpha)$.
+  \item \textcolor{ForestGreen}{Cascade BSC$(\delta)\!\to\!$BEC$(\varepsilon)$}: let $E=\mathbf 1\{Y{=}?\}$, decompose $H(Y|X)=H(E|X)+H(Y|E,X)$; $C=(1{-}\varepsilon)(1{-}H_2(\delta))$.
+  \item \textcolor{ForestGreen}{Non-symmetric}: optimal $P_X$ may be non-uniform; exploit symmetry to reduce $P_X$ to few parameters (e.g.\ $P_X{=}(1{-}2p,p,p)$), set $\partial I/\partial p=0$ (Lagrangian / KKT).
+  \item \textcolor{ForestGreen}{Z-channel} ($P(0|0){=}1$, $P(1|1){=}1{-}q$): $C_Z\ge\tfrac{1-q}{2}$ by emulating erasure.
+\end{itemize}
+
+\subsection{Jointly Typical Set}
+For joint distribution $P_{XY}$, fix $\varepsilon>0$:
+\[\mathcal T_n(\varepsilon)=\Big\{(\mathbf x,\mathbf y): \text{all three typical}\Big\}\]
+i.e.\ $\mathbf x$ $P_X$-typical, $\mathbf y$ $P_Y$-typical, and $(\mathbf x,\mathbf y)$
+$P_{XY}$-typical:
+\[2^{-n(H(X,Y)+\varepsilon)}\le P_{\mathbf{XY}}(\mathbf x,\mathbf y)\le 2^{-n(H(X,Y)-\varepsilon)},\]
+and analogously for the $X$- and $Y$-marginal bounds.
+\paragraph{Four properties}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Equivalent defn}: empirical log-likelihoods
+    $\tfrac{1}{n}\sum\log_2\tfrac{1}{P(\cdot)}$ within $\varepsilon$ of $H(X),H(Y),H(X,Y)$.
+  \item \textcolor{Bittersweet}{High prob}: $\mathbb P[(\mathbf X,\mathbf Y)\in\mathcal T_n(\varepsilon)]\to 1$ (LLN).
+  \item \textcolor{Bittersweet}{Cardinality}: $|\mathcal T_n(\varepsilon)|\le 2^{n(H(X,Y)+\varepsilon)}$.
+  \item \textcolor{Bittersweet}{Mismatched}: if $\mathbf Z\stackrel{\text{iid}}{\sim}Q_Z$, then $\mathbb P[\mathbf Z\in\mathcal T_n(\varepsilon;P_Z)]\approx 2^{-nD(P_Z\|Q_Z)}$.
+  \item \textcolor{Bittersweet}{Independent pair}: if
+    $(\mathbf X',\mathbf Y')\sim P_{\mathbf X}P_{\mathbf Y}$ (independent),
+    \[\mathbb P[(\mathbf X',\mathbf Y')\!\in\!\mathcal T_n(\varepsilon)]\le 2^{-n(I(X;Y)-3\varepsilon)}.\]
+\end{itemize}
+\subsection{Achievability (Random Coding)}
+\paragraph{Codebook}
+Draw each symbol $X_i^{(m)}\stackrel{\text{iid}}{\sim}P_X$ independently for all $i,m$.
+\paragraph{Decoder}
+Output $\hat m$ if it is the \emph{unique} index with
+$(\mathbf x^{(\hat m)},\mathbf Y)\in\mathcal T_n(\varepsilon)$; else error.
+\paragraph{Error analysis}
+Averaged $\overline P_e^{(m)}\le\delta_n+M\cdot 2^{-n(I(X;Y)-3\varepsilon)}$. With $M=2^{nR}$, second term $\to 0$ when $R<I(X;Y)-3\varepsilon$. Pick $P_X$ achieving $C$; deterministic code exists by probabilistic method.
+
+\subsection{Converse via Fano}
+Weak Fano: $H(m|\hat m)\le 1+P_e\log_2 M$, so $nR=H(m)=I(m;\hat m)+H(m|\hat m)\le I(m;\hat m)+1+P_e\,nR$.
+Along $m\!\to\!\mathbf X\!\to\!\mathbf Y\!\to\!\hat m$: $I(m;\hat m)\overset{\text{DPI}}{\le}I(\mathbf X;\mathbf Y)\le\sum_i I(X_i;Y_i)\le nC$ (sub-additivity + memorylessness). Thus $P_e\ge 1-\tfrac{C+1/n}{R}>0$ when $R>C$.
+
+\subsection{Joint Source-Channel Coding}
+Source of entropy rate $H$, $k$ symbols over DMC, $n$ uses. Reliable iff $nC>kH\iff\tfrac{k}{n}<\tfrac{C}{H}$.
+\textcolor{Bittersweet}{Separation theorem}: source-compress to $\approx 2^{kH}$ bits then channel-code is asymptotically optimal.
