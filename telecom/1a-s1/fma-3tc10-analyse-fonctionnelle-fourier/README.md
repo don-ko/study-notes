@@ -2,7 +2,7 @@
 
 Notes for `FMA_3TC10_TP`, Télécom Paris 1A, S1 2026-27. The course material they
 were written from, and the module README that describes it, stay in
-[`don-ko/telecom`](https://github.com/don-ko/telecom/tree/main/fma-3tc10-analyse-fonctionnelle-fourier)
+[`don-ko/telecom`](https://github.com/don-ko/telecom/tree/main/fma-3tc10-analyse-fonctionnelle-fourier) (private)
 (`~/Documents/project/telecom/fma-3tc10-analyse-fonctionnelle-fourier/`): references below to `cours/`, `td/`,
 `examens/` and the like are to that directory. The notes moved here from its
 `notes/` on 2026-09-28.

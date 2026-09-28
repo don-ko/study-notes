@@ -2,7 +2,7 @@
 
 Notes for `ECE_3TC32_TP`, Télécom Paris 1A, S1 2026-27. The course material they
 were written from, and the module README that describes it, stay in
-[`don-ko/telecom`](https://github.com/don-ko/telecom/tree/main/ece-3tc32-compilation)
+[`don-ko/telecom`](https://github.com/don-ko/telecom/tree/main/ece-3tc32-compilation) (private)
 (`~/Documents/project/telecom/ece-3tc32-compilation/`): references below to `cours/`, `td/`,
 `examens/` and the like are to that directory. The notes moved here from its
 `notes/` on 2026-09-28.

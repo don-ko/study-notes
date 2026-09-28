@@ -1,7 +1,7 @@
 # Glossaire — FMA 3TC11: Probabilités
 
 The French-first rule's term list for these notes
-([spec](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-09-21-french-first-notes-design.md)).
+([spec](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-09-21-french-first-notes-design.md), in the private coursework repo).
 Each term below is glossed exactly once, in its Home chapter, as
 `\textbf{terme} (\textit{English})` — or as `terme (\textit{English})` when the
 gloss sits in a definition's or theorem's title — and appears in French alone

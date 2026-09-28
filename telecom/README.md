@@ -4,7 +4,7 @@ Notes for the **Diplôme d'ingénieur, 1ère année**, academic year **2026-27**
 `1a-s1/` holds semester S1, one directory per module, named from the official
 sigle as in the coursework repo. The course material the notes were written
 from — `cours/`, `td/`, `examens/` — and the module READMEs that describe it stay
-in [`don-ko/telecom`](https://github.com/don-ko/telecom)
+in [`don-ko/telecom`](https://github.com/don-ko/telecom) (private)
 (`~/Documents/project/telecom/`). The notes moved here from its
 `<module>/notes/` directories on 2026-09-28.
 
@@ -34,7 +34,7 @@ and [`cs2100`](../nus/y2s1/cs2100/): `article` at 10pt, 1in margins, sans-serif
 headings via `sectsty`, a `fancyhdr` running head carrying the section,
 `\microtoc`, and the unnumbered theorem-like environments `definition` /
 `example` / `theorem` / `remark` / `notation` / `proof` that carry most of the
-content. The two reference documents differ on three lines, and **`cs3231` is the
+content. The two reference documents differ on three format settings, and **`cs3231` is the
 one followed here**: `\parindent` 0in rather than 0.2in, `secnumdepth` 2 rather
 than 3 — subsubsections carry no number — and `titlesec` setting
 `\subsubsection` in `\large\bfseries\sffamily`. `fontenc` at `T1` is the one
@@ -70,7 +70,7 @@ A setup does not run against the Économie precedent below either: it commits to
 no content. 3TC10's material is 2025-26 too, but the decision to write its notes
 rests on one thing Économie lacks: its 2026/2027 Moodle course publishes those
 polys under *Supports et programme* with no rival 2026-27 series beside them.
-The vintage stays a recorded risk for the notes.
+The vintage stays a recorded risk for the notes spec.
 
 Économie has no notes. Its six séance decks print 2025 on every cover and the
 module README records their reuse this year as unconfirmed, so there is nothing
