@@ -1,0 +1,85 @@
+\documentclass[10pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage{fix-cm}        % scale one design size, as OT1 does --- keeps the title bold
+\usepackage[T1]{fontenc}   % accented French terms kept inline in the prose
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{arrows,calc}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{titlesec}
+\titleformat*{\subsubsection}{\large\bfseries\sffamily}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0in} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily FMA 3TC10: Analyse fonctionnelle et de Fourier }\\
+\vspace{24pt}
+%{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+%\vspace{6pt}
+%{\fontsize{12}{12} \selectfont \ttfamily dkkl1137@gmail.com} \\
+%\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt
+  Functional analysis and Fourier analysis, in the order of the course poly. The
+  course sets conventions on the extended real line, then works through the topology
+  of normed vector spaces --- metric spaces, continuity of linear and bilinear maps,
+  density and separability, completeness and Banach spaces; the Lebesgue integral and
+  the $L^p$ spaces, with their inequalities and convolution; Hilbert spaces,
+  orthogonal projection, Hilbert bases and Fourier series; the Fourier transform on
+  $\mathbb{R}$, first on $L^1$ and then extended to $L^2$; regularity, decay at
+  infinity and the Schwartz class; and Fourier analysis on $[0,1[$ and on
+  $\mathbb{Z}$, with the Fejér kernel.
+
+  \medskip
+  No chapters are written yet: this file is the setup, and chapters are added at the
+  end of it as they are written.
+
+  \medskip
+  Prose is in English; the French terms the polys, the devoirs maison and the exams
+  actually use are kept inline, so the vocabulary stays findable in both languages.
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content --- chapters are \input here as they are written
+\end{document}
