@@ -1,0 +1,244 @@
+% Chapter 12: NP-Completeness.
+\section{NP-Completeness}
+\label{sec:npc}
+
+Building on the machinery of \cref{sec:reductions} -- decision problems, the classes $\P$ and $\NP$, polynomial-time many-one reductions $\le_p$, and $\NP$-hardness/completeness -- this chapter is the operational catalogue. The Cook--Levin theorem seeds the entire $\NP$-complete club at $3$-\textsc{Sat}; thereafter, every $\NP$-hardness proof reduces \emph{from} a previously-known $\NP$-hard problem \emph{to} the new one, following the template of input transformation, certificate translation, both-directions correctness, and polynomial-time check. The canonical reductions worked through here are $\textsc{Independent-Set} \le_p \textsc{Clique}$, $\textsc{Independent-Set} \le_p \textsc{Vertex-Cover}$, $3\textsc{-Sat} \le_p \textsc{Directed-Ham-Cycle}$, and $\textsc{Partition-Special} \le_p \textsc{Fantastic-Half}$ -- the last accompanied by an instructive sequence of failed attempts.
+
+\subsection{Definitions}
+The canonical NP-complete problems referenced in this chapter are catalogued below. Each is a decision problem: input as stated, YES/NO output. Witness sizes (for $\NP$ membership) are noted in remarks where non-obvious.
+
+\begin{definition}[3-SAT]
+\label{def:3sat}
+\index{3-SAT}
+Given a Boolean formula $\varphi$ in conjunctive normal form (CNF) with exactly three literals per clause, decide whether some assignment of truth values to the variables makes $\varphi = 1$.
+\end{definition}
+
+\begin{definition}[Circuit-SAT]
+\label{def:circuit_sat}
+\index{Circuit-SAT}
+Given a Boolean circuit $C$ with one output, decide whether some assignment of truth values to the input wires makes the output $1$.
+\end{definition}
+
+\begin{definition}[Clique]
+\label{def:clique}
+\index{Clique}
+Given an undirected graph $G = (V, E)$ and an integer $k$, decide whether $G$ contains a \emph{clique} of size $k$ -- a subset $S \subseteq V$ with $|S| = k$ and every pair in $S$ joined by an edge.
+\end{definition}
+
+\begin{definition}[Independent-Set]
+\label{def:independent_set}
+\index{Independent-Set}
+Given an undirected graph $G = (V, E)$ and an integer $k$, decide whether $G$ contains an \emph{independent set} of size $k$ -- a subset $S \subseteq V$ with $|S| = k$ and no two vertices of $S$ joined by an edge.
+\end{definition}
+
+\begin{definition}[Vertex-Cover]
+\label{def:vertex_cover}
+\index{Vertex-Cover}
+Given an undirected graph $G = (V, E)$ and an integer $k$, decide whether $G$ has a \emph{vertex cover} of size $k$ -- a subset $C \subseteq V$ with $|C| = k$ such that every edge has at least one endpoint in $C$.
+\end{definition}
+
+\begin{definition}[Hamiltonian-Cycle]
+\label{def:hamiltonian_cycle}
+\index{Hamiltonian-Cycle}
+Given an undirected graph $G = (V, E)$, decide whether $G$ contains a cycle that visits every vertex exactly once.
+\end{definition}
+
+\begin{definition}[Directed-Hamiltonian-Cycle]
+\label{def:dhc}
+\index{Directed-Hamiltonian-Cycle}
+Given a directed graph $G = (V, E)$, decide whether $G$ contains a directed cycle that visits every vertex exactly once.
+\end{definition}
+
+\begin{definition}[Subset-Sum]
+\label{def:subset_sum}
+\index{Subset-Sum}
+Given non-negative integers $a_1, \dots, a_n$ and a target $W$, decide whether some subset $S \subseteq \{1, \dots, n\}$ satisfies $\sum_{i \in S} a_i = W$.
+\end{definition}
+
+\begin{definition}[Partition]
+\label{def:partition}
+\index{Partition}
+Given non-negative integers $a_1, \dots, a_n$, decide whether $\{1, \dots, n\}$ can be split into two disjoint sets $S, \bar S$ with $\sum_{i \in S} a_i = \sum_{i \in \bar S} a_i$.
+\end{definition}
+
+\begin{definition}[Partition-Special]
+\label{def:partition_special}
+\index{Partition-Special}
+Given $n$ items, each with a positive integer weight $x_i$, decide whether the items can be partitioned into two groups of equal cardinality and equal weight.
+\end{definition}
+
+\begin{definition}[Fantastic-Half]
+\label{def:fantastic_half}
+\index{Fantastic-Half}
+Given $n$ items with positive integer weights $b_1, \dots, b_n$ summing to $B$, decide whether some subset of size $n/2$ has weight exactly $B/2$.
+\end{definition}
+
+\subsection{Cook--Levin theorem}
+
+\begin{theorem}[Cook--Levin]
+\label{thm:cook_levin}
+$3\textsc{-Sat}$ is $\NP$-complete. More strongly, every problem in $\NP$ poly-time reduces to \textsc{Circuit-Sat}, and \textsc{Circuit-Sat} poly-time reduces to $3\textsc{-Sat}$, so $3\textsc{-Sat}$ is $\NP$-hard. Combined with the fact that $3\textsc{-Sat} \in \NP$ (a satisfying assignment is a polynomial-size, polynomial-time-verifiable certificate), this gives $\NP$-completeness.
+\end{theorem}
+
+\begin{proof}
+\sketchproof Fix an arbitrary problem $L \in \NP$. By \cref{def:class_np}, there is a polynomial-time verifier $V(x, y)$ and a polynomial $p$ such that $x \in L$ iff there exists a certificate $y$ with $|y| \le p(|x|)$ and $V(x, y) = 1$. Since $V$ runs in polynomial time, it is computable by a Turing machine $M_V$ with running time bounded by some polynomial $q(|x|)$.
+
+\medskip
+\noindent\textit{Step 1 (every $L \in \NP$ reduces to \textsc{Circuit-Sat}).} The computation of $M_V$ on input $(x, y)$ for $q(|x|)$ steps can be unrolled into a Boolean circuit $C_x$ whose inputs are the bits of $y$. The circuit simulates the tape, head, and state of $M_V$ at each time step using a polynomial-size collection of gates -- one ``slice'' per time step, each slice computing the next-step configuration from the previous slice using the (constant-size) transition table of $M_V$. The total size is polynomial in $|x|$ and $q(|x|)$, hence polynomial in $|x|$. The circuit outputs $1$ iff $V(x, y) = 1$. Thus $x \in L$ iff $C_x$ has some satisfying input $y$, i.e.\ $C_x \in \textsc{Circuit-Sat}$. The map $x \mapsto C_x$ is computable in polynomial time.
+
+\medskip
+\noindent\textit{Step 2 (\textsc{Circuit-Sat} $\le_p 3\textsc{-Sat}$).} Given a Boolean circuit, introduce one variable per wire. For each gate, write a small CNF formula encoding ``output wire equals gate-of-input-wires'' (e.g.\ for an AND gate with inputs $a, b$ and output $c$, the clauses $(\overline{a} \vee \overline{b} \vee c) \wedge (a \vee \overline{c}) \wedge (b \vee \overline{c})$ enforce $c \leftrightarrow a \wedge b$). Conjoin all these per-gate clauses with a single unit clause forcing the output wire to $1$. The resulting CNF has clauses of size $\le 3$; pad shorter clauses with auxiliary variables to obtain exactly $3$ literals per clause. The construction has size polynomial in the circuit, and the formula is satisfiable iff the circuit is.
+
+Composing the two steps gives $L \le_p 3\textsc{-Sat}$ for every $L \in \NP$, which by \cref{def:np_hard} is the definition of $3\textsc{-Sat}$ being $\NP$-hard.
+\end{proof}
+
+\begin{remark}[What Cook--Levin buys]
+After Cook--Levin, every subsequent $\NP$-hardness proof follows the pattern: pick a problem $A$ already known $\NP$-hard (typically $3$-\textsc{Sat}, but later \textsc{Independent-Set}, \textsc{Vertex-Cover}, \textsc{Subset-Sum}, \textsc{Partition}, \textsc{Partition-Special}, etc.\ once they have been proven $\NP$-hard), and exhibit $A \le_p B$. By transitivity of $\le_p$ (\cref{thm:reduction_transitive}), every problem in $\NP$ then reduces to $B$.
+
+A complete $\NP$-completeness proof has two halves: exhibit a polynomial-size, polynomial-time-verifiable certificate (membership in $\NP$), \emph{and} reduce a known $\NP$-hard problem to the target (hardness). Skipping the membership step shows only $\NP$-hardness, not $\NP$-completeness. The reduction direction is also a perennial trap: to prove $B$ is $\NP$-hard one reduces $A \le_p B$ for $A$ \emph{already} known hard; reducing $B \le_p \textsc{3-Sat}$ instead would only show $B \in \NP$. Mnemonic: the previously-known-hard problem reduces \emph{to} the new problem, so that solving the new one also solves the old.
+\end{remark}
+
+\subsection{Canonical reductions}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.85\linewidth]{np-reduction-graph.pdf}
+  \caption{Canonical NP-complete reductions covered in this chapter. An arrow $A \to B$ means $A \le_p B$; the dashed arrow from ``Every Problem from \texttt{NP}'' to \textsc{Circuit-Sat} is the Cook--Levin theorem.}
+  \label{fig:np_reductions}
+\end{figure}
+
+\begin{theorem}[$\textsc{Independent-Set} \le_p \textsc{Clique}$]
+\label{thm:is_to_clique}
+\textsc{Clique} is $\NP$-complete. The hardness is established by the reduction: given an instance $(G, k)$ of \textsc{Independent-Set} (where $G = (V, E)$), output the instance $(\bar G, k)$ of \textsc{Clique}, where $\bar G = (V, \bar E)$ is the complement graph: $(u, v) \in \bar E$ iff $u \ne v$ and $(u, v) \notin E$.
+\end{theorem}
+
+\begin{proof}
+\textit{Membership in $\NP$.} A clique $C \subseteq V$ of size $\ge k$ is itself a polynomial-size certificate; the verifier checks $|C| \ge k$ and $(u, v) \in E$ for every distinct pair $u, v \in C$ in $O(k^2)$ time.
+
+\medskip
+\noindent\textit{Reduction is polynomial.} Constructing $\bar G$ enumerates all $\binom{|V|}{2}$ pairs and includes them in $\bar E$ iff they are not in $E$, taking $O(|V|^2)$ time.
+
+\medskip
+\noindent\textit{($\Rightarrow$).} Suppose $G$ has an independent set $X \subseteq V$ of size $k$. By definition, no two vertices in $X$ are adjacent in $G$, so for every distinct $u, v \in X$ we have $(u, v) \notin E$, hence $(u, v) \in \bar E$. Thus $X$ is a clique of size $k$ in $\bar G$.
+
+\medskip
+\noindent\textit{($\Leftarrow$).} Suppose $\bar G$ has a clique $X$ of size $k$. Then for every distinct $u, v \in X$, $(u, v) \in \bar E$, so $(u, v) \notin E$, so $X$ is an independent set of size $k$ in $G$.
+
+\medskip
+Since \textsc{Independent-Set} is $\NP$-hard (by reducing $3\textsc{-Sat}$ to \textsc{Independent-Set}; see \cref{sec:reductions}), so is \textsc{Clique}.
+\end{proof}
+
+\begin{remark}[Certificates have to translate]
+The reduction is correct precisely because the same vertex subset witnesses both sides: a YES-witness $C$ for \textsc{Clique} on $\bar G$ is also a YES-witness for \textsc{Independent-Set} on $G$. Arguing only that ``the optimal value of $A$ on $x$ equals the optimal value of $B$ on $f(x)$'' is necessary but not sufficient for $\le_p$-correctness; one must additionally exhibit a polynomial-time map taking a YES-witness for $f(x)$ back to a YES-witness for $x$.
+\end{remark}
+
+\begin{theorem}[$\textsc{Independent-Set} \le_p \textsc{Vertex-Cover}$]
+\label{thm:is_to_vc}
+\textsc{Vertex-Cover} is $\NP$-complete. The hardness uses the duality: $X \subseteq V$ is a vertex cover of $G = (V, E)$ iff $V \setminus X$ is an independent set of $G$. Reduction: given an instance $(G, k)$ of \textsc{Independent-Set}, output $(G, |V| - k)$ as an instance of \textsc{Vertex-Cover}.
+\end{theorem}
+
+\begin{proof}
+\textit{$\NP$ membership.} A subset $X \subseteq V$ with $|X| \le k'$ is a certificate; the verifier checks for every edge $(u, v) \in E$ whether $u \in X$ or $v \in X$, in $O(|E|)$ time.
+
+\medskip
+\noindent\textit{Reduction is polynomial.} The output is just $(G, |V| - k)$, computed in $O(|V|)$ time.
+
+\medskip
+\noindent\textit{Correctness via the duality.} For any $X \subseteq V$, the following are equivalent:
+\begin{enumerate}[(i)]
+  \item $X$ is a vertex cover, i.e.\ for every edge $(u, v) \in E$, $u \in X$ or $v \in X$;
+  \item no edge has both endpoints in $V \setminus X$;
+  \item $V \setminus X$ is an independent set.
+\end{enumerate}
+The first $\iff$ second is contraposition; the second $\iff$ third is the definition of an independent set.
+
+\medskip
+\noindent\textit{($\Rightarrow$).} If $G$ has an independent set $Y$ of size $\ge k$, take $X = V \setminus Y$. By the duality, $X$ is a vertex cover; and $|X| = |V| - |Y| \le |V| - k$.
+
+\medskip
+\noindent\textit{($\Leftarrow$).} If $G$ has a vertex cover $X$ of size $\le |V| - k$, take $Y = V \setminus X$. By the duality, $Y$ is an independent set; and $|Y| = |V| - |X| \ge k$.
+\end{proof}
+
+\begin{corollary}[Three-way equivalence]
+\label{cor:is_clique_vc_equivalence}
+\textsc{Independent-Set}, \textsc{Clique}, and \textsc{Vertex-Cover} are pairwise polynomial-time equivalent: each reduces to each in polynomial time, via complementation of the graph (\cref{thm:is_to_clique}) and complementation of the vertex set (\cref{thm:is_to_vc}).
+\end{corollary}
+
+\begin{theorem}[$3\textsc{-Sat} \le_p \textsc{Directed-Ham-Cycle}$]
+\label{thm:3sat_to_dhc}
+\textsc{Directed-Ham-Cycle} (and hence \textsc{Hamiltonian-Cycle} on undirected graphs, by a further reduction) is $\NP$-complete. Given a $3$-\textsc{Sat} instance $\Phi$ over variables $x_1, \dots, x_n$ with clauses $C_1, \dots, C_m$, construct a directed graph $G$ as follows.
+\begin{itemize}
+  \item For each variable $x_i$, build a \emph{horizontal path gadget} $P_i$: a chain of $3m + 3$ vertices with antiparallel edges between consecutive vertices (so the path can be traversed left-to-right or right-to-left). Left-to-right traversal of $P_i$ encodes $x_i = \mathsf{True}$; right-to-left encodes $x_i = \mathsf{False}$.
+  \item Add two special vertices $s$ and $t$. Connect $s$ to the left and right ends of $P_1$, and connect both ends of $P_n$ to $t$. Each $P_i$'s endpoints are connected to both endpoints of $P_{i+1}$, so any Hamiltonian cycle traverses the path gadgets one by one, choosing a direction independently for each.
+  \item For each clause $C_j = \ell_{j,1} \vee \ell_{j,2} \vee \ell_{j,3}$, add a \emph{clause vertex} $c_j$. For each literal $\ell_{j,k}$, place edges between $c_j$ and a designated pair $(u_{i,j}, v_{i,j})$ of consecutive vertices in $P_i$ (where $i$ is the variable underlying $\ell_{j,k}$): specifically, if $\ell_{j,k} = x_i$, add edge $u_{i,j} \to c_j$ and $c_j \to v_{i,j}$ (so a left-to-right traversal of $P_i$ can ``detour'' through $c_j$); if $\ell_{j,k} = \overline{x_i}$, reverse the orientation. Different clauses use disjoint pairs of consecutive vertices in each $P_i$, which is why each $P_i$ needs $\Theta(m)$ vertices.
+\end{itemize}
+The output $G$ has $\Theta(nm)$ vertices and edges, constructed in polynomial time.
+\end{theorem}
+
+\begin{proof}
+\sketchproof
+\textit{$\NP$ membership.} A Hamiltonian cycle is itself a polynomial-size certificate; the verifier checks that it visits each vertex exactly once and uses only edges of $G$, in $O(|V|)$ time.
+
+\medskip
+\noindent\textit{Reduction is polynomial.} The graph has $\Theta(nm)$ vertices and edges, all constructible in polynomial time.
+
+\medskip
+\noindent\textit{($\Rightarrow$).} Suppose $\Phi$ is satisfiable, witnessed by an assignment $\alpha$. Build a Hamiltonian cycle: start at $s$; for each $i = 1, \dots, n$, traverse $P_i$ left-to-right if $\alpha(x_i) = \mathsf{True}$ and right-to-left otherwise. Since $\alpha$ satisfies $\Phi$, each clause $C_j$ contains some literal $\ell_{j,k}$ that is true under $\alpha$; the orientation of $P_i$ (where $i$ is the variable of $\ell_{j,k}$) chosen above is precisely the one that lets the traversal detour through $c_j$ via the dedicated $(u_{i,j}, v_{i,j})$ pair. Pick one such satisfying literal per clause and detour through the corresponding $c_j$; finally connect to $t$ and back to $s$. Each clause vertex is visited exactly once because we detour through exactly one literal per clause.
+
+\medskip
+\noindent\textit{($\Leftarrow$).} Suppose $G$ has a Hamiltonian cycle $H$. The key claim (proved by case analysis of the local edges around each clause vertex's two attachment points $u, v$ in $P_i$) is: \emph{after $H$ enters a clause vertex $c_j$ from some $u_{i,j} \in P_i$, it must leave $c_j$ back to the immediately following vertex $v_{i,j}$ in the same $P_i$ -- it cannot ``escape'' to a different $P_{i'}$.} The argument: if $H$ entered $c_j$ from $u$ and exited to a vertex $v'$ in some other path, then the predecessor of the next vertex $v$ in the original $P_i$ would have no remaining valid in-neighbour, leading $H$ to get stuck. Granting the claim, contracting all detours through clause vertices yields a Hamiltonian cycle of the auxiliary graph consisting of just the path gadgets and $s, t$. That cycle must traverse each $P_i$ in a single direction; read off $\alpha(x_i) = \mathsf{True}$ if left-to-right and $\mathsf{False}$ otherwise. Each clause vertex $c_j$ is visited via some literal $\ell_{j,k}$ which (by construction of the detour edges) is true under $\alpha$, so $\alpha$ satisfies every clause, hence $\Phi$.
+\end{proof}
+
+\begin{theorem}[$\textsc{Partition-Special} \le_p \textsc{Fantastic-Half}$]
+\label{thm:partspec_to_fh}
+\textsc{Fantastic-Half} is $\NP$-complete. Recall: \textsc{Partition-Special} asks, given non-negative integers $x_1, \dots, x_n$, whether $\{1, \dots, n\}$ can be partitioned into $I_1 \sqcup I_2$ with $\sum_{i \in I_1} x_i = \sum_{i \in I_2} x_i$ and $|I_1| = |I_2|$; \textsc{Fantastic-Half} asks, given non-negative integer pairs $(a_1, b_1), \dots, (a_n, b_n)$ with $A = \sum a_i$, $B = \sum b_i$, whether some $S \subseteq \{1, \dots, n\}$ with $|S| = n/2$ satisfies $\sum_{i \in S} a_i \ge A/2$ and $\sum_{i \in S} b_i \ge B/2$. Reduction: given $(x_1, \dots, x_n)$, output $a_i := x_i$ and $b_i := X - x_i$ for all $i$, where $X = \sum_i x_i$.
+\end{theorem}
+
+\begin{proof}
+\textit{$\NP$ membership.} The set $S$ is itself a polynomial-size certificate; the verifier checks $|S| = n/2$, $\sum_{i \in S} a_i \ge A/2$, and $\sum_{i \in S} b_i \ge B/2$ in linear time.
+
+\medskip
+\noindent\textit{Reduction validity and runtime.} Each $b_i = X - x_i \ge 0$ since $x_i \le X$, so the constructed instance is valid. The construction takes $O(n)$ time.
+
+\medskip
+\noindent\textit{($\Rightarrow$).} If $\{1, \dots, n\}$ partitions into $I_1, I_2$ of equal size and equal sum, take $S = I_1$. Then $|S| = n/2$, and $\sum_{i \in S} a_i = \sum_{i \in S} x_i = X/2 = A/2$. For the $b$-sums, $\sum_{i \in S} b_i = \sum_{i \in S} (X - x_i) = (n/2) X - X/2$, while $B = \sum_i (X - x_i) = nX - X$, so $B/2 = (nX - X)/2 = (n/2) X - X/2$, giving $\sum_{i \in S} b_i = B/2$.
+
+\medskip
+\noindent\textit{($\Leftarrow$).} Suppose $S$ satisfies $|S| = n/2$, $\sum_{i \in S} a_i \ge A/2$, and $\sum_{i \in S} b_i \ge B/2$. The first inequality reads $\sum_{i \in S} x_i \ge \sum_{i \notin S} x_i$. The second reads $\sum_{i \in S}(X - x_i) \ge \sum_{i \notin S}(X - x_i)$, i.e.\ $(n/2) X - \sum_{i \in S} x_i \ge (n/2) X - \sum_{i \notin S} x_i$, hence $\sum_{i \in S} x_i \le \sum_{i \notin S} x_i$. The two inequalities together force equality: $\sum_{i \in S} x_i = \sum_{i \notin S} x_i$. So $(I_1, I_2) := (S, \{1, \dots, n\} \setminus S)$ is a valid \textsc{Partition-Special} witness.
+\end{proof}
+
+\begin{remark}[Why the obvious reductions $a_i = b_i = x_i$, $b_i = x_{n+1-i}$, and $b_i = -x_i$ all fail]
+Three natural attempts fail before the correct reduction $b_i = X - x_i$. The ``copy'' attempt $a_i = b_i = x_i$ breaks ($\Leftarrow$): the inequality $\sum_{i \in S} a_i \ge A/2$ alone is not enough to conclude equality with $\sum_{i \notin S} a_i$ -- the counterexample $(1, 2, 3, 5)$ is a NO-instance of \textsc{Partition-Special} but YES under this map (take $S = \{3, 4\}$ with $a$-sum $8 \ge 11/2$ and $b$-sum $8 \ge 11/2$). The ``reverse'' attempt $b_i = x_{n+1-i}$ permutes but does not negate; the same counterexample still works. The ``negate'' attempt $b_i = -x_i$ \emph{would} force equality (the two reverse inequalities cancel) but violates the non-negativity requirement of \textsc{Fantastic-Half}, producing an invalid instance. Replacing $-x_i$ by $X - x_i$ preserves the cancellation property up to the additive constant $X$ while keeping values non-negative; this is the trick.
+
+The first two failures illustrate that \emph{both directions} of correctness are mandatory: $x \in A \Rightarrow f(x) \in B$ is easy, but the reverse can fail on a small counterexample. The third illustrates that the reduction's output must be a syntactically valid instance of the target -- always check that $f(x)$ satisfies the input constraints of $B$. A separate concern is the runtime bound: the construction must be polynomial in $|x|$, not in the value encoded by $x$. For \textsc{Subset-Sum}-flavour reductions, ``pseudo-polynomial'' time in the magnitude of weights is \emph{not} polynomial time.
+\end{remark}
+
+\subsection{Worked example}
+
+\begin{example}[Concrete reduction $\textsc{Independent-Set} \le_p \textsc{Clique}$]
+\label{ex:reduction_walkthrough}
+Take the small graph $G$ with vertex set $V = \{a, b, x, y, z, t\}$ and edge set
+\[
+  E = \{(a, b),\ (b, x),\ (x, y),\ (y, t),\ (y, z)\}.
+\]
+We ask: does $G$ have an independent set of size $\ge 3$? We solve it via the \textsc{Clique} oracle.
+
+\medskip
+\noindent\textit{Step 1 -- apply the reduction.} Build $\bar G$ on the same vertex set; an edge $(u, v)$ is in $\bar G$ iff $u \ne v$ and $(u, v) \notin E$. The total number of unordered pairs is $\binom{6}{2} = 15$. Subtracting the $5$ edges of $E$, the complement has $10$ edges:
+\[
+  \bar E = \{(a,x),\ (a,y),\ (a,z),\ (a,t),\ (b,y),\ (b,z),\ (b,t),\ (x,z),\ (x,t),\ (z,t)\}.
+\]
+
+\medskip
+\noindent\textit{Step 2 -- ask the target problem.} We ask whether $\bar G$ has a \emph{clique} of size $\ge 3$.
+
+\medskip
+\noindent\textit{Step 3 -- inspect.} The triple $\{a, x, t\}$ has all three pairs $(a,x), (a,t), (x,t) \in \bar E$, so it is a clique of size $3$ in $\bar G$. By \cref{thm:is_to_clique} (the $\Leftarrow$ direction), this same triple is an independent set of size $3$ in $G$: indeed, none of $(a,x), (a,t), (x,t)$ is in $E$.
+
+\medskip
+\noindent\textit{Step 4 -- certificate translation.} Critically, the reduction's correctness is not just that ``YES corresponds to YES''; it is that the \emph{same set of vertices} is the witness on both sides. A black-box \textsc{Clique} solver returning the clique $\{a, x, t\}$ of $\bar G$ \emph{directly} hands back the desired independent set of $G$. This is the typical structure: the certificate transforms via the same map (or a simple inverse) as the instance itself.
+
+\medskip
+\noindent\textit{Polynomial time.} Building $\bar G$ took $O(n^2)$ time. So a hypothetical polynomial-time \textsc{Clique} solver would yield a polynomial-time \textsc{Independent-Set} solver: one $\bar G$-construction followed by one \textsc{Clique} call, then trivially read off the witness.
+\end{example}
+

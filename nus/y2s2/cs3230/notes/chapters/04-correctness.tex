@@ -1,0 +1,217 @@
+% Chapter 4: Correctness.
+\section{Correctness}
+\label{sec:correctness}
+
+An algorithm is \emph{correct} on a given input if, when executed, it halts and produces the specified output, and \emph{correct} (without qualification) if it is correct on every legal input. Correctness has two faces: \emph{partial correctness} (\emph{if} the algorithm halts, the output satisfies the post-condition) and \emph{termination}; together these constitute \emph{total correctness}. Iterative algorithms admit a uniform partial-correctness template -- the loop-invariant theorem -- with termination argued separately by exhibiting a non-negative integer variant. Recursive algorithms are handled by strong induction on input size.
+
+\subsection{Definitions}
+
+\begin{definition}[Loop invariant]
+\label{def:loop_invariant}
+\index{loop invariant}
+A \emph{loop invariant} for a loop $L$ is a predicate $I$ on the program state such that $I$ holds at the start of every iteration of $L$ (equivalently, every time control reaches the loop guard). The invariant is the inductive hypothesis used to prove partial correctness of the loop: it must be (a) true on entry, (b) preserved by each pass of the loop body, and (c) strong enough that, combined with the negated guard, it implies the desired post-condition when the loop exits. Choosing the right invariant is the only creative step in a loop-invariant proof; everything else is mechanical.
+\end{definition}
+
+\begin{definition}[Partial correctness]
+\label{def:partial_correctness}
+\index{partial correctness}
+An algorithm $\mathcal{A}$ is \emph{partially correct} with respect to a pre-condition $P$ and post-condition $Q$ if, for every input satisfying $P$, \emph{if} $\mathcal{A}$ halts on that input \emph{then} the output satisfies $Q$. Partial correctness says nothing about whether the algorithm halts; an algorithm that loops forever on every input is vacuously partially correct.
+\end{definition}
+
+\begin{definition}[Total correctness]
+\label{def:total_correctness}
+\index{total correctness}
+An algorithm $\mathcal{A}$ is \emph{totally correct} with respect to $(P, Q)$ if, for every input satisfying $P$, $\mathcal{A}$ halts and the output satisfies $Q$. Equivalently, total correctness is partial correctness (\cref{def:partial_correctness}) plus termination. The two are typically established by separate arguments: the loop invariant or strong induction handles partial correctness, while a termination measure (\cref{def:termination_measure}) handles termination.
+\end{definition}
+
+\begin{definition}[Termination measure / variant]
+\label{def:termination_measure}
+\index{termination measure}
+A \emph{termination measure} (or \emph{loop variant}) for a loop $L$ is a function $\mu$ from the program state into $\mathbb{N}$ (or, more generally, into a well-founded set such as $(\mathbb{N}, <)$) such that:
+\begin{enumerate}[(i)]
+  \item $\mu \ge 0$ at every point in the execution of $L$;
+  \item $\mu$ \emph{strictly decreases} on every pass of the loop body, i.e.\ if $\mu_t$ is the value at the start of iteration $t$, then $\mu_{t+1} < \mu_t$.
+\end{enumerate}
+Since a strictly decreasing sequence of non-negative integers cannot be infinite, the existence of such a $\mu$ proves that $L$ executes only finitely many iterations. For recursive procedures the analogue is a measure on the input that strictly decreases on every recursive call; well-foundedness then forbids infinite recursion. Typical choices: $\mu = n - i$ for a \texttt{for} loop running from $i$ to $n$; $\mu = \mathrm{ub} - \mathrm{lb} + 1$ for binary search; $\mu = |V \setminus R|$ for Dijkstra's main loop.
+\end{definition}
+
+\begin{remark}[Well-founded, not merely decreasing]
+The codomain of $\mu$ must be well-founded; strict decrease alone is not enough. A strictly decreasing sequence in $\mathbb{Q}$ or $\mathbb{R}$ can be infinite ($1, 1/2, 1/4, \dots$), so picking $\mathbb{N}$ (or any well-founded order) is essential. Conversely, ``the value of $i$ never repeats'' does not suffice -- $i$ must \emph{decrease} (or progress monotonically toward a fixed bound).
+\end{remark}
+
+\begin{definition}[Strong induction]
+\label{def:strong_induction}
+\index{strong induction}
+\emph{Strong induction} (also \emph{course-of-values induction}) on $\mathbb{N}$: to prove that a predicate $P(n)$ holds for every $n \ge 0$, it suffices to prove
+\[
+  \forall n \in \mathbb{N},\ \bigl(\forall k < n,\ P(k)\bigr) \implies P(n).
+\]
+The base case $P(0)$ is the instance of this implication at $n = 0$, where the antecedent $\forall k < 0,\ P(k)$ is vacuous. Strong induction differs from ordinary induction only in the inductive hypothesis: instead of assuming $P(n-1)$ alone, we may assume $P(k)$ for \emph{all} $k < n$. The two principles are logically equivalent, but strong induction is the natural fit when a recursive procedure makes calls of varying smaller sizes (e.g.\ $\mathrm{Fib}(n)$ calls both $\mathrm{Fib}(n-1)$ and $\mathrm{Fib}(n-2)$).
+\end{definition}
+
+\begin{definition}[Structural induction]
+\label{def:structural_induction}
+\index{structural induction}
+\emph{Structural induction} generalises strong induction from $\mathbb{N}$ to any \emph{inductively defined} (algebraic) structure: lists, trees, formulas, etc. To prove that a predicate $P$ holds for every element of such a structure, one proves $P$ for each base constructor (e.g.\ the empty list, a leaf), and proves $P$ for each recursive constructor under the assumption that $P$ holds for every immediate substructure (e.g.\ the tail of a list, the children of an internal node). Termination of recursion on the structure is automatic because the substructures are strictly smaller in the well-founded ordering induced by the constructors. In algorithm analysis, most correctness proofs reduce to strong induction (\cref{def:strong_induction}) on the integer input size; structural induction is the right tool whenever the input is naturally a tree or a recursive data type.
+\end{definition}
+
+\subsection{Loop invariants}
+
+The loop-invariant pattern reduces partial correctness of an iterative algorithm to a three-line induction.
+
+\begin{theorem}[Loop-invariant theorem]
+\label{thm:loop_invariant_theorem}
+Let $L$ be a loop with guard $G$ and let $I$ be a predicate on the program state. Suppose:
+\begin{enumerate}[(i)]
+  \item \emph{(Initialisation)} $I$ holds at the start of the first iteration;
+  \item \emph{(Maintenance)} for every iteration $t$, if $I$ and $G$ hold at the start of $t$, then $I$ holds at the start of iteration $t+1$ (equivalently, at the end of iteration $t$);
+  \item \emph{(Termination)} the loop performs only finitely many iterations.
+\end{enumerate}
+Then, when $L$ exits, the conjunction $I \wedge \neg G$ holds. Consequently, if $I \wedge \neg G$ entails the desired post-condition, the loop is partially correct, and -- given (iii) -- totally correct.
+\end{theorem}
+
+\begin{proof}
+Let $I_t$ denote ``$I$ holds at the start of iteration $t$''. We prove by induction on $t$ that $I_t$ holds for every $t = 1, 2, \dots, T$, where $T$ is the total number of iterations (finite by (iii)). The base case $t = 1$ is exactly (i). For the inductive step, suppose $I_t$ holds. Either iteration $t$ is the last one (the guard becomes false, and $I_t$ remains true at exit, so $I_{T+1} := I$-at-exit holds), or iteration $t$ executes the body and control returns to the guard; by (ii) this implies $I_{t+1}$. By induction, $I$ holds at the moment the loop exits. At that moment the guard is false (else the loop would have continued), so $I \wedge \neg G$ holds, as claimed. The post-condition then follows by the assumed entailment $I \wedge \neg G \models Q$.
+\end{proof}
+
+\begin{remark}[Three obligations $\leftrightarrow$ induction]
+The structure of \cref{thm:loop_invariant_theorem} is exactly mathematical induction on iteration count: initialisation is the base case, maintenance is the inductive step, and the ``termination'' clause names the conclusion drawn at exit (not to be confused with proving the loop terminates -- that is a separate obligation handled by a variant, \cref{def:termination_measure}). Some authors fold the post-condition entailment into a fourth bullet called ``termination''; we bundle ``invariant survives plus guard fails $\Rightarrow$ correct output'' into a single observation.
+\end{remark}
+
+\begin{remark}[Common loop-invariant pitfalls]
+Three slips recur. First, partial correctness is not total correctness: the loop-invariant theorem gives only conditional correctness, so a separate termination argument (a variant in $\mathbb{N}$ that strictly decreases, \cref{def:termination_measure}) is still owed. Second, the invariant must survive \emph{exit}: it is $I \wedge \neg G$ at the moment the guard fails that must imply the post-condition, so a candidate $I$ too weak to do so when conjoined with $\neg G$ is not yet finished. Third, the boundary case of zero iterations matters: if the body is never executed (e.g.\ $n = 0$ in selection sort, or $\mathrm{lb} > \mathrm{ub}$ in binary search), initialisation and the negated guard alone must already entail the post-condition, typically by appealing to vacuous truth (an empty prefix is sorted, an empty range contains no element) -- but this should be stated explicitly.
+\end{remark}
+
+\begin{example}[Selection sort -- finding the right invariant]
+\label{ex:insertion_sort_correctness}
+We prove the partial correctness of \textsc{SelectionSort}, the sorting algorithm given in \cref{alg:selection_sort}.
+
+\begin{algorithm}
+\caption{\textsc{SelectionSort}$(A[1..n])$.}
+\label{alg:selection_sort}
+\begin{algorithmic}[1]
+  \For{$j = 1$ \textbf{to} $n - 1$}
+    \State Select $s \in \{j, j+1, \dots, n\}$ such that $A[s]$ is a smallest entry in $A[j..n]$.
+    \State Swap $A[j]$ and $A[s]$.
+  \EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Choice of invariant.} Three candidate invariants ``at the start of iteration $j$'' suggest themselves:
+\begin{enumerate}[(a)]
+  \item ``$A$ is sorted.'' \emph{Fails initialisation:} a generic input is not sorted at the start of $j = 1$.
+  \item ``$A[1..j-1]$ is sorted.'' Initialisation and termination check out (at exit $j = n$, so $A[1..n-1]$ is sorted, and one more element being out of place would break the post-condition only if $A[n]$ were smaller than $A[n-1]$). \emph{Fails maintenance:} nothing forces $A[j-1] \le A[j]$, since the prefix sorted-ness of $A[1..j-1]$ does not constrain the relationship between the prefix and the suffix.
+  \item ``$x \le y$ for all $x \in A[1..j-1]$ and $y \in A[j..n]$.'' \emph{Fails termination:} at exit, this only says the largest of the first $n-1$ entries is $\le A[n]$, which does not imply that the prefix itself is sorted.
+\end{enumerate}
+The fix is to conjoin (b) and (c). The correct invariant $I_j$ is:
+\[
+  \text{$A[1..j-1]$ is sorted}\quad \wedge \quad x \le y\ \text{for all } x \in A[1..j-1],\ y \in A[j..n].
+\]
+
+\medskip
+\noindent\textit{Initialisation.} At $j = 1$, the prefix $A[1..0]$ is empty, so both conjuncts hold vacuously.
+
+\medskip
+\noindent\textit{Maintenance.} Suppose $I_j$ holds at the start of iteration $j$. Iteration $j$ picks $s \in \{j, \dots, n\}$ with $A[s] = \min A[j..n]$ and swaps $A[j]$ and $A[s]$. After the swap:
+\begin{itemize}
+  \item $A[1..j-1]$ is unchanged and remains sorted.
+  \item The new $A[j]$ equals the old $A[s] = \min A[j..n]$, which by the second conjunct of $I_j$ is $\ge$ every $x \in A[1..j-1]$ (since each such $x$ was $\le$ every entry in $A[j..n]$). Hence $A[j-1] \le A[j]$, so $A[1..j]$ is sorted.
+  \item The new $A[j]$ is also $\le$ every entry remaining in $A[j+1..n]$ (it was the minimum of $A[j..n]$). Combined with the second conjunct of $I_j$, every entry of $A[1..j]$ is $\le$ every entry of $A[j+1..n]$.
+\end{itemize}
+Both conjuncts of $I_{j+1}$ hold.
+
+\medskip
+\noindent\textit{Termination (post-condition).} The loop exits with $j = n$, at which point $I_n$ asserts that $A[1..n-1]$ is sorted and every entry of $A[1..n-1]$ is $\le A[n]$. Together this means $A[1..n]$ is sorted, which is the post-condition. (Termination of the loop itself is immediate: the \texttt{for} loop runs $n - 1$ times.)
+
+\medskip
+\noindent\textit{Why each candidate failed.} The lesson is that an invariant must be \emph{strong enough} to imply the post-condition at exit and \emph{weak enough} to be true at entry; (b) was too weak at the right (termination), while (a) was too strong at the left (initialisation). Conjoining (b) and (c) is the standard fix: a sorted prefix together with ``every prefix entry $\le$ every suffix entry'' is exactly the invariant that survives both endpoints. The methodological point generalises: pick the invariant \emph{before} writing the proof. Reverse-engineering one from the maintenance step is a common error. The candidate-checking exercise above -- write several candidates, mark which of (init / maint / term) each one satisfies, and conjoin until all three boxes are ticked -- is the right discipline.
+\end{example}
+
+\subsection{Termination}
+
+Partial correctness is independent of termination, and termination is usually proved separately by exhibiting a variant.
+
+\begin{example}[Binary search -- termination via a strictly decreasing variant]
+\label{ex:binary_search_termination}
+Consider \textsc{BinarySearch}$(A, \mathrm{lb}, \mathrm{ub}, x)$ in \cref{alg:binary_search}, which decides whether $x$ occurs in the sorted slice $A[\mathrm{lb}..\mathrm{ub}]$.
+
+\begin{algorithm}
+\caption{\textsc{BinarySearch}$(A, \mathrm{lb}, \mathrm{ub}, x)$.}
+\label{alg:binary_search}
+\begin{algorithmic}[1]
+  \If{$\mathrm{lb} > \mathrm{ub}$} \Return \textbf{NO} \EndIf
+  \State $\mathrm{mid} \gets \lfloor (\mathrm{lb} + \mathrm{ub})/2 \rfloor$.
+  \If{$x = A[\mathrm{mid}]$} \Return \textbf{YES}
+  \ElsIf{$x > A[\mathrm{mid}]$} \Return \textsc{BinarySearch}$(A, \mathrm{mid}+1, \mathrm{ub}, x)$
+  \ElsIf{$x < A[\mathrm{mid}]$} \Return \textsc{BinarySearch}$(A, \mathrm{lb}, \mathrm{mid}-1, x)$
+  \EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Termination measure.} Let $n = \mathrm{ub} - \mathrm{lb} + 1$ be the size of the searched slice. Set $\mu = \max(n, 0)$; then $\mu \in \mathbb{N}$.
+
+\medskip
+\noindent\textit{$\mu$ strictly decreases at every recursive call.} Let $m = \lfloor (\mathrm{lb} + \mathrm{ub})/2 \rfloor$, so $\mathrm{lb} \le m \le \mathrm{ub}$ when the call is made (the early return at $\mathrm{lb} > \mathrm{ub}$ ensures $n \ge 1$ in this branch). The two recursive calls have new slice sizes
+\[
+  n_{\text{right}} = \mathrm{ub} - (m + 1) + 1 = \mathrm{ub} - m, \qquad
+  n_{\text{left}}  = (m - 1) - \mathrm{lb} + 1 = m - \mathrm{lb}.
+\]
+Both are $\le \lfloor n/2 \rfloor \le n - 1 < n$ (when $n \ge 1$), so $\mu$ strictly decreases.
+
+\medskip
+\noindent\textit{$\mu \ge 0$.} Immediate from the definition.
+
+\medskip
+\noindent\textit{Conclusion.} A strictly decreasing sequence in $\mathbb{N}$ cannot be infinite, so the recursion bottoms out after at most $\mu_0$ levels, where $\mu_0$ is the initial value. In fact $\mu$ at least halves each level, so the recursion depth is $O(\log n)$, matching the well-known $O(\log n)$ time bound. The same variant $\mathrm{ub} - \mathrm{lb} + 1$ also works for the half-open-interval variant of binary search; the choice of $+1$ vs $-1$ affects only the off-by-one shift in the base case.
+\end{example}
+
+\subsection{Induction for recursive algorithms}
+
+For a recursive procedure $\mathcal{A}$, correctness on every input reduces to two obligations: (a) the no-recursion (base) branches are correct, and (b) for every recursive branch, \emph{if} all recursive calls return correct answers, then so does the surrounding code. The combination is precisely strong induction (\cref{def:strong_induction}) on input size.
+
+\begin{theorem}[Strong induction principle]
+\label{thm:strong_induction}
+Let $P(n)$ be a predicate on $\mathbb{N}$. If
+\[
+  \forall n \in \mathbb{N},\ \bigl(\forall k < n,\ P(k)\bigr) \implies P(n),
+\]
+then $P(n)$ holds for every $n \in \mathbb{N}$.
+\end{theorem}
+
+\begin{proof}
+Define $Q(n) := \forall k \le n,\ P(k)$. We show $Q(n)$ for all $n$ by ordinary induction. \emph{Base} $n = 0$: the hypothesis at $n = 0$ has the vacuous antecedent $\forall k < 0,\ P(k)$, so it directly yields $P(0)$, hence $Q(0)$. \emph{Step:} suppose $Q(n)$, i.e.\ $P(k)$ for all $k \le n$; equivalently $P(k)$ for all $k < n+1$. The hypothesis at $n + 1$ then gives $P(n+1)$, so $Q(n+1)$ holds. By ordinary induction $Q(n)$ holds for every $n$, hence so does $P(n)$.
+
+The same argument works for any well-founded relation in place of $<$ on $\mathbb{N}$, which is what justifies structural induction (\cref{def:structural_induction}) on inductively defined data types.
+\end{proof}
+
+\begin{remark}[When to reach for strong induction, and how many base cases]
+If the recursive call is on a single argument with size exactly $n - 1$ (e.g.\ a tail-recursive linear scan), ordinary induction suffices. Strong induction is the right tool when the call is on a smaller-by-an-arbitrary-amount argument (binary search's $\lfloor n/2 \rfloor$) or when there are multiple recursive calls (Fibonacci, merge sort). A recursion that refers to both $f(n-1)$ and $f(n-2)$ also requires base cases at \emph{both} $n = 0$ and $n = 1$; otherwise the first recursive step appeals to $f(-1)$.
+\end{remark}
+
+\begin{example}[Recursive Fibonacci -- correctness by strong induction]
+\label{ex:recursive_correctness}
+Let $\mathrm{Fib}(n)$ be defined by $\mathrm{Fib}(0) = 0$, $\mathrm{Fib}(1) = 1$, and $\mathrm{Fib}(n) = \mathrm{Fib}(n-1) + \mathrm{Fib}(n-2)$ for $n \ge 2$. Consider the recursive algorithm
+\[
+  \textsc{Fib}(n) := \begin{cases} n & \text{if } n \le 1, \\ \textsc{Fib}(n-1) + \textsc{Fib}(n-2) & \text{otherwise.} \end{cases}
+\]
+We show that $\textsc{Fib}(n) = \mathrm{Fib}(n)$ for all $n \ge 0$ by strong induction (\cref{thm:strong_induction}) on $n$.
+
+\medskip
+\noindent\textit{Base cases.} For $n = 0$: $\textsc{Fib}(0) = 0 = \mathrm{Fib}(0)$. For $n = 1$: $\textsc{Fib}(1) = 1 = \mathrm{Fib}(1)$. Both are the $n \le 1$ branch and involve no recursion. Two base cases are needed because the recursive branch refers to $\textsc{Fib}(n-2)$ and $\textsc{Fib}(n-1)$ simultaneously.
+
+\medskip
+\noindent\textit{Inductive step.} Fix $n \ge 2$ and assume $\textsc{Fib}(k) = \mathrm{Fib}(k)$ for every $k$ with $0 \le k < n$. Since $n \ge 2$ the algorithm executes the recursive branch:
+\[
+  \textsc{Fib}(n) = \textsc{Fib}(n-1) + \textsc{Fib}(n-2)
+  \stackrel{\text{IH}}{=} \mathrm{Fib}(n-1) + \mathrm{Fib}(n-2)
+  = \mathrm{Fib}(n),
+\]
+where the second equality uses the inductive hypothesis at the two strictly smaller indices $n-1$ and $n-2$ (both $\ge 0$ because $n \ge 2$), and the third is the recurrence defining $\mathrm{Fib}$. By \cref{thm:strong_induction}, $\textsc{Fib}(n) = \mathrm{Fib}(n)$ for every $n \ge 0$.
+
+\medskip
+\noindent\textit{Termination.} Each recursive call strictly decreases the input ($n \mapsto n-1$ and $n \mapsto n-2$, both non-negative once $n \ge 2$), and the base branch returns at $n \le 1$. The variant $\mu = n$ is non-negative and strictly decreases on every recursive call, so by \cref{def:termination_measure} the recursion terminates. Total correctness follows.
+
+\medskip
+\noindent\textit{Why strong (not ordinary) induction.} The recursive branch invokes the algorithm at \emph{two} smaller arguments, $n-1$ and $n-2$. The inductive hypothesis must cover both, which is exactly the strength advantage of strong induction over $P(n-1) \Rightarrow P(n)$. The same pattern applies to merge sort (recursion on the two halves of size $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$, both $< n$ for $n \ge 2$), to recursive binary search (induction on slice size $n = \mathrm{ub} - \mathrm{lb} + 1$, base case $n \le 0$ returning \textbf{NO}, inductive step splitting on $x$ vs $A[\mathrm{mid}]$ and invoking strong induction on a strictly smaller slice), and to fast exponentiation $\mathrm{power}(x, n) = \mathrm{power}(x, \lfloor n/2 \rfloor)^2 \cdot x^{n \bmod 2}$.
+\end{example}
+

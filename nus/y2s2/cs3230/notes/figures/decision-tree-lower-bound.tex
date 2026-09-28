@@ -1,0 +1,27 @@
+% Comparison-based sort decision tree (illustrative; n=3).
+\begin{tikzpicture}[
+  every node/.style={font=\footnotesize\sffamily, align=center},
+  internal/.style={draw, ellipse, inner sep=2pt, minimum width=2.4em},
+  leaf/.style={draw=none},
+  level distance=1.0cm,
+  level 1/.style={sibling distance=4.4cm},
+  level 2/.style={sibling distance=2.2cm},
+  level 3/.style={sibling distance=1.4cm},
+  edge from parent/.style={draw, ->, >={Stealth[length=2mm]}}
+]
+  \node[internal] {$a_1\!:\!a_2$}
+    child {node[internal] {$a_2\!:\!a_3$}
+      child {node[leaf] {$\langle 1,2,3\rangle$} edge from parent node[left] {$\le$}}
+      child {node[internal] {$a_1\!:\!a_3$}
+        child {node[leaf] {$\langle 1,3,2\rangle$} edge from parent node[left] {$\le$}}
+        child {node[leaf] {$\langle 3,1,2\rangle$} edge from parent node[right] {$>$}}
+        edge from parent node[right] {$>$}}
+      edge from parent node[left] {$\le$}}
+    child {node[internal] {$a_1\!:\!a_3$}
+      child {node[leaf] {$\langle 2,1,3\rangle$} edge from parent node[left] {$\le$}}
+      child {node[internal] {$a_2\!:\!a_3$}
+        child {node[leaf] {$\langle 2,3,1\rangle$} edge from parent node[left] {$\le$}}
+        child {node[leaf] {$\langle 3,2,1\rangle$} edge from parent node[right] {$>$}}
+        edge from parent node[right] {$>$}}
+      edge from parent node[right] {$>$}};
+\end{tikzpicture}

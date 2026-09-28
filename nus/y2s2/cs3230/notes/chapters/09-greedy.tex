@@ -1,0 +1,310 @@
+% Chapter 9: Greedy Algorithms.
+\section{Greedy Algorithms}
+\label{sec:greedy}
+
+A \emph{greedy} algorithm builds an optimal solution by committing, at each step, to a single locally optimal choice and then recursing on the one subproblem that remains. Compared with dynamic programming (\cref{sec:dp}), which explores every relevant subproblem and combines their solutions, greedy collapses the recursion tree into a single path: at each node only one child is visited. The pay-off is dramatic running times, typically $O(n \log n)$, but not every problem with optimal substructure admits a greedy choice -- the classical sanity check is fractional knapsack (greedy works) versus 0/1 knapsack (only DP, in pseudo-polynomial time). Correctness proofs come in two flavours: a \emph{cut-and-paste} argument for optimal substructure, and an \emph{exchange} (or ``stays-ahead'') argument for the greedy choice.
+
+\subsection{Definitions}
+
+\begin{definition}[Greedy algorithm]
+\label{def:greedy_algorithm}
+\index{greedy algorithm}
+A \emph{greedy algorithm} for an optimisation problem is an algorithm that, at each step, makes the choice that looks best at the moment -- a locally optimal choice -- and then recursively solves the single subproblem that remains, without ever revisiting earlier decisions. The paradigm has three ingredients:
+\begin{enumerate}[(i)]
+  \item \textbf{Cast} the problem so that one decision reduces it to one subproblem of the same form.
+  \item \textbf{Prove} the greedy-choice property (\cref{def:greedy_choice}): some optimal solution makes the locally optimal choice, so committing to it is safe.
+  \item \textbf{Combine} the greedy choice with an optimal solution to the subproblem (using optimal substructure, \cref{def:greedy_optimal_substructure}) to obtain an optimal solution to the original problem.
+\end{enumerate}
+The hallmark is that a \emph{locally} optimal choice is \emph{globally} optimal -- a property that must be \emph{proved}, not assumed. A useful sanity check before trusting a candidate greedy: test it on a small adversarial instance; 0/1 knapsack famously \emph{has} optimal substructure (DP works) yet \emph{lacks} a usable greedy-choice property, so optimal substructure alone never suffices.
+\end{definition}
+
+\begin{definition}[Greedy-choice property]
+\label{def:greedy_choice}
+\index{greedy-choice property}
+A problem has the \emph{greedy-choice property} (with respect to a candidate greedy choice $g$) if there exists an optimal solution to the original problem that makes the choice $g$. Equivalently: any optimal solution can be \emph{exchanged} for one that contains $g$ without increasing the cost (resp.\ decreasing the value). This is what makes the local commitment safe: even though we cannot enumerate all optima, we know that at least one of them agrees with the greedy choice, so reducing to the subproblem after committing to $g$ loses no optimal solution. Contrast with DP, where every locally feasible choice may need to be considered.
+\end{definition}
+
+\begin{definition}[Optimal substructure (greedy flavour)]
+\label{def:greedy_optimal_substructure}
+\index{optimal substructure (greedy)}
+A problem has \emph{optimal substructure} for a greedy algorithm if, after committing to the greedy choice $g$, an optimal solution to the original instance contains an optimal solution to the residual subproblem -- the instance obtained by removing $g$ (and possibly some bookkeeping). Formally: if $S^\star$ is optimal and $S^\star \ni g$, then $S^\star \setminus \{g\}$ is optimal for the residual subproblem. This differs from the DP-flavoured optimal substructure (\cref{sec:dp}) in two ways: (i) only \emph{one} subproblem appears, not several; (ii) it is paired with the greedy-choice property to justify recursing on that single subproblem rather than enumerating all candidate decompositions. The proof template is a \emph{cut-and-paste argument}: assume the residual were sub-optimal, paste in the supposedly better residual to get a better solution to the original, contradiction.
+\end{definition}
+
+\begin{definition}[Exchange argument]
+\label{def:exchange_argument}
+\index{exchange argument}
+An \emph{exchange argument} is the standard technique for proving the greedy-choice property. Given an arbitrary optimal solution $\mathrm{OPT}$ that does \emph{not} contain the greedy choice $g$, one constructs a new solution $\mathrm{OPT}'$ by ``exchanging'' some element of $\mathrm{OPT}$ for $g$ (or by inserting $g$ in place of an element of $\mathrm{OPT}$) and shows that $\mathrm{OPT}'$ is feasible and $\mathrm{cost}(\mathrm{OPT}') \le \mathrm{cost}(\mathrm{OPT})$ (resp.\ $\mathrm{value}(\mathrm{OPT}') \ge \mathrm{value}(\mathrm{OPT})$). Iterating the exchange transforms $\mathrm{OPT}$ into an optimal solution containing $g$. A close relative is the \emph{stays-ahead} argument, in which one inducts on the prefix of the greedy solution and shows it is at least as good as the corresponding prefix of any optimal solution; the two are interchangeable in practice.
+\end{definition}
+
+\subsection{Interval scheduling}
+
+\begin{example}[Setup]
+\label{ex:interval_scheduling_setup}
+The \emph{interval scheduling} problem: given $n$ activities $a_1, \dots, a_n$ with start and finish times $(s_i, f_i)$, select a maximum-cardinality subset of pairwise non-overlapping activities (i.e.\ for any two selected activities, one finishes before the other starts). The greedy algorithm \textsc{Earliest-Finish-First} (EFF) sorts the activities by finish time and scans left-to-right, greedily selecting an activity iff its start time is at least the finish time of the most recently selected activity.
+\end{example}
+
+\begin{theorem}[Correctness of earliest-finish-first scheduling]
+\label{thm:interval_scheduling}
+The \textsc{Earliest-Finish-First} greedy algorithm returns a maximum-cardinality set of pairwise non-overlapping activities, in $O(n \log n)$ time (dominated by the sort).
+\end{theorem}
+
+\begin{proof}
+The algorithm clearly returns a feasible (non-overlapping) set $G = \{g_1, g_2, \dots, g_k\}$ ordered by finish time. We show $|G|$ matches any optimum by an exchange/stays-ahead argument. Let $O = \{o_1, o_2, \dots, o_m\}$ be \emph{any} optimal solution, also ordered by finish time. We claim that for every $i \le k$,
+\[
+  f(g_i) \;\le\; f(o_i),
+\]
+i.e.\ the $i$-th greedy pick finishes no later than the $i$-th optimal pick. The proof is by induction on $i$.
+\begin{description}
+  \item[Base $i=1$.] Greedy picks the globally earliest-finishing activity, so $f(g_1) \le f(o_1)$.
+  \item[Inductive step.] Suppose $f(g_{i-1}) \le f(o_{i-1})$. Then $o_i$ starts at $s(o_i) \ge f(o_{i-1}) \ge f(g_{i-1})$, so $o_i$ was a candidate when greedy chose $g_i$ (it does not overlap any previously chosen $g_j$). Greedy chose the activity of \emph{earliest} finish time among such candidates, so $f(g_i) \le f(o_i)$.
+\end{description}
+Now suppose for contradiction that $|G| < |O|$, i.e.\ $k < m$. Then $o_{k+1}$ exists, with $s(o_{k+1}) \ge f(o_k) \ge f(g_k)$ (using the claim at $i=k$). Hence $o_{k+1}$ does not overlap any of $g_1, \dots, g_k$ and was a candidate for the $(k+1)$-th greedy pick -- but greedy terminated, contradiction. Therefore $|G| \ge |O|$, so $|G|$ is optimal.
+
+The running time is $O(n \log n)$ to sort by finish time plus a single $O(n)$ scan, hence $O(n \log n)$ overall.
+\end{proof}
+
+\begin{remark}[Stays-ahead vs.\ exchange framing]
+For interval scheduling the cleanest argument is \emph{stays-ahead}: induct on the prefix index and show that the $i$-th greedy pick finishes no later than the $i$-th pick of any optimum. For Huffman coding and fractional knapsack, the cleanest is a direct \emph{exchange} (swap two leaves, swap two items). Both establish the greedy-choice property; pick the framing that matches the structure of the problem. Whichever framing is chosen, the exchange step is load-bearing: state $\mathrm{OPT}$, exhibit the modification that produces an $\mathrm{OPT}'$ containing the greedy choice, and verify $\mathrm{cost}(\mathrm{OPT}') \le \mathrm{cost}(\mathrm{OPT})$ (resp.\ $\ge$). Hand-waving (``intuitively the heaviest item should go first'') is not a substitute.
+\end{remark}
+
+\begin{example}[Earliest-finish-first on a small input]
+\label{ex:interval_scheduling_run}
+Consider activities (start, finish): $a_1 = (1,4)$, $a_2 = (3,5)$, $a_3 = (0,6)$, $a_4 = (5,7)$, $a_5 = (3,9)$, $a_6 = (5,9)$, $a_7 = (6,10)$, $a_8 = (8,11)$, $a_9 = (8,12)$, $a_{10} = (2,14)$, $a_{11} = (12,16)$.
+
+\medskip
+\noindent\textit{Step 1.} Sort by finish time (already sorted above).
+
+\medskip
+\noindent\textit{Step 2.} Sweep left-to-right with $f_{\mathrm{last}} = -\infty$:
+\begin{itemize}
+  \item $a_1=(1,4)$: $1 \ge -\infty$, select. $f_{\mathrm{last}}=4$.
+  \item $a_2=(3,5)$: $3 < 4$, skip. $a_3=(0,6)$: $0<4$, skip.
+  \item $a_4=(5,7)$: $5 \ge 4$, select. $f_{\mathrm{last}}=7$.
+  \item $a_5=(3,9), a_6=(5,9), a_7=(6,10)$: all start before $7$, skip.
+  \item $a_8=(8,11)$: $8 \ge 7$, select. $f_{\mathrm{last}}=11$.
+  \item $a_9=(8,12)$: $8 < 11$, skip. $a_{10}=(2,14)$: skip.
+  \item $a_{11}=(12,16)$: $12 \ge 11$, select. $f_{\mathrm{last}}=16$.
+\end{itemize}
+Output: $\{a_1, a_4, a_8, a_{11}\}$, of size $4$. By \cref{thm:interval_scheduling} this is optimal. Note that the alternative greedy ``pick the activity of shortest duration first'' would fail (e.g.\ a short central activity can preclude two longer non-overlapping ones).
+\end{example}
+
+\subsection{Huffman coding}
+
+The \emph{prefix coding} problem: given an alphabet $A = \{a_1, \dots, a_n\}$ with frequencies $f(a_i)$, find an encoding $\gamma : A \to \{0,1\}^*$ in which no codeword is a prefix of another, minimising the average bit length $\mathrm{ABL}(\gamma) = \sum_{x \in A} f(x)\,|\gamma(x)|$. By the standard correspondence, prefix codes on $n$ alphabets are in bijection with full binary trees on $n$ leaves (each leaf labelled by an alphabet, each codeword being the root-to-leaf 0/1 path label), and $\mathrm{ABL}(\gamma) = \sum_{x \in A} f(x)\,\mathrm{depth}_T(x)$ where $T$ is the corresponding tree. \emph{Huffman's algorithm} repeatedly merges the two lowest-frequency alphabets:
+
+\begin{algorithm}[H]
+\caption{\textsc{Huffman}$(A, f)$}
+\begin{algorithmic}[1]
+\If{$|A|=1$} \Return a single leaf.
+\EndIf
+\State Let $a_1, a_2 \in A$ be the two alphabets of \emph{smallest} frequency.
+\State Replace $a_1, a_2$ by a fresh symbol $a_{1,2}$ with $f(a_{1,2}) = f(a_1) + f(a_2)$.
+\State Recursively call \textsc{Huffman} on $\{a_3, \dots, a_n, a_{1,2}\}$ to obtain a tree $T'$.
+\State In $T'$, replace the leaf $a_{1,2}$ by an internal node with children $a_1$ and $a_2$. \Return the tree.
+\end{algorithmic}
+\end{algorithm}
+
+Using a min-heap keyed by frequency, the running time is $O(n \log n)$.
+
+\begin{theorem}[Correctness of Huffman coding]
+\label{thm:huffman}
+\textsc{Huffman}$(A, f)$ produces a prefix code of minimum average bit length.
+\end{theorem}
+
+\begin{proof}
+\sketchproof
+The proof has two ingredients.
+
+\medskip
+\noindent\textit{Tree-shape invariant.} The binary tree of any optimal prefix code is \emph{full} (every internal node has exactly two children): an internal node with one child could be deleted, shrinking all codewords below it and strictly decreasing $\mathrm{ABL}$, contradicting optimality.
+
+\medskip
+\noindent\textit{Greedy-choice (exchange).} Order the alphabets so that $f(a_1) \le f(a_2) \le \dots \le f(a_n)$. We claim there is an optimal tree in which $a_1$ and $a_2$ are siblings at the deepest level. Take any optimal tree $T$. Pick a deepest leaf; by the full-tree property its sibling is also a leaf -- call them $x, y$. Swapping $a_1$ with $x$ and $a_2$ with $y$ can only weakly decrease $\mathrm{ABL}$, because the lowest-frequency symbols are being moved to the deepest positions: the change in $\mathrm{ABL}$ is $(f(x)-f(a_1))(d(a_1)-d(x)) + (f(y)-f(a_2))(d(a_2)-d(y)) \le 0$ since $f(x) \ge f(a_1)$, $d(x) \ge d(a_1)$, and similarly for $y$.
+
+\medskip
+\noindent\textit{Optimal substructure (cut-and-paste).} Let $A' = (A \setminus \{a_1,a_2\}) \cup \{a_{1,2}\}$ with $f(a_{1,2}) = f(a_1)+f(a_2)$, and let $T'$ be any tree for $A'$. Building $T$ from $T'$ by attaching $a_1, a_2$ as children of $a_{1,2}$ gives $\mathrm{ABL}(T) = \mathrm{ABL}(T') + f(a_1)+f(a_2)$ (since $a_1, a_2$ inherit depth $d(a_{1,2})+1$, contributing $(f(a_1)+f(a_2))(d(a_{1,2})+1) = f(a_{1,2})\,d(a_{1,2}) + (f(a_1)+f(a_2))$). The additive constant is independent of $T'$, so an optimal $T'$ produces an optimal $T$. Cut-and-paste: if a better $T''$ existed, replacing siblings $a_1, a_2$ by a merged leaf gives a tree on $A'$ better than $T'$ -- contradiction.
+
+\medskip
+Combining the two: greedy-choice ensures the two least-frequent alphabets can be made siblings; optimal substructure then reduces the problem to $A'$, on which the algorithm recurses. Induction on $n$ closes the proof.
+\end{proof}
+
+\begin{example}[Huffman tree construction]
+\label{ex:huffman_run}
+Frequencies $f(a)=0.45$, $f(b)=0.18$, $f(c)=0.15$, $f(d)=0.12$, $f(e)=0.10$.
+
+\medskip
+\noindent\textit{Step 1.} Two smallest: $d(0.12), e(0.10)$. Merge into $de$ with frequency $0.22$. Forest: $\{a:0.45, b:0.18, c:0.15, de:0.22\}$.
+
+\medskip
+\noindent\textit{Step 2.} Two smallest: $c(0.15), b(0.18)$. Merge into $bc$ with frequency $0.33$. Forest: $\{a:0.45, bc:0.33, de:0.22\}$.
+
+\medskip
+\noindent\textit{Step 3.} Two smallest: $de(0.22), bc(0.33)$. Merge into $bcde$ with frequency $0.55$. Forest: $\{a:0.45, bcde:0.55\}$.
+
+\medskip
+\noindent\textit{Step 4.} Merge $a$ and $bcde$ into the root.
+
+\medskip
+Reading 0 = left, 1 = right yields the optimal codes $a \mapsto 0$, $b \mapsto 100$, $c \mapsto 101$, $d \mapsto 110$, $e \mapsto 111$, giving $\mathrm{ABL} = 0.45 \cdot 1 + (0.18+0.15+0.12+0.10) \cdot 3 = 0.45 + 1.65 = 2.10$ bits/symbol. (Compare with fixed-length $\lceil \log_2 5 \rceil = 3$.)
+\end{example}
+
+\subsection{Minimum spanning trees}
+
+\begin{example}[Setup]
+\label{ex:mst_setup}
+Given a connected undirected graph $G=(V,E)$ with edge weights $w : E \to \reals_{>0}$ (assume distinct for simplicity), find a \emph{spanning tree} -- a subset $T \subseteq E$ with $|T|=|V|-1$ that connects all vertices -- of minimum total weight $w(T) = \sum_{e \in T} w(e)$.
+\end{example}
+
+The greedy structure of MST rests on a single deep fact, the \emph{cut property}, which is itself the greedy-choice property in disguise.
+
+\begin{theorem}[Cut property]
+\label{thm:mst_cut_property}
+Let $T$ be the (unique) MST of $G$, let $A \subsetneq V$, and let $(u,v) \in E$ be the \emph{minimum-weight edge} crossing the cut $(A, V \setminus A)$. Then $(u,v) \in T$.
+\end{theorem}
+
+\begin{proof}
+Suppose for contradiction that $(u,v) \notin T$. Since $T$ is a spanning tree, there is a unique $u$-to-$v$ path in $T$. This path begins in $A$ (at $u$) and ends in $V \setminus A$ (at $v$), so it must contain at least one edge $e = (x,y)$ that crosses the cut, with $x \in A$, $y \in V \setminus A$. Now consider $T' = T \setminus \{e\} \cup \{(u,v)\}$:
+\begin{itemize}
+  \item $T'$ has $|V|-1$ edges (we removed one and added one).
+  \item Removing $e$ disconnects $T$ into two components, one containing $A \cap T$ vertices reachable from $u$ side and the other containing the $V \setminus A$ side; adding $(u,v)$ reconnects them, so $T'$ is connected.
+  \item Hence $T'$ is a spanning tree.
+  \item By choice of $(u,v)$ as the \emph{minimum} crossing edge, $w(u,v) < w(e)$ (using distinctness), so $w(T') < w(T)$.
+\end{itemize}
+This contradicts $T$ being the MST. Therefore $(u,v) \in T$.
+\end{proof}
+
+\begin{remark}[Tied edge weights]
+The proof above uses distinct edge weights so that the swap strictly decreases the total weight. With ties the MST need not be unique; the cut property still holds with ``minimum'' read as ``one of the minimum'' crossing edges, and Kruskal/Prim still produce \emph{some} MST.
+\end{remark}
+
+The cut property is the engine that powers both standard MST algorithms below: Prim builds the tree by repeatedly applying the cut property to the cut $(A, V \setminus A)$ where $A$ is the set of vertices already attached; Kruskal applies it implicitly by adding the globally-cheapest non-cycle-forming edge.
+
+\begin{algorithm}[H]
+\caption{\textsc{Prim}$(G, w, r)$}
+\begin{algorithmic}[1]
+\State $A \gets \{r\}$, $T \gets \emptyset$.
+\While{$A \ne V$}
+  \State Let $e=(u,v)$ be the minimum-weight edge with $u \in A$, $v \in V \setminus A$.
+  \State $T \gets T \cup \{e\}$, $A \gets A \cup \{v\}$.
+\EndWhile
+\State \Return $T$.
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}[Correctness of Prim]
+\label{thm:prim_correctness}
+\textsc{Prim} returns the MST of $G$. With a Fibonacci-heap-backed priority queue, it runs in $O(|E| + |V|\log|V|)$ time.
+\end{theorem}
+
+\begin{proof}
+\sketchproof
+Loop invariant: after each iteration, $T$ is a subset of the MST. Initially $T = \emptyset \subseteq \mathrm{MST}$. Each iteration adds the minimum-weight edge crossing the cut $(A, V \setminus A)$, which by the cut property (\cref{thm:mst_cut_property}) is in the MST. The invariant is preserved. The loop terminates when $|T|=|V|-1$, at which point $T$ is a spanning tree contained in the MST -- hence $T$ is the MST.
+\end{proof}
+
+\begin{algorithm}[H]
+\caption{\textsc{Kruskal}$(G, w)$}
+\begin{algorithmic}[1]
+\State $T \gets \emptyset$. Sort $E$ in increasing order of weight.
+\For{each edge $e=(u,v) \in E$ in sorted order}
+  \If{$T \cup \{e\}$ is acyclic} $T \gets T \cup \{e\}$.
+  \EndIf
+\EndFor
+\State \Return $T$.
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}[Correctness of Kruskal]
+\label{thm:kruskal_correctness}
+\textsc{Kruskal} returns the MST of $G$. With union-find, it runs in $O(|E| \log |V|)$ time.
+\end{theorem}
+
+\begin{proof}
+\sketchproof
+At the moment edge $e=(u,v)$ is considered, suppose adding it would not create a cycle. Let $A$ be the connected component of $u$ in the current $T$. Then $v \notin A$, and every edge in $E$ already crossing $(A, V\setminus A)$ has weight $\ge w(e)$ (all lighter edges have been considered, and by the no-cycle test would have been added if they connected $A$ to $V \setminus A$, but they did not -- they were either within $A$ or rejected for forming a cycle elsewhere; a careful argument shows $e$ is in fact the lightest crossing edge). By the cut property, $e \in \mathrm{MST}$. Conversely, any rejected edge forms a cycle with already-chosen edges of strictly smaller weight, so it cannot belong to the MST (cycle property, dual of cut property). Hence the algorithm outputs exactly the MST.
+\end{proof}
+
+\begin{example}[Prim's algorithm step-by-step]
+\label{ex:mst_run}
+Take a graph with vertices $\{v_1, \dots, v_7\}$ and edges of weights $\{3, 5, 6, 7, 8, 9, 10, 12, 14, 15\}$ (unique). Concretely, edges are $v_2v_3=3$, $v_4v_5=5$, $v_1v_4=6$, $v_5v_6=7$, $v_2v_5=8$, $v_5v_7=9$, $v_3v_6=10$, $v_1v_5=12$, $v_2v_4=14$, $v_6v_7=15$. Start Prim from $v_6$.
+
+\medskip
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{cllll}
+\toprule
+Iter & $A$ before & cut edges (weight) & min edge & $T$ after \\
+\midrule
+1 & $\{v_6\}$       & $v_5v_6=7,\ v_3v_6=10,\ v_6v_7=15$           & $v_5v_6=7$  & $\{v_5v_6\}$ \\
+2 & $\{v_5,v_6\}$   & $v_4v_5=5,\ v_2v_5=8,\ v_5v_7=9,\ v_3v_6=10$ & $v_4v_5=5$  & $\{v_5v_6, v_4v_5\}$ \\
+3 & $+v_4$          & $v_1v_4=6,\ v_2v_5=8,\ v_2v_4=14,\dots$       & $v_1v_4=6$  & $+ v_1v_4$ \\
+4 & $+v_1$          & $v_2v_5=8,\ v_5v_7=9,\ v_3v_6=10,\dots$       & $v_2v_5=8$  & $+ v_2v_5$ \\
+5 & $+v_2$          & $v_2v_3=3,\ v_5v_7=9,\dots$                  & $v_2v_3=3$  & $+ v_2v_3$ \\
+6 & $+v_3$          & $v_5v_7=9,\ v_6v_7=15$                        & $v_5v_7=9$  & $+ v_5v_7$ \\
+\bottomrule
+\end{tabular}
+\medskip
+
+After iteration $6$ all $7$ vertices are in $A$, and $T = \{v_5v_6, v_4v_5, v_1v_4, v_2v_5, v_2v_3, v_5v_7\}$ has $|V|-1=6$ edges and total weight $3+5+6+7+8+9 = 38$. (Kruskal would produce the same edges, in the order $3, 5, 6, 7, 8, 9$, rejecting weights $10, 12, 14, 15$ as cycle-forming.)
+\end{example}
+
+\subsection{Approximation algorithms by greedy}
+
+When a problem is NP-hard, polynomial-time algorithms are not expected to compute the exact optimum. A common workaround is to settle for a solution provably within a constant factor of the optimum, computed by a polynomial-time greedy algorithm. Two canonical examples are \textsc{Set-Cover} (greedy gives an $O(\log n)$-approximation) and \textsc{Vertex-Cover} via maximal matching (greedy gives a $2$-approximation). The latter has the cleanest proof and is treated in detail below.
+
+\begin{definition}[Approximation ratio]
+\label{def:approximation_ratio}
+\index{approximation ratio}
+For an optimisation problem and a constant $\alpha \ge 1$, an algorithm $\mathcal{A}$ is an \emph{$\alpha$-approximation algorithm} if, for every instance $I$ with optimum value $\mathrm{OPT}(I)$,
+\[
+  \mathrm{OPT}(I) \;\le\; \mathcal{A}(I) \;\le\; \alpha \cdot \mathrm{OPT}(I) \qquad \text{(minimisation)},
+\]
+\[
+  \frac{\mathrm{OPT}(I)}{\alpha} \;\le\; \mathcal{A}(I) \;\le\; \mathrm{OPT}(I) \qquad \text{(maximisation)},
+\]
+and $\mathcal{A}$ runs in polynomial time. Smaller $\alpha$ is better; $\alpha = 1$ recovers exact algorithms. The ratio may be a function of the input size, e.g.\ $\alpha = O(\log n)$ for set cover.
+\end{definition}
+
+\begin{example}[Vertex cover via maximal matching]
+\label{ex:vc_setup}
+\textsc{Vertex-Cover}: given an undirected graph $G=(V,E)$, find a smallest $C \subseteq V$ such that every edge has at least one endpoint in $C$. The decision version is NP-complete. The greedy approach: compute any \emph{maximal matching} $M$ (greedily add edges with both endpoints unmatched until no such edge remains -- not maximum, just maximal), and output the set of matched vertices.
+\end{example}
+
+\begin{theorem}[Maximal matching gives a $2$-approximation for Vertex Cover]
+\label{thm:vc_2approx}
+Let $M$ be any maximal matching in $G$ and let $C(M)$ be the set of $2|M|$ endpoints of $M$'s edges. Then $C(M)$ is a vertex cover, and $|C(M)| \le 2 \cdot \mathrm{VC}(G)$, where $\mathrm{VC}(G)$ is the minimum vertex cover size. In particular, the greedy algorithm is a polynomial-time $2$-approximation for \textsc{Vertex-Cover}.
+\end{theorem}
+
+\begin{proof}
+\textit{$C(M)$ is a vertex cover.} If some edge $(u,v)$ had neither endpoint in $C(M)$, then $u, v$ are both unmatched in $M$, so $M \cup \{(u,v)\}$ is a matching, contradicting maximality of $M$. Hence every edge has an endpoint in $C(M)$.
+
+\medskip
+\noindent\textit{Lower bound.} The edges of $M$ are pairwise disjoint, so any vertex cover must contain at least one endpoint of each edge in $M$ -- i.e.\ $\mathrm{VC}(G) \ge |M|$.
+
+\medskip
+\noindent\textit{Upper bound.} By construction, $|C(M)| = 2|M|$.
+
+\medskip
+\noindent Combining,
+\[
+  |C(M)| \;=\; 2|M| \;\le\; 2 \cdot \mathrm{VC}(G),
+\]
+which is the $2$-approximation bound. The maximal matching $M$ can be computed in $O(|V|+|E|)$ time by a single edge-scan, so the algorithm runs in linear time.
+\end{proof}
+
+\begin{remark}[Greedy need not optimise locally]
+The maximal-matching algorithm picks edges \emph{arbitrarily}: there is no local optimisation at each step. ``Greedy'' here means ``one-shot, no backtracking''; it does not require picking the locally best item. Conflating the two leads to spurious objections that the algorithm ``isn't really greedy''.
+\end{remark}
+
+\begin{example}[A small vertex-cover run]
+\label{ex:vc_run}
+Take the path $P_4 = v_1 - v_2 - v_3 - v_4$ (3 edges). Greedy maximal matching scans edges in some order; suppose it picks $(v_1,v_2)$ first. Now $v_1, v_2$ are matched, so the candidate edges $(v_2,v_3)$ and $(v_3,v_4)$: the first has $v_2$ already matched -- skip; the second, $v_3, v_4$ both unmatched -- add. Matching $M = \{(v_1,v_2), (v_3,v_4)\}$, $|M|=2$.
+
+The output cover is $C(M) = \{v_1, v_2, v_3, v_4\}$ of size $4$. The optimal vertex cover is $\{v_2, v_3\}$ of size $2$, so the approximation ratio achieved on this instance is $4/2 = 2$ -- exactly the worst case allowed by the theorem. Note that with a different edge order greedy might pick $(v_2,v_3)$ first, yielding $M=\{(v_2,v_3)\}$ and cover $\{v_2,v_3\}$ of size $2$ (optimal). So the analysis is tight against the worst-case greedy run, but the algorithm is still polynomial-time and \emph{never} worse than $2 \cdot \mathrm{OPT}$.
+\end{example}
+
+\begin{remark}[Other greedy approximations]
+\textsc{Set-Cover} (cover $\{1,\dots,n\}$ by the fewest subsets from a family $\mathcal{S}$) admits a parallel treatment: the greedy algorithm that repeatedly picks the set covering the largest number of as-yet-uncovered elements is an $O(\log n)$-approximation. The standard analysis tracks the uncovered set: since $\mathrm{OPT}$ sets cover everything, by pigeonhole some set in the optimum covers at least a $1/\mathrm{OPT}$ fraction of whatever is currently uncovered, and greedy picks at least as good. After $k$ rounds at most $(1-1/\mathrm{OPT})^k\, n \le n\,e^{-k/\mathrm{OPT}}$ elements remain, which drops below $1$ once $k > \mathrm{OPT}\ln n$. Hence greedy terminates within $\mathrm{OPT}\cdot(1 + \ln n) = O(\log n) \cdot \mathrm{OPT}$ rounds (the tight constant is the $n$-th harmonic number $H_n$). The ratios are tight in a strong sense: no polynomial-time $(\sqrt{2}-\varepsilon)$-approximation exists for \textsc{Vertex-Cover} unless $\mathrm{P}=\mathrm{NP}$, and \textsc{Independent-Set} admits no constant-factor approximation under the same hypothesis -- a striking contrast given that \textsc{Vertex-Cover} and \textsc{Independent-Set} are complementary.
+\end{remark}
+
+\begin{remark}[When greedy fails: 0/1 vs.\ fractional knapsack]
+Sorting by value-per-weight and greedily packing is optimal for \emph{fractional} knapsack but \emph{wrong} for 0/1 knapsack: with items $(w,v) = (1,2), (5,9)$ and $W=5$, the ratios are $2$ and $1.8$, so greedy takes $(1,2)$ first, leaving capacity $4$ in which the weight-$5$ item no longer fits, giving value $2$; the optimum takes $(5,9)$ alone for value $9$. The gap can be made arbitrarily large by scaling the heavy item, so no constant-factor bound saves the ratio greedy on 0/1 knapsack -- it requires DP (\cref{sec:dp}). The fractional variant also exhibits a subtler trap: when several items share the same value-per-weight ratio, the exchange argument must compare the greedy choice against \emph{any} optimum that ties on the ratio, not only those that pick the same physical item.
+\end{remark}

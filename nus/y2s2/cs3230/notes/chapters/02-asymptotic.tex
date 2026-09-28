@@ -1,0 +1,265 @@
+% Chapter 2: Asymptotic Analysis.
+\section{Asymptotic Analysis}
+\label{sec:asymptotic}
+
+Asymptotic analysis treats the running time of an algorithm as a function $T(n)$ of the input size $n$, ignores constant factors and lower-order terms, and asks how $T(n)$ behaves as $n \to \infty$. The cost model is the RAM machine of \cref{sec:math}: each arithmetic, logical, comparison, branch, or memory-access instruction is charged $\Theta(1)$ time (exponentiation excepted), and $T(n)$ is the worst-case or average-case instruction count on inputs of size $n$. The Bachmann--Landau symbols $O$, $\Omega$, $\Theta$, $o$, $\omega$ are the standard vocabulary for stating such bounds.
+
+\subsection{Comparison table}
+
+The five asymptotic notations are conveniently organised by reading two parallel columns: the constants-form definition (use this when you need a proof from first principles) and the limit-form characterisation (use this when one of L'H\^opital's rule, Stirling, or known growth-rate facts evaluates the limit cleanly). The two columns agree whenever the limit exists; the constants-form is strictly more general.
+
+\medskip
+\noindent\textbf{Coarse bounds: $O$, $\Omega$, $\Theta$.}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+We say               & if $\exists\, c, c_1, c_2, n_0 > 0$ s.t.\ $\forall n \ge n_0$, & if exists, $\displaystyle\lim_{n\to\infty} \frac{f(n)}{g(n)}$ \\
+\midrule
+$f(n) \in O(g(n))$       & $0 \le f(n) \le c \cdot g(n)$                       & $< \infty$           \\
+$f(n) \in \Omega(g(n))$  & $0 \le c \cdot g(n) \le f(n)$                       & $> 0$                \\
+$f(n) \in \Theta(g(n))$  & $0 \le c_1 \cdot g(n) \le f(n) \le c_2 \cdot g(n)$  & $\in (0, \infty)$    \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent\textbf{Strict bounds: $o$, $\omega$.} Note the universal quantifier on $c$ and the strict inequality.
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+We say               & if $\forall c > 0,\ \exists\, n_0 > 0$ s.t.\ $\forall n \ge n_0$, & if exists, $\displaystyle\lim_{n\to\infty} \frac{f(n)}{g(n)}$ \\
+\midrule
+$f(n) \in o(g(n))$        & $0 \le f(n) < c \cdot g(n)$                       & $= 0$    \\
+$f(n) \in \omega(g(n))$   & $0 \le c \cdot g(n) < f(n)$                       & $= \infty$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Definitions}
+
+In every definition below, $f$ and $g$ are functions $\mathbb{N} \to \mathbb{R}_{\ge 0}$, assumed eventually non-negative. The clause $0 \le \dots$ in each definition enforces this and is part of the definition.
+
+\begin{definition}[Big-O]
+\label{def:big_o}
+\index{Big-O notation}
+$f \in O(g)$ if there exist constants $c > 0$ and $n_0 > 0$ such that
+\[
+  \forall n \ge n_0,\quad 0 \le f(n) \le c \cdot g(n).
+\]
+Read: ``$f$ grows at most as fast as $g$.'' Equivalently, $O(g)$ is the set of functions eventually dominated by some constant multiple of $g$.
+\end{definition}
+
+\begin{remark}[Limit form of $O$]
+If $\lim_{n \to \infty} f(n)/g(n) < \infty$ (in particular, if the limit equals $0$ or any finite positive number), then $f \in O(g)$. The converse fails when the limit does not exist: e.g., $f(n) = (2 + \sin n) \cdot n$ and $g(n) = n$ satisfy $f \in O(g)$ even though $f/g$ oscillates and has no limit.
+\end{remark}
+
+\begin{remark}[Notation: $\in$ versus $=$]
+The customary notation $f = O(g)$ is a one-way membership, not an equality: it abbreviates $f \in O(g)$. Reading it as set inclusion makes statements like $O(n) = O(n^2)$ meaningful while the reversed $O(n^2) = O(n)$ is false. Writing $\in$ throughout avoids the asymmetry trap.
+\end{remark}
+
+\begin{definition}[Big-Omega]
+\label{def:big_omega}
+\index{Big-Omega notation}
+$f \in \Omega(g)$ if there exist constants $c > 0$ and $n_0 > 0$ such that
+\[
+  \forall n \ge n_0,\quad 0 \le c \cdot g(n) \le f(n).
+\]
+Read: ``$f$ grows at least as fast as $g$.''
+\end{definition}
+
+\begin{remark}[Limit form of $\Omega$]
+If $\lim_{n \to \infty} f(n)/g(n) > 0$ (allowing $\infty$), then $f \in \Omega(g)$.
+\end{remark}
+
+\begin{remark}[Eventual non-negativity is part of the definition]
+The clause $0 \le \dots$ in the constants-form definitions of $O$ and $\Omega$ is silently dropped in many textbooks but must be checked when $f$ or $g$ can be negative or zero. In algorithm analysis the functions of interest are running times, which are non-negative, so this clause is automatic.
+\end{remark}
+
+\begin{definition}[Big-Theta]
+\label{def:big_theta}
+\index{Big-Theta notation}
+$f \in \Theta(g)$ if there exist constants $c_1, c_2 > 0$ and $n_0 > 0$ such that
+\[
+  \forall n \ge n_0,\quad 0 \le c_1 \cdot g(n) \le f(n) \le c_2 \cdot g(n).
+\]
+Equivalently, $f \in \Theta(g) \iff f \in O(g) \wedge f \in \Omega(g)$, i.e., $\Theta(g) = O(g) \cap \Omega(g)$. Read: ``$f$ and $g$ grow at the same rate.''
+\end{definition}
+
+\begin{remark}[Limit form of $\Theta$]
+If $\lim_{n \to \infty} f(n)/g(n) = c$ for some $c \in (0, \infty)$, then $f \in \Theta(g)$.
+\end{remark}
+
+\begin{remark}[Both directions are required]
+Membership in $\Theta(g)$ requires both $f \in O(g)$ and $f \in \Omega(g)$; an upper bound alone does not suffice. For instance, $n \in O(n^2)$ but $n \notin \Theta(n^2)$.
+\end{remark}
+
+\begin{definition}[little-o]
+\label{def:little_o}
+\index{little-o notation}
+$f \in o(g)$ if for \emph{every} constant $c > 0$ there exists $n_0 > 0$ such that
+\[
+  \forall n \ge n_0,\quad 0 \le f(n) < c \cdot g(n).
+\]
+Note the universal quantifier on $c$ and the strict inequality. Read: ``$f$ grows strictly slower than $g$.'' We often write $f \ll g$ as shorthand for $f \in o(g)$.
+\end{definition}
+
+\begin{remark}[Limit form of $o$]
+$f \in o(g) \iff \lim_{n \to \infty} f(n)/g(n) = 0$ (assuming the ratio is eventually defined). Some textbooks use $\le$ instead of $<$ in the constants-form; this changes only the choice of $n_0$ and yields the same set of functions.
+\end{remark}
+
+\begin{remark}[$O$ versus $o$]
+The two definitions differ in two places: Big-$O$ uses an existential constant and $\le$, whereas little-$o$ uses a universal constant and $<$. The distinction settles questions like ``$n^2 \in o(n^2)$?'' (no: no $c < 1$ works) versus ``$n^2 \in O(n^2)$?'' (yes, with $c = 1$).
+\end{remark}
+
+\begin{definition}[little-omega]
+\label{def:little_omega}
+\index{little-omega notation}
+$f \in \omega(g)$ if for \emph{every} constant $c > 0$ there exists $n_0 > 0$ such that
+\[
+  \forall n \ge n_0,\quad 0 \le c \cdot g(n) < f(n).
+\]
+Read: ``$f$ grows strictly faster than $g$.''
+\end{definition}
+
+\begin{remark}[Limit form of $\omega$]
+$f \in \omega(g) \iff \lim_{n \to \infty} f(n)/g(n) = \infty$.
+\end{remark}
+
+\subsection{Key results}
+
+\begin{theorem}[Equivalence of definitional and limit forms]
+\label{thm:asymp_limit_equivalence}
+Suppose $f, g$ are eventually positive and $\lim_{n \to \infty} f(n)/g(n) = L$ exists in $[0, \infty]$. Then
+\begin{itemize}
+  \item $L = 0 \iff f \in o(g)$;
+  \item $L < \infty \implies f \in O(g)$;
+  \item $L \in (0, \infty) \implies f \in \Theta(g)$;
+  \item $L > 0 \implies f \in \Omega(g)$ (with $L = \infty$ giving $f \in \omega(g)$);
+  \item $L = \infty \iff f \in \omega(g)$.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+\sketchproof All five clauses are direct unwindings of the $\varepsilon$-$N$ definition of a limit. We illustrate the first. Suppose $L = 0$. Fix any $c > 0$; by definition of limit there exists $n_0$ such that for all $n \ge n_0$, $|f(n)/g(n) - 0| < c$, i.e.\ $f(n) < c \cdot g(n)$, and $f(n) \ge 0$ by assumption. This is precisely the definition of $f \in o(g)$ (\cref{def:little_o}). Conversely, if $f \in o(g)$, then for every $\varepsilon > 0$ there is $n_0$ with $f(n)/g(n) < \varepsilon$ for $n \ge n_0$, so the limit exists and equals $0$. The other clauses are analogous: take $\varepsilon = L/2$ for the lower bound and $\varepsilon = 1$ together with $c = L+1$ for the upper bound. The unidirectional clauses (involving only $\implies$) cannot be reversed because Big-$O$ and $\Omega$ are insensitive to oscillation: a bounded oscillating ratio gives $f \in \Theta(g)$ without the limit existing.
+\end{proof}
+
+\begin{remark}[When the limit does not exist]
+The limit-form shortcuts only apply when $\lim_{n \to \infty} f(n)/g(n)$ exists. For oscillating ratios such as $f(n) = (2 + \sin n)\, n$ against $g(n) = n$, no limit exists and one must fall back to the constants-form definition.
+\end{remark}
+
+\begin{theorem}[$O$--$\Omega$ duality]
+\label{thm:o_omega_dual}
+For any eventually non-negative $f$ and $g$,
+\[
+  f \in O(g) \iff g \in \Omega(f).
+\]
+The same swap converts $o$ and $\omega$: $f \in o(g) \iff g \in \omega(f)$.
+\end{theorem}
+
+\begin{proof}
+Suppose $f \in O(g)$, witnessed by constants $c > 0$ and $n_0$ such that $0 \le f(n) \le c \cdot g(n)$ for $n \ge n_0$. Dividing by $c > 0$ gives $0 \le \frac{1}{c} f(n) \le g(n)$ for $n \ge n_0$, which is exactly the definition of $g \in \Omega(f)$ (\cref{def:big_omega}) with constant $c' = 1/c$ and the same $n_0$.
+
+Conversely, if $g \in \Omega(f)$ with constants $c'$ and $n_0'$ giving $c' \cdot f(n) \le g(n)$, then $f(n) \le \frac{1}{c'} g(n)$ for $n \ge n_0'$, so $f \in O(g)$ with $c = 1/c'$.
+
+The little-$o$/$\omega$ case is identical, with the universal quantifier on the constant $c$ being preserved by the same reciprocation: $\forall c > 0,\ f(n) < c \cdot g(n)$ iff $\forall c' > 0,\ \frac{1}{c'} f(n) < g(n)$ (relabel $c = 1/c'$).
+\end{proof}
+
+\begin{theorem}[Transitivity]
+\label{thm:asymp_transitive}
+Let $A \in \{O, \Omega, \Theta, o, \omega\}$. Then
+\[
+  f \in A(g) \ \text{and}\ g \in A(h) \quad\implies\quad f \in A(h).
+\]
+\end{theorem}
+
+\begin{proof}
+We show the case $A = O$; the others follow either by the same scaling argument or by \cref{thm:o_omega_dual}. Suppose $f \in O(g)$, witnessed by $c_1, n_1$ with $f(n) \le c_1 g(n)$ for $n \ge n_1$, and $g \in O(h)$, witnessed by $c_2, n_2$ with $g(n) \le c_2 h(n)$ for $n \ge n_2$. Set $n_0 = \max(n_1, n_2)$ and $c = c_1 c_2$. For all $n \ge n_0$,
+\[
+  0 \le f(n) \le c_1 g(n) \le c_1 c_2 h(n) = c \cdot h(n),
+\]
+so $f \in O(h)$.
+
+For $A = \Omega$, transit through \cref{thm:o_omega_dual}: $f \in \Omega(g) \iff g \in O(f)$, etc., and apply the $O$ case in reverse. For $A = \Theta$, combine the $O$ and $\Omega$ cases. For $A = o$, the same product-of-constants argument works, but the universal quantifier on $c$ is handled as follows: given any $c > 0$, choose $c_1 = c/c_2$ in the $f \in o(g)$ definition where $c_2$ is any fixed constant making $g(n) \le c_2 h(n)$ eventually (such $c_2$ exists because $g \in o(h) \subseteq O(h)$). The argument for $\omega$ is dual.
+\end{proof}
+
+\begin{theorem}[Sum and max rules]
+\label{thm:asymp_sum}
+If $f \in O(g)$ and $f' \in O(g')$, then
+\[
+  f + f' \in O\bigl(\max(g, g')\bigr) = O(g + g').
+\]
+In particular, $O(g) + O(g') = O(\max(g, g'))$. The same identity holds with $O$ replaced by $\Omega$ or $\Theta$, with $\max$ replaced by $\min$ in the case of $\Omega$ if one wants the analogous lower-bound version.
+\end{theorem}
+
+\begin{proof}
+Let $c, n_1$ witness $f \le c \cdot g$ for $n \ge n_1$, and let $c', n_2$ witness $f' \le c' \cdot g'$ for $n \ge n_2$. For $n \ge n_0 := \max(n_1, n_2)$,
+\[
+  0 \;\le\; f(n) + f'(n) \;\le\; c \cdot g(n) + c' \cdot g'(n)
+  \;\le\; (c + c') \cdot \max(g(n), g'(n)),
+\]
+so $f + f' \in O(\max(g, g'))$ with constant $c + c'$. The equality $O(\max(g, g')) = O(g + g')$ is then immediate from the two-sided bound $\max(g, g') \le g + g' \le 2 \max(g, g')$ (assuming $g, g' \ge 0$), which keeps the same set of functions up to a constant factor.
+
+The corollary used most often is: \emph{a sum of finitely many terms is asymptotically the largest term}. So $3n^2 + 5n + 7 \log n \in \Theta(n^2)$ because $5n, 7 \log n \in O(n^2)$ and the leading $3n^2$ term is in $\Omega(n^2)$.
+\end{proof}
+
+\begin{corollary}[Reflexivity, symmetry of $\Theta$]
+\label{cor:asymp_reflexive}
+For every $f$, $f \in O(f)$, $f \in \Omega(f)$, and $f \in \Theta(f)$. Furthermore $f \in \Theta(g) \iff g \in \Theta(f)$.
+\end{corollary}
+
+\begin{proof}
+Take $c = 1, n_0 = 1$ in each constants-form definition for reflexivity. Symmetry of $\Theta$ follows from $\Theta(g) = O(g) \cap \Omega(g)$ together with \cref{thm:o_omega_dual}: $f \in \Theta(g) \iff f \in O(g) \wedge f \in \Omega(g) \iff g \in \Omega(f) \wedge g \in O(f) \iff g \in \Theta(f)$.
+\end{proof}
+
+\subsection{Growth-rate ordering}
+
+The functions one meets in algorithm analysis fall into a small number of asymptotic equivalence classes that are totally ordered by $\ll$ (where $f \ll g$ abbreviates $f \in o(g)$). The ladder below subsumes most concrete growth-rate comparisons.
+\[
+  1 \ll \log\log n \ll \log n \ll \log^c n \ll n^{1/k} \ll n \ll n \log n \ll n^c \ll c^n \ll n! \ll n^n
+\]
+where $c > 1$ is any fixed constant and $k \ge 1$ is any fixed integer. In words, going left to right: constants, double-log, single-log, any constant power of $\log$, any constant fractional power of $n$, linear, $n \log n$, any constant power of $n$ (polynomial), any constant base raised to $n$ (exponential), the factorial, and finally $n^n$.
+
+\paragraph{Useful identities.}
+\begin{itemize}
+  \item Inside $\Theta(\cdot)$ the base of a logarithm is irrelevant: $\log_a n = \Theta(\log_b n)$ for any constant bases $a, b > 1$. Bases of \emph{exponentials} are not interchangeable: $4^n \notin \Theta(2^n)$, since $4^n / 2^n = 2^n \to \infty$.
+  \item L'H\^opital's rule: if $f, g \to \infty$ then $\lim f/g = \lim f'/g'$. This is the standard tool for proving $f \in o(g)$ between, e.g., $n \log n$ and $n^2$.
+  \item Stirling: $n! = \sqrt{2\pi n}(n/e)^n (1 + O(1/n))$, so $\log(n!) \in \Theta(n \log n)$ and $n! \in \omega(c^n)$ for every constant $c > 1$.
+  \item Logarithm-in-the-exponent identity: $a^{\log_b c} = c^{\log_b a}$. Useful for normalising expressions like $n^{\log_2 3}$ that arise from the master theorem.
+\end{itemize}
+
+\subsection{Worked examples}
+
+\begin{example}[$3n^2 + 5n \in \Theta(n^2)$ from first principles]
+\label{ex:theta_polynomial}
+We show both $3n^2 + 5n \in O(n^2)$ and $3n^2 + 5n \in \Omega(n^2)$.
+
+\medskip
+\noindent\textit{Upper bound.} For all $n \ge 1$, $5n \le 5n^2$, so $3n^2 + 5n \le 3n^2 + 5n^2 = 8n^2$. Take $c_2 = 8$, $n_0 = 1$.
+
+\medskip
+\noindent\textit{Lower bound.} For all $n \ge 1$, $3n^2 + 5n \ge 3n^2$. Take $c_1 = 3$, $n_0 = 1$.
+
+\medskip
+\noindent\textit{Conclusion.} $0 \le 3n^2 \le 3n^2 + 5n \le 8n^2$ for all $n \ge 1$, so $3n^2 + 5n \in \Theta(n^2)$ by \cref{def:big_theta}. The same scheme handles any polynomial: for $p(n) = a_d n^d + \ldots + a_0$ with $a_d > 0$, $p \in \Theta(n^d)$.
+\end{example}
+
+\begin{example}[$\log^{100} n \in o(n^{0.1})$]
+\label{ex:logpow_vs_nfrac}
+\textbf{True.} Apply L'H\^opital's rule $100$ times, or argue via the substitution $u = \log n$ (so $n = e^u$):
+\[
+  \frac{\log^{100} n}{n^{0.1}} \;=\; \frac{u^{100}}{e^{0.1 u}}
+  \;\xrightarrow[u \to \infty]{}\; 0,
+\]
+since exponentials beat polynomials in $u$. Hence the limit-form characterisation gives $\log^{100} n \in o(n^{0.1})$. The takeaway: every constant power of $\log n$ is dominated by every constant fractional power of $n$, no matter how the constants compare.
+\end{example}
+
+\begin{example}[$\log\log n \in \omega(n^{100})$]
+\label{ex:loglog_vs_npow}
+\textbf{False.} The relation goes the other way: $\log\log n \in o(n^{100})$, indeed $\log\log n \in o(n^{\varepsilon})$ for every $\varepsilon > 0$. To see this, $\log\log n \le \log n \in o(n^{\varepsilon})$ by the previous example, so $\log\log n \in o(n^{100})$ by transitivity (\cref{thm:asymp_transitive}). Equivalently, $n^{100} \in \omega(\log\log n)$ by duality (\cref{thm:o_omega_dual}). The given statement asserts the wrong inequality.
+\end{example}
+
+\begin{example}[$f \in O(g) \implies g \in \Omega(f)$]
+\label{ex:o_implies_omega}
+\textbf{True.} This is exactly the $O$--$\Omega$ duality theorem (\cref{thm:o_omega_dual}). The proof is one line: if $f \le c \cdot g$ eventually, then $\frac{1}{c} f \le g$ eventually, witnessing $g \in \Omega(f)$. Note carefully that the converse statement ``$g \in \Omega(f) \implies f \in O(g)$'' is also true (it is the same equivalence read in the other direction), but the analogous swap with $\Theta$ in place of $O$/$\Omega$ would only give $\Theta(f) \subseteq \Theta(g) \iff \Theta(g) \subseteq \Theta(f)$, the symmetric case.
+\end{example}
+

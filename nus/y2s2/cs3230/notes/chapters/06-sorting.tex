@@ -1,0 +1,248 @@
+% Chapter 6: Sorting and Lower Bounds.
+\section{Sorting and Lower Bounds}
+\label{sec:sorting}
+
+The sorting problem takes an array $A = (a_1, \dots, a_n)$ and a total order $\le$ and returns a permutation $(a'_1, \dots, a'_n)$ with $a'_1 \le a'_2 \le \cdots \le a'_n$. Two questions organise the chapter: a decision-tree argument together with Stirling's approximation forces every comparison-based algorithm to use $\Omega(n \log n)$ comparisons in the worst case, and quicksort's expected running time on a uniformly random input permutation is $\Theta(n \log n)$ even though its worst case is $\Theta(n^2)$. Lifting the comparison-only restriction unlocks linear-time methods (counting sort, radix sort) whose running time depends on the size of the alphabet rather than on $n!$. Distinct keys are assumed throughout unless stated otherwise.
+
+\subsection{Definitions}
+
+\begin{definition}[Comparison-based sort]
+\label{def:comparison_sort}
+\index{comparison-based sort}
+A sorting algorithm is \emph{comparison-based} if the only operation it performs on input keys is to compare two of them with one of $<, \le, =, >, \ge$, branching on the boolean outcome. Arithmetic on keys, hashing of keys, bit-level inspection of keys, and array indexing by key value are all forbidden. Equivalently, the algorithm's behaviour on input $(a_1, \dots, a_n)$ depends only on the order type of the input, i.e.\ on which of the $n!$ relative orderings the input realises. Insertion sort, selection sort, merge sort, heap sort and quicksort are all comparison-based; counting sort and radix sort are not.
+\end{definition}
+
+\begin{definition}[In-place sort]
+\label{def:in_place}
+\index{in-place sort}
+A sorting algorithm is \emph{in-place} if, beyond the input array, it uses only $O(1)$ or $O(\log n)$ auxiliary memory. Insertion sort and heap sort are in-place ($O(1)$ extra). A standard recursive quicksort is in-place ($O(\log n)$ stack depth, provided one always recurses on the smaller side first). The textbook merge sort, which allocates a length-$n$ scratch array, is \emph{not} in-place.
+\end{definition}
+
+\begin{definition}[Stable sort]
+\label{def:stable_sort}
+\index{stable sort}
+A sorting algorithm is \emph{stable} if it preserves the relative order of equal keys: whenever $A[i] = A[j]$ and $i < j$ in the input, the element originally at index $i$ appears before the element originally at index $j$ in the output. Insertion sort and (carefully implemented) merge sort are stable; the standard in-place quicksort partition is not. Stability matters when keys carry payload data (e.g.\ sorting records by one field while preserving an earlier sort by another field) and is the structural assumption that makes radix sort correct.
+\end{definition}
+
+\begin{definition}[Decision tree for a comparison-based sorting algorithm]
+\label{def:decision_tree}
+\index{decision tree}
+Fix a comparison-based sorting algorithm $\mathcal{A}$ and an input length $n$. The \emph{decision tree} of $\mathcal{A}$ on inputs of length $n$ is a rooted binary tree in which:
+\begin{itemize}
+  \item each internal node is labelled with a comparison ``$a_i\!:\!a_j$'' that $\mathcal{A}$ might perform between two specific input positions;
+  \item the two outgoing edges are labelled $\le$ and $>$ (or analogous), corresponding to the two branches taken by $\mathcal{A}$ after that comparison;
+  \item each leaf is labelled with the permutation $\mathcal{A}$ outputs along the unique root-to-leaf path that reaches it.
+\end{itemize}
+A specific input traces a unique root-to-leaf path; the number of comparisons made on that input equals the depth of the leaf. Worst-case running time is therefore at least the height of the tree.
+\end{definition}
+
+\subsection{Comparison-based lower bound}
+
+\begin{figure}[h]
+  \centering
+  \input{figures/decision-tree-lower-bound.tex}
+  \caption{A comparison-sort decision tree for $n=3$: every leaf is a permutation of the input; every internal node is a comparison.}
+  \label{fig:decision_tree}
+\end{figure}
+
+\begin{theorem}[Comparison-sorting lower bound]
+\label{thm:sort_lower_bound}
+Any deterministic comparison-based sorting algorithm makes at least $\lceil \log_2(n!) \rceil = \Omega(n \log n)$ comparisons in the worst case on inputs of length $n$. Consequently its worst-case running time is $\Omega(n \log n)$.
+\end{theorem}
+
+\begin{proof}
+Let $\mathcal{A}$ be any deterministic comparison-based sorting algorithm and let $T$ be its decision tree on inputs of length $n$ (\cref{def:decision_tree}). We claim $T$ has at least $n!$ leaves.
+
+For each of the $n!$ orderings of the input there is a corresponding input -- e.g.\ take the input to be the corresponding permutation of $(1, 2, \dots, n)$ -- on which $\mathcal{A}$ must produce a \emph{distinct} output permutation, namely the inverse permutation that sorts the input. Inputs that are different orderings cannot reach the same leaf, since a leaf labels a single permutation and $\mathcal{A}$ is correct on every input. Hence $T$ has at least $n!$ leaves.
+
+A binary tree of height $h$ has at most $2^h$ leaves, so any tree with $\ge n!$ leaves satisfies $2^h \ge n!$, i.e.\ $h \ge \log_2(n!)$. By Stirling's approximation (\cref{sec:math}, $\log(n!) \in \Theta(n \log n)$, more precisely $\log_2(n!) = n \log_2 n - n \log_2 e + O(\log n)$),
+\[
+  h \;\ge\; \log_2(n!) \;=\; n \log_2 n - n \log_2 e + O(\log n) \;\in\; \Omega(n \log n).
+\]
+The worst-case running time of $\mathcal{A}$ is at least the worst-case number of comparisons, which is the height of the tree, hence $\Omega(n \log n)$.
+\end{proof}
+
+\begin{corollary}[Sharp counting consequence]
+\label{cor:five_comparisons}
+There is no comparison-based algorithm that sorts every $5$-element array using $\le 6$ comparisons.
+\end{corollary}
+
+\begin{proof}
+\sketchproof A binary tree of height $\le 6$ has at most $2^6 = 64$ leaves, but $5! = 120 > 64$, so it cannot label every permutation. (Tight: a custom algorithm sorting $5$ elements with $7$ comparisons does exist.)
+\end{proof}
+
+\begin{remark}[Scope of the bound]
+The lower bound applies only to algorithms restricted to comparisons; quoting ``sorting requires $\Omega(n \log n)$'' as if it were universal is a textbook trap. Algorithms that look at bits of keys or use keys as array indices (counting sort, radix sort, bucket sort) escape it -- the decision-tree model does not apply because their behaviour depends on key \emph{values}, not just on the order type of the input. Merge sort and heap sort match the lower bound and are therefore \emph{asymptotically optimal} among comparison-based sorts. The leaf-counting step of the proof rests on \emph{correctness}: distinct input orderings demand distinct output permutations, so distinct leaves -- a tree with fewer than $n!$ leaves would have to be wrong on some input. The same decision-tree counting argument generalises: merging $k$ sorted arrays of length $n$ each has $(kn)!/(n!)^k$ possible interleavings, giving the lower bound $\log_2((kn)!/(n!)^k) \in \Theta(kn \log k)$.
+\end{remark}
+
+\subsection{Quicksort average-case analysis}
+
+Quicksort picks a pivot from the array, partitions the array into elements $\le$ pivot and elements $\ge$ pivot in $\Theta(n)$ time, and recurses on the two sides. With the pivot chosen as $A[1]$, the worst-case input is an already-sorted array (or its reverse), giving the recurrence $T(n) = T(n-1) + T(0) + cn$ and hence $T(n) \in \Theta(n^2)$. The point of the average-case analysis is to show that, over a uniformly random input permutation (equivalently, a random pivot), the expected running time is $\Theta(n \log n)$.
+
+\begin{theorem}[Average-case running time of quicksort]
+\label{thm:quicksort_avg}
+Assume distinct keys. Let $A(n)$ denote the average running time of quicksort over the $n!$ equally likely input permutations of $n$ keys. Then $A(n) \in O(n \log n)$.
+\end{theorem}
+
+\begin{proof}
+Conditional on the pivot being the $j$-th smallest of the $n$ keys, the partition produces sub-arrays of sizes $j-1$ and $n-j$. Quicksort is comparison-based, so its run depends only on the order type of the input. If the input permutation is uniformly random then (i) the pivot $A[1]$ is the $j$-th smallest with probability $1/n$ for each $j \in [n]$, and (ii) conditional on this, the order types of the two sub-arrays are each uniformly random and independent (the partition only compares the pivot against each non-pivot, so it never compares two non-pivots with each other and cannot bias their relative order). Hence
+\[
+  A(n) \;=\; cn + \frac{1}{n}\sum_{j=1}^{n}\!\bigl[A(j-1) + A(n-j)\bigr]
+       \;=\; cn + \frac{2}{n}\sum_{j=0}^{n-1} A(j),
+\]
+with base case $A(0) = A(1) = 0$. To solve, multiply by $n$ and subtract the same identity at $n-1$ to telescope:
+\[
+  n A(n) - (n-1) A(n-1) \;=\; c(2n - 1) + 2 A(n-1)
+  \quad\Longleftrightarrow\quad
+  n A(n) - (n+1) A(n-1) \;=\; c(2n-1).
+\]
+Dividing both sides by $n(n+1)$,
+\[
+  \frac{A(n)}{n+1} - \frac{A(n-1)}{n} \;=\; \frac{c(2n-1)}{n(n+1)} \;<\; \frac{2c}{n}.
+\]
+Telescoping from $n$ down to $1$,
+\[
+  \frac{A(n)}{n+1} \;<\; \frac{A(1)}{2} + 2c\sum_{k=2}^{n}\frac{1}{k}
+                 \;=\; O(1) + 2c\,(H_n - 1)
+                 \;=\; O(\log n),
+\]
+where we used the harmonic-sum envelope $H_n = \ln n + \Theta(1)$ from \cref{sec:math}. Multiplying by $n+1$ gives $A(n) \in O(n \log n)$, as claimed.
+\end{proof}
+
+\begin{remark}[Average case vs.\ randomised quicksort]
+The same bound $O(n \log n)$ holds for the \emph{randomised} variant in which the pivot is chosen uniformly at random from the current sub-array on every recursive call -- regardless of input order. The two analyses are essentially identical because the only place randomness enters is the per-call distribution of the pivot's rank, and that distribution is $\mathrm{Unif}([n])$ in both settings. The per-input ``with high probability'' guarantee is taken up in \cref{sec:randomised}. Two caveats apply when quoting the result. First, ``average-case running time'' is meaningless without specifying a distribution; the standard convention is uniform over the $n!$ orderings, and other conventions yield other answers. Second, the unqualified claim ``quicksort is $O(n \log n)$'' is wrong: on a sorted (or reverse-sorted) input with first-element pivoting, the worst case $\Theta(n^2)$ from the recurrence $T(n) = T(n-1) + cn$ is realised.
+\end{remark}
+
+\begin{remark}[In-place quicksort]
+The standard recursive quicksort can be made in-place by recursing on the smaller side first and handling the larger side via tail recursion; this caps the recursion depth at $O(\log n)$ in the worst case, giving $O(\log n)$ auxiliary space. The partition step itself, however, is not stable: equal-keyed elements can swap. If stability is required, either fall back to a stable algorithm (insertion or carefully implemented merge sort) or attach the original index as a tiebreaker.
+\end{remark}
+
+\begin{example}[Quicksort via indicator variables and linearity]
+\label{ex:quicksort_indicator_analysis}
+An alternative proof of \cref{thm:quicksort_avg} that avoids recurrences entirely. Let $a_1 < a_2 < \dots < a_n$ be the sorted keys and let $X$ be the total number of comparisons quicksort makes on a uniformly random input permutation. Two specific keys $a_i$ and $a_j$ ($i < j$) are compared by the algorithm \emph{at most once}, because the only comparisons happen between a pivot and a non-pivot, after which the pivot leaves the recursion. Define the indicator
+\[
+  X_{ij} \;=\; \indic_{\{a_i \text{ and } a_j \text{ are compared at some point}\}},
+  \qquad i < j.
+\]
+Then $X = \sum_{i<j} X_{ij}$ and, by linearity of expectation (\cref{thm:linearity}),
+\[
+  \expec[X] \;=\; \sum_{1 \le i < j \le n} \prob(a_i \text{ and } a_j \text{ are compared}).
+\]
+
+\medskip
+\noindent\textit{Computing the per-pair probability.} Consider the first pivot among $\{a_i, a_{i+1}, \dots, a_j\}$ (in execution order). Until that moment, all $j - i + 1$ of these keys have stayed together in the same recursive sub-array, since any earlier pivot is either smaller than $a_i$ (sending them all right) or larger than $a_j$ (sending them all left). When the first pivot from this set is finally chosen:
+\begin{itemize}
+  \item if the pivot is $a_i$ or $a_j$, then $a_i$ and $a_j$ are compared (pivot against non-pivot);
+  \item if the pivot is one of the $j - i - 1$ keys strictly between, then $a_i$ goes left and $a_j$ goes right and they are never compared again.
+\end{itemize}
+By symmetry, each of the $j - i + 1$ keys is equally likely to be that first pivot, so
+\[
+  \prob(a_i, a_j \text{ compared}) \;=\; \frac{2}{j - i + 1}.
+\]
+
+\medskip
+\noindent\textit{Summing.} Substituting,
+\[
+  \expec[X] \;=\; \sum_{i=1}^{n-1}\sum_{j=i+1}^{n} \frac{2}{j - i + 1}
+            \;=\; \sum_{i=1}^{n-1} \sum_{k=2}^{n - i + 1} \frac{2}{k}
+            \;\le\; 2\sum_{i=1}^{n-1} H_n
+            \;=\; 2(n-1) H_n
+            \;\in\; O(n \log n),
+\]
+using $H_n = \ln n + \Theta(1)$. Since the running time is $\Theta(\expec[X]) + \Theta(n) = \Theta(\expec[X])$ once partition overhead is accounted for, we recover \cref{thm:quicksort_avg}. The crucial structural fact that makes the indicator argument work is that each \emph{pair} is compared at most once, so $X_{ij}$ is genuinely an indicator and not a count.
+\end{example}
+
+\subsection{Linear-time non-comparison sorts}
+
+The $\Omega(n \log n)$ lower bound disappears as soon as the algorithm is allowed to look at key values directly. Both algorithms below assume keys come from a small integer range and use the keys themselves as array indices.
+
+\begin{theorem}[Counting sort]
+\label{thm:counting_sort}
+Suppose the input array $A[1..n]$ has keys drawn from $\{1, 2, \dots, k\}$. Counting sort sorts $A$ in $O(n + k)$ time and $O(n + k)$ space. Implemented carefully, it is stable.
+\end{theorem}
+
+\begin{proof}
+Counting sort works in three passes:
+\begin{enumerate}[(i)]
+  \item \textbf{Count}: traverse $A$ once and compute $\mathrm{count}[v]$ = number of indices with $A[i] = v$, for each $v \in \{1, \dots, k\}$. This is $O(n + k)$ (initialise the array of size $k$, then $n$ increments).
+  \item \textbf{Prefix sum}: replace $\mathrm{count}[v]$ by $\sum_{u \le v} \mathrm{count}[u]$, the number of keys $\le v$. After this pass, $\mathrm{count}[v]$ is the index of the \emph{last} cell that should hold value $v$. This is $O(k)$.
+  \item \textbf{Place}: traverse $A$ \emph{from right to left}; for each $A[i]$, write it to position $\mathrm{count}[A[i]]$ of the output array $B$ and decrement $\mathrm{count}[A[i]]$. This is $O(n)$.
+\end{enumerate}
+Total: $O(n + k)$. Stability is guaranteed by the right-to-left placement pass: among indices with the same key $v$, those processed later (smaller $i$) are written to smaller output positions, preserving original order.
+\end{proof}
+
+\begin{remark}[Input regime and placement orientation]
+The $O(n + k)$ bound is linear only when $k = O(n)$; for $k = n^{10}$ counting sort is $\Omega(n^{10})$, useless. The placement orientation also matters: the right-to-left pass with prefix sums interpreted as ``last free index'' is the formulation given above, while a left-to-right pass with the count array interpreted as ``next free index'' is also stable. Mixing the two -- right-to-left with ``next free'' or vice versa -- silently breaks stability, which then breaks radix sort downstream.
+\end{remark}
+
+\begin{example}[Counting sort on a small input]
+\label{ex:counting_sort_run}
+Let $A = (3, 1, 2, 1, 3, 2, 1)$ with $n = 7$ and alphabet $\{1, 2, 3\}$ ($k = 3$).
+
+\medskip
+\noindent\textit{Count pass.} $\mathrm{count} = (3, 2, 2)$ -- three $1$s, two $2$s, two $3$s.
+
+\medskip
+\noindent\textit{Prefix sum.} $\mathrm{count} = (3, 5, 7)$ -- the last cell holding a $1$ is index $3$; the last cell holding a $2$ is index $5$; the last cell holding a $3$ is index $7$.
+
+\medskip
+\noindent\textit{Place pass} (right to left, output array $B[1..7]$).
+\begin{center}
+\begin{tabular}{rcll}
+\toprule
+$i$ & $A[i]$ & action & state of $B$ \\
+\midrule
+$7$ & $1$ & $B[3] \gets 1$, $\mathrm{count}[1] \gets 2$ & $(\_,\_,1,\_,\_,\_,\_)$ \\
+$6$ & $2$ & $B[5] \gets 2$, $\mathrm{count}[2] \gets 4$ & $(\_,\_,1,\_,2,\_,\_)$ \\
+$5$ & $3$ & $B[7] \gets 3$, $\mathrm{count}[3] \gets 6$ & $(\_,\_,1,\_,2,\_,3)$ \\
+$4$ & $1$ & $B[2] \gets 1$, $\mathrm{count}[1] \gets 1$ & $(\_,1,1,\_,2,\_,3)$ \\
+$3$ & $2$ & $B[4] \gets 2$, $\mathrm{count}[2] \gets 3$ & $(\_,1,1,2,2,\_,3)$ \\
+$2$ & $1$ & $B[1] \gets 1$, $\mathrm{count}[1] \gets 0$ & $(1,1,1,2,2,\_,3)$ \\
+$1$ & $3$ & $B[6] \gets 3$, $\mathrm{count}[3] \gets 5$ & $(1,1,1,2,2,3,3)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The final output is $B = (1,1,1,2,2,3,3)$. Note how the right-to-left order is what gives stability: the $1$ at $A[7]$ ends up at $B[3]$, while the $1$ at $A[2]$ ends up at $B[1]$, preserving the input order $A[2] \prec A[4] \prec A[7]$.
+\end{example}
+
+\begin{theorem}[Radix sort]
+\label{thm:radix_sort}
+Suppose each key in $A[1..n]$ has $d$ digits drawn from an alphabet of size $k$. Radix sort sorts $A$ in $O\!\bigl(d(n + k)\bigr)$ time.
+\end{theorem}
+
+\begin{proof}
+\sketchproof Run counting sort $d$ times -- once per digit -- starting from the \emph{least significant digit} and proceeding to the most significant. Each pass is $O(n + k)$ by \cref{thm:counting_sort}, giving total $O(d(n + k))$. Correctness rests on the inductive invariant: after passing on digits $1, \dots, t$, the array is sorted by the lexicographic order of those $t$ low-order digits. The induction step uses \emph{stability} crucially: when sorting on digit $t+1$, two keys with the same digit-$(t+1)$ value retain their relative order from the previous pass, so they remain sorted on digits $1, \dots, t$. Without stable counting sort, radix sort is wrong.
+\end{proof}
+
+\begin{remark}[When is linear-time sorting actually linear?]
+For radix sort applied to $n$ machine-word integers in $\{0, \dots, n^c - 1\}$, choosing alphabet $k = n$ gives $d = c$ digits and total $O(c \cdot 2n) = O(n)$. For arbitrary integers in a range up to $U$, $d = \log_k U$ and the running time is $O((n + k) \log_k U)$, optimised at $k = n$ to $O(n \log_n U)$. The catch is the $k$ term: counting sort with alphabet $k = n^{10}$ is $\Omega(n^{10})$, useless. Bucket sort is a third member of this family: it scatters keys into buckets, sorts each bucket, and concatenates; under the assumption that keys are i.i.d.\ uniform on an interval, it runs in $O(n)$ expected time, but the assumption is essential -- on adversarial input it degrades to the time of the bucket sub-sort.
+\end{remark}
+
+\subsection{Linear-time selection}
+
+Selection asks: given $A[1..n]$ and $k \in [n]$, find the $k$-th smallest element. Sorting and indexing takes $O(n \log n)$; the median-of-medians algorithm of Blum--Floyd--Pratt--Rivest--Tarjan does it in $\Theta(n)$ in the worst case.
+
+\begin{theorem}[Median-of-medians selection]
+\label{thm:select_linear}
+There is a deterministic, comparison-based algorithm $\textsc{Select}(A, k)$ that returns the $k$-th smallest element of $A[1..n]$ in $O(n)$ time in the worst case.
+\end{theorem}
+
+\begin{proof}
+\sketchproof The algorithm works in five phases.
+\begin{enumerate}[(i)]
+  \item Divide $A$ into $\lceil n/5 \rceil$ groups of $5$ (the last possibly smaller). Sort each group in $O(1)$ time, and let $m_g$ be its median.
+  \item Recursively call $\textsc{Select}$ on the array $(m_1, m_2, \dots)$ of medians to find their median $p$. This takes $T(\lceil n/5 \rceil)$ time.
+  \item Partition $A$ around $p$ into $A_<, \{p\}, A_>$ in $O(n)$ time.
+  \item If $|A_<| = k - 1$, return $p$. Otherwise recurse into $A_<$ or $A_>$ with an updated rank.
+\end{enumerate}
+\noindent\textit{Why $O(n)$.} The pivot $p$ is the median of the $\lceil n/5 \rceil$ group-medians, so at least half of those medians are $\ge p$, and each such group contributes at least $3$ elements $\ge p$ (the median and the two larger). Hence at least $3 \lceil n/10 \rceil \ge 3n/10$ elements of $A$ are $\ge p$, and symmetrically at least $3n/10$ are $\le p$. Therefore each of $|A_<|, |A_>|$ is at most $7n/10$, giving the recurrence
+\[
+  T(n) \;\le\; T\!\left(\!\left\lceil \tfrac{n}{5} \right\rceil\!\right) + T\!\left(\!\left\lfloor \tfrac{7n}{10} \right\rfloor\!\right) + O(n).
+\]
+The two fractions sum to $9/10 < 1$, which is the structural reason the recurrence solves to $T(n) = O(n)$. To verify, guess $T(n) \le cn$ and substitute: $T(n) \le c(n/5) + c(7n/10) + an = (9c/10)n + an = cn - (cn/10 - an)$, which is $\le cn$ for $c \ge 10a$. The base case is $O(1)$ for $n \le 5$. The constant $5$ is the smallest odd group size that makes the two fractions sum to less than one; group size $3$ would give $T(n/3) + T(2n/3) + O(n) = O(n \log n)$.
+\end{proof}
+
+\begin{remark}[Randomised quickselect]
+Replacing the deterministic median-of-medians pivot with a uniformly random pivot gives a much simpler algorithm with expected running time $O(n)$ but $\Theta(n^2)$ worst case. The expected analysis mirrors \cref{ex:quicksort_indicator_analysis} (each pair is compared at most once, sum of $2/(j-i+1)$ over relevant pairs).
+\end{remark}
+

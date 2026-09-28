@@ -1,0 +1,9 @@
+# latexmkrc — canonical build for cs3230_notes.tex
+$pdf_mode = 1;                  # produce PDF directly via pdflatex
+$pdflatex = 'pdflatex -interaction=nonstopmode -synctex=1 -file-line-error %O %S';
+$bibtex_use = 1;
+
+# imakeidx auto-registers a makeindex rule with latexmk; no custom rule needed.
+
+# Files to clean up with `latexmk -c`
+$clean_ext = "synctex.gz idx ind ilg thm mtc* maf out toc lof lot";

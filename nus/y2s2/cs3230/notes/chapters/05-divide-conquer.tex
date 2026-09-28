@@ -1,0 +1,180 @@
+% Chapter 5: Divide and Conquer.
+\section{Divide and Conquer}
+\label{sec:dnc}
+
+Divide-and-conquer (D\&C) refines the brute-force / iterative approach by reducing an instance of size $n$ to several instances of the \emph{same problem} on strictly smaller inputs, recursing, and stitching the sub-answers back together. Running times then satisfy a recurrence of the canonical shape $T(n) = a T(n/b) + f(n)$ solved by the Master Theorem (\cref{thm:master}), and correctness follows by strong induction on $n$. The asymptotic cost is determined by a competition between the number of subproblems $a$ and the combine cost $f(n)$, a principle exploited by Strassen's algorithm and many others.
+
+\subsection{Definitions}
+
+\begin{definition}[Divide-and-conquer paradigm]
+\label{def:dnc_paradigm}
+\index{divide and conquer}
+A \emph{divide-and-conquer} algorithm for a problem with input size $n$ proceeds in three steps:
+\begin{enumerate}[(1)]
+  \item \textbf{Divide.} Split the instance into $a \ge 1$ subinstances, each of size at most $n/b$ for some constant $b > 1$ (so subinstances are \emph{strictly smaller}).
+  \item \textbf{Conquer.} Solve each subinstance recursively. When $n$ falls below a constant threshold the recursion is terminated by a direct base-case computation in $\Theta(1)$ time.
+  \item \textbf{Combine.} Stitch the $a$ subinstance answers into an answer for the original instance.
+\end{enumerate}
+Writing $f(n)$ for the time spent on divide+combine on an instance of size $n$, the worst-case running time satisfies the canonical recurrence
+\[
+  T(n) \;=\;
+  \begin{cases}
+    \Theta(1) & \text{if } n \le n_0, \\
+    a\,T(n/b) + f(n) & \text{if } n > n_0,
+  \end{cases}
+\]
+for the constant base-case threshold $n_0$. The recursion-tree shape is determined by $(a, b)$ and the leaf-vs-root cost balance is determined by $f(n)$ versus $n^{\log_b a}$ (\cref{thm:master}).
+\end{definition}
+
+\begin{remark}[Why $b > 1$ strictly]
+The strict inequality $b > 1$ is what makes D\&C terminate: each call is on an input strictly smaller than its parent, so after $\log_b n$ levels the recursion bottoms out. A recurrence such as $T(n) = 2T(n/1) + n$ or $T(n) = T(n) + 1$ does not describe a D\&C algorithm and does not terminate; this is the same reason recursive correctness proofs require the induction to be on a well-founded measure. When setting up the recurrence, always verify $n/b < n$ for the chosen $b$.
+\end{remark}
+
+\begin{remark}[State the combine cost explicitly]
+A common slip is to write $T(n) = a T(n/b)$ with no $f(n)$ term, which silently asserts that the divide and combine steps cost $O(1)$. They rarely do: for naive matrix multiplication the combine is $\Theta(n^2)$, for Strassen's algorithm it is also $\Theta(n^2)$ (eighteen block additions), and for the closest-pair-of-points problem it is $\Theta(n)$ via the strip argument. Always identify $f(n)$ before invoking the Master Theorem.
+\end{remark}
+
+\subsection{Key results}
+
+\begin{theorem}[Correctness template for D\&C]
+\label{thm:dnc_correctness}
+Let $\mathcal{A}$ be a D\&C algorithm in the form of \cref{def:dnc_paradigm}, with base case correct by direct inspection and a combine step which, given correct answers for the $a$ subinstances, produces a correct answer for the parent instance. Then $\mathcal{A}$ is correct on every input.
+\end{theorem}
+
+\begin{proof}
+Strong induction on $n$, the size of the input.
+
+\smallskip
+\noindent\emph{Base case.} For $n \le n_0$, the algorithm returns the value computed by the direct base-case routine, which is correct by hypothesis.
+
+\smallskip
+\noindent\emph{Inductive step.} Fix $n > n_0$ and assume (strong inductive hypothesis) that $\mathcal{A}$ is correct on every input of size $< n$. On an input of size $n$, $\mathcal{A}$ first divides into $a$ subinstances each of size at most $n/b < n$. By the inductive hypothesis, the recursive calls return correct answers for these $a$ subinstances. By the assumption on the combine step, the algorithm then produces a correct answer for the parent. Hence $\mathcal{A}$ is correct on the input of size $n$.
+
+By strong induction, $\mathcal{A}$ is correct on every input.
+\end{proof}
+
+\begin{remark}[Match the base case to the algorithm]
+The strong-induction proof above only goes through if the base case in the proof matches what the algorithm actually does. If the recursion bottoms out at threshold $n_0 > 1$ but the analysis writes $T(1) = T(0) = \Theta(1)$ to argue termination, the recurrence is still numerically correct but the inductive step has no anchor at $n = n_0$. State the base case at the size the algorithm actually terminates at.
+\end{remark}
+
+\begin{proposition}[Worst-case time of a D\&C algorithm]
+\label{prop:dnc_complexity}
+Let $\mathcal{A}$ be a D\&C algorithm whose running time satisfies the canonical recurrence $T(n) = a T(n/b) + f(n)$ with $a \ge 1$, $b > 1$, $f$ eventually positive. Let $c^* = \log_b a$. Then by the Master Theorem (\cref{thm:master}):
+\begin{itemize}
+  \item if $f(n) \in O(n^{c^* - \varepsilon})$ for some $\varepsilon > 0$, then $T(n) \in \Theta(n^{c^*})$ \emph{(leaves dominate)};
+  \item if $f(n) \in \Theta(n^{c^*})$, then $T(n) \in \Theta(n^{c^*} \log n)$ \emph{(balanced)};
+  \item if $f(n) \in \Omega(n^{c^* + \varepsilon})$ for some $\varepsilon > 0$ \emph{and} the regularity condition $a f(n/b) \le k f(n)$ holds for some $k < 1$ and all large $n$, then $T(n) \in \Theta(f(n))$ \emph{(root dominates)}.
+\end{itemize}
+\end{proposition}
+
+\begin{proof}
+\sketchproof This is exactly the Master Theorem (\cref{thm:master}), which is proved in \cref{sec:recurrences} by summing the per-level work in the recursion tree. Each of the $\log_b n$ levels has $a^k$ nodes at depth $k$, each doing work $f(n/b^k)$, so the total work is
+\[
+  T(n) \;=\; \sum_{k=0}^{\log_b n - 1} a^k f(n/b^k) \;+\; \Theta(a^{\log_b n}).
+\]
+The leaf term equals $\Theta(n^{\log_b a}) = \Theta(n^{c^*})$. Whether the geometric-like sum on the left is dominated by its first term, last term, or grows uniformly across levels, is exactly the case split on $f(n)$ versus $n^{c^*}$.
+\end{proof}
+
+\begin{remark}[The two levers of D\&C optimisation]
+\Cref{prop:dnc_complexity} makes the two design levers explicit. To improve a D\&C algorithm one can either (i) reduce $a$ (fewer subproblems) which decreases $c^* = \log_b a$ and so shrinks the leaf term, or (ii) reduce $f(n)$ which only helps if $f(n)$ already dominates (Case 3) or matches (Case 2) the leaf term. In Case 1 the leaves already swamp the combine, so making the combine cheaper does not change the asymptotic cost. The recurrence $T(n) = 8T(n/2) + n^3$ illustrates this: original is $\Theta(n^3 \log n)$ (Case 2); dropping $f$ from $n^3$ to $n^2$ gives $\Theta(n^3)$ via Case 1 (where $f$ no longer matters), and dropping $a$ from $8$ to $7$ also gives $\Theta(n^3)$ but via Case 3, where regularity must be checked.
+\end{remark}
+
+\begin{remark}[Regularity and the divide step]
+Case 3 of \cref{thm:master} requires the regularity condition $a f(n/b) \le k f(n)$ for some constant $k < 1$ and all large $n$. For polynomial $f$ this is automatic; for $f$ involving logarithms or other slowly-varying factors it must be verified, otherwise the Akra--Bazzi method (\cref{sec:recurrences}) is needed. A separate trap is the cost of the divide step itself: for closest-pair and similar geometric problems, sorting points by $x$-coordinate inside every recursive call would push the recurrence to $T(n) = 2T(n/2) + n \log n$, giving $\Theta(n \log^2 n)$ instead of the optimal $\Theta(n \log n)$. The standard fix --- pre-sort once, then pass sorted lists down through the recursion --- is itself a D\&C-design pattern.
+\end{remark}
+
+\subsection{Worked examples}
+
+\begin{example}[Fast exponentiation by repeated squaring]
+\label{ex:fast_exp}
+\textbf{Problem.} Given a positive integer $a$ and a non-negative integer $n$, compute $a^n$ (in modular arithmetic, so each multiplication is $\Theta(1)$ in the word RAM model).
+
+\medskip
+\noindent\textbf{Naive approach.} The recurrence $a^n = a^{n-1} \cdot a$ gives $T(n) = T(n-1) + \Theta(1)$, hence $T(n) \in \Theta(n)$. This is iteration, not D\&C: the subinstance is of size $n - 1$, not $n / b$.
+
+\medskip
+\noindent\textbf{D\&C approach.} Use the identity
+\[
+  a^n \;=\;
+  \begin{cases}
+    \bigl(a^{\lfloor n/2 \rfloor}\bigr)^{\!2} & \text{if } n \text{ is even}, \\
+    \bigl(a^{\lfloor n/2 \rfloor}\bigr)^{\!2} \cdot a & \text{if } n \text{ is odd}.
+  \end{cases}
+\]
+\textit{Divide:} reduce computing $a^n$ to a single subproblem of computing $a^{\lfloor n/2 \rfloor}$. \textit{Conquer:} recurse to obtain $x = a^{\lfloor n/2 \rfloor}$. \textit{Combine:} return $x \cdot x$ (or $x \cdot x \cdot a$ if $n$ is odd), $\Theta(1)$ work.
+
+\medskip
+\noindent\textbf{Pseudocode.}
+\begin{algorithmic}
+\Function{FastExp}{$a, n$}
+  \If{$n = 0$} \Return $1$ \EndIf
+  \State $x \gets$ \Call{FastExp}{$a, \lfloor n/2 \rfloor$}
+  \If{$n$ is even} \Return $x \cdot x$
+  \Else{} \Return $x \cdot x \cdot a$
+  \EndIf
+\EndFunction
+\end{algorithmic}
+
+\medskip
+\noindent\textbf{Correctness.} By \cref{thm:dnc_correctness}: base case $n = 0$ returns $1 = a^0$. For $n > 0$, by strong induction the recursive call returns $x = a^{\lfloor n/2 \rfloor}$ correctly; the combine step then returns $x^2 = a^{2\lfloor n/2 \rfloor}$ which equals $a^n$ when $n$ is even and $a^{n-1}$ when $n$ is odd, in which case multiplying by $a$ gives $a^n$.
+
+\medskip
+\noindent\textbf{Time.} The recurrence is $T(n) = T(n/2) + \Theta(1)$, so $a = 1$, $b = 2$, $f(n) = \Theta(1)$, $c^* = \log_2 1 = 0$. Since $f(n) = \Theta(n^0) = \Theta(n^{c^*})$, Case 2 of \cref{prop:dnc_complexity} (\cref{thm:master}) gives
+\[
+  T(n) \;\in\; \Theta(n^0 \log n) \;=\; \Theta(\log n).
+\]
+This is an exponential improvement over the iterative $\Theta(n)$. The same idea, applied to a $2 \times 2$ companion matrix $M = \begin{psmallmatrix} 1 & 1 \\ 1 & 0 \end{psmallmatrix}$, gives an $O(\log n)$-time algorithm for the $n$-th Fibonacci number via $M^n = \begin{psmallmatrix} F_{n+1} & F_n \\ F_n & F_{n-1} \end{psmallmatrix}$.
+\end{example}
+
+\begin{example}[Strassen's matrix multiplication, $\Theta(n^{\log_2 7})$]
+\label{ex:strassen}
+\textbf{Problem.} Given two $n \times n$ matrices $A$ and $B$ (assume $n$ is a power of $2$ for cleanliness), compute $C = A \cdot B$.
+
+\medskip
+\noindent\textbf{Naive D\&C.} Block-partition each matrix into four $(n/2) \times (n/2)$ blocks:
+\[
+  A = \begin{pmatrix} a & b \\ c & d \end{pmatrix},\quad
+  B = \begin{pmatrix} e & f \\ g & h \end{pmatrix},\quad
+  C = \begin{pmatrix} r & s \\ t & u \end{pmatrix},
+\]
+where the entries $a, \dots, h, r, \dots, u$ are themselves $(n/2) \times (n/2)$ matrices and
+\[
+  r = ae + bg,\quad s = af + bh,\quad t = ce + dg,\quad u = cf + dh.
+\]
+\textit{Divide+combine cost:} 4 block-additions of $(n/2)$-square matrices, $\Theta(n^2)$ total. \textit{Conquer:} 8 block-multiplications of $(n/2)$-square matrices. The recurrence is $T(n) = 8 T(n/2) + \Theta(n^2)$, with $c^* = \log_2 8 = 3$ and $f(n) = \Theta(n^2) = O(n^{3-1})$ in Case 1, hence $T(n) \in \Theta(n^3)$. No improvement over the standard triple-loop algorithm.
+
+\medskip
+\noindent\textbf{Strassen's trick.} Following \cref{prop:dnc_complexity}, the leaves dominate ($f(n) \ll n^{c^*}$), so the only way to improve the asymptotic is to reduce $a = 8$. Strassen (1969) computes $C = AB$ using only \emph{seven} block-multiplications, at the cost of $18$ block-additions/subtractions:
+\[
+  \begin{array}{ll}
+    P_1 = a (f - h),         & P_5 = (a + d)(e + h), \\
+    P_2 = (a + b) h,         & P_6 = (b - d)(g + h), \\
+    P_3 = (c + d) e,         & P_7 = (a - c)(e + f), \\
+    P_4 = d (g - e),         &
+  \end{array}
+\]
+and then
+\[
+  r = P_5 + P_4 - P_2 + P_6,\quad s = P_1 + P_2,\quad t = P_3 + P_4,\quad u = P_5 + P_1 - P_3 - P_7.
+\]
+
+\medskip
+\noindent\textbf{Correctness.} A direct expansion verifies each formula; for instance,
+\begin{align*}
+  P_5 + P_4 - P_2 + P_6
+  &= (a+d)(e+h) + d(g-e) - (a+b)h + (b-d)(g+h) \\
+  &= ae + ah + de + dh + dg - de - ah - bh + bg + bh - dg - dh \\
+  &= ae + bg \;=\; r,
+\end{align*}
+and similarly for $s, t, u$. Note: the $P_i$ are products of $(n/2)$-square matrices, so they do \emph{not} commute with each other, but each $P_i$ is a single matrix product, so the algebraic identities only require associativity and distributivity, both of which matrix arithmetic satisfies. Combined with \cref{thm:dnc_correctness}, the algorithm is correct.
+
+\medskip
+\noindent\textbf{Time.} Now $a = 7$, $b = 2$, $f(n) = \Theta(n^2)$ (the 18 block-additions). So $c^* = \log_2 7 \approx 2.807$ and $f(n) = \Theta(n^2) = O(n^{c^* - \varepsilon})$ for any $\varepsilon < c^* - 2$. Case 1 of \cref{prop:dnc_complexity} gives
+\[
+  T(n) \;\in\; \Theta\bigl(n^{\log_2 7}\bigr) \;=\; \Theta(n^{2.807\dots}).
+\]
+
+\medskip
+\noindent\textbf{Remark.} Strassen's algorithm is the proof-of-concept that fast matrix multiplication is possible; the matrix-multiplication exponent $\omega$ has been pushed down repeatedly (Coppersmith--Winograd 1990: $\omega < 2.376$; current record approximately $2.371552$), but Strassen's $\log_2 7$ remains the standard textbook example because the construction is fully explicit.
+\end{example}
+

@@ -1,0 +1,60 @@
+% Front matter: quick reference and problem-solving checklist.
+\section*{Quick reference}
+\addcontentsline{toc}{section}{Quick reference}
+\label{sec:quickref}
+
+\paragraph{Logs and exponentials.}
+\begin{itemize}
+  \item $a^{\log_b c} = c^{\log_b a}$
+  \item $\log_b(xy) = \log_b x + \log_b y$,\quad $\log_b(x^k) = k \log_b x$
+  \item $e^x \ge 1 + x$ for all $x$;\quad $\ln(1 + x) \le x$ for $x > -1$
+\end{itemize}
+
+\paragraph{Series.}
+\begin{itemize}
+  \item Arithmetic: $\sum_{i=1}^n i = n(n+1)/2$
+  \item Geometric: $\sum_{i=0}^{n-1} r^i = (r^n - 1)/(r - 1)$ for $r \ne 1$;\quad
+        $\sum_{i=0}^\infty r^i = 1/(1 - r)$ for $|r| < 1$
+  \item Harmonic: $H_n = \sum_{i=1}^n 1/i = \ln n + \Theta(1)$
+\end{itemize}
+
+\paragraph{Stirling's approximation.}
+$n! = \sqrt{2\pi n}\, (n/e)^n (1 + \Theta(1/n))$;\quad
+in particular $\log_2(n!) = n \log_2 n - n \log_2 e + \Theta(\log n)$.
+
+\paragraph{Probability.}
+\begin{itemize}
+  \item Linearity: $\expec[X + Y] = \expec[X] + \expec[Y]$ (always)
+  \item Markov: $\prob[X \ge a] \le \expec[X]/a$ for $X \ge 0$, $a > 0$
+  \item Chebyshev: $\prob\bigl[\,|X - \expec[X]| \ge a\,\bigr] \le \mathrm{Var}(X)/a^2$
+  \item Union bound: $\prob\bigl[\bigcup_i A_i\bigr] \le \sum_i \prob[A_i]$
+\end{itemize}
+
+\paragraph{Master Theorem.}
+For $T(n) = a T(n/b) + f(n)$ with $a \ge 1$, $b > 1$, let $c^* = \log_b a$:
+\begin{itemize}
+  \item Case 1: $f(n) = O(n^{c^* - \varepsilon})$ for some $\varepsilon > 0$ \(\Rightarrow\) $T(n) = \Theta(n^{c^*})$
+  \item Case 2: $f(n) = \Theta(n^{c^*})$ \(\Rightarrow\) $T(n) = \Theta(n^{c^*} \log n)$
+  \item Case 3: $f(n) = \Omega(n^{c^* + \varepsilon})$ and $af(n/b) \le k f(n)$ for some $k < 1$ and large $n$ \(\Rightarrow\) $T(n) = \Theta(f(n))$
+\end{itemize}
+
+\section*{Solving an algorithm problem: moves to consider}
+\addcontentsline{toc}{section}{Solving an algorithm problem: moves to consider}
+\label{sec:checklist}
+
+\textbf{For an algorithm-design problem, try in order:}
+\begin{enumerate}
+  \item \textbf{Greedy} (\cref{sec:greedy}). Identify the locally optimal choice; attempt an exchange argument. Often the intended solution; cheap to try first.
+  \item \textbf{Divide and conquer} (\cref{sec:dnc}). Look for a way to split the input into independent subproblems of similar shape; analyse via Master Theorem (\cref{sec:recurrences}).
+  \item \textbf{Dynamic programming} (\cref{sec:dp}). Identify subproblems and a recurrence; check overlap; tabulate. Time = (state space) $\times$ (per-transition cost).
+  \item \textbf{Reduction} (\cref{sec:reductions}). Reduce to a known polynomial-time problem (e.g., max-flow, shortest paths) -- or, if intractability is suspected, reduce a known NP-hard problem to it (\cref{sec:npc}).
+  \item \textbf{Randomisation} (\cref{sec:randomised}). When deterministic structure is hard to exploit, try a Las Vegas or Monte Carlo strategy; analyse via linearity of expectation.
+\end{enumerate}
+
+\textbf{For a correctness proof:} state a loop invariant or inductive hypothesis explicitly; show init / maintenance / termination (\cref{sec:correctness}).
+
+\textbf{For a complexity analysis:} write down the recurrence; identify $a$, $b$, $f(n)$; apply the Master Theorem case-decision tree (\cref{fig:mt_cases}).
+
+\textbf{For an NP-hardness proof:} pick a known NP-complete problem (\cref{sec:npc}) and construct a polynomial-time mapping reduction to the target. State the mapping and prove correctness in both directions.
+
+\textbf{For a data-structure analysis:} if costs vary across operations but the total over a sequence is bounded, this is amortised analysis -- pick aggregate / accounting / potential and apply (\cref{sec:amortised}).

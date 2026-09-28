@@ -1,0 +1,80 @@
+% Appendix A: Selected Problems.
+\section{Selected Problems}
+\label{sec:tricky}
+
+\subsection*{How to use this appendix}
+Each entry: terse problem statement, the key insight (the ``trick''), and the standard pattern it instantiates.
+When a problem of the listed \emph{shape} arises, the listed \emph{trick} applies.
+
+\subsubsection*{Asymptotic analysis}
+
+\subsection{\texorpdfstring{$\log f \in o(\log g)$ does not follow from $f \in o(g)$}{log f in o(log g) does not follow from f in o(g)}}
+\textbf{Problem.} If $f \in o(g)$ with both increasing, must $\lceil \log f(n)\rceil \in o(\lceil \log g(n)\rceil)$?\\
+\textbf{Trick.} Take $f(n) = 2^n$, $g(n) = 4^n$: $f \in o(g)$ but $\log f = n = \tfrac{1}{2}\log g$. Logs compress exponential gaps to constant factors, breaking little-$o$.\\
+\textbf{Pattern.} Big-$O$/$\Theta$ are preserved by logarithms (up to constants), but $o$ and $\omega$ are not. When asked whether an asymptotic relation survives a transformation, check whether the relation tolerates constant multiplicative slack. See \cref{sec:asymptotic}.
+
+\subsubsection*{Recurrences}
+
+\subsection{Recurrence with two unequal recursive calls}
+\textbf{Problem.} Solve $T(n) = T(n/2) + T(\sqrt{n}) + 2n$ tightly.\\
+\textbf{Trick.} Master theorem does not apply (two recursive calls with different shrink rates). Naive bound $T(n) \leq 2T(n/2) + 2n$ gives $O(n\log n)$, which is loose. Guess $T(n) \leq cn$ and verify by substitution: the $\sqrt{n}$ branch contributes only $c\sqrt{n} \leq (c-4)n/2$ for $n \geq 10$ with $c \geq 12$. So $T(n) \in \Theta(n)$.\\
+\textbf{Pattern.} When master theorem fails, try the substitution method with a linear (or otherwise sharp) guess; the $\sqrt{n}$ subproblem is asymptotically negligible compared to $T(n/2) + n$. See \cref{sec:recurrences}.
+
+\subsubsection*{Divide and conquer}
+
+\subsection{H-index by unbounded (galloping) binary search}
+\textbf{Problem.} Given a non-increasing array $A[1..n]$, find the largest $i$ with $A[i] \geq i$ (the H-index).\\
+\textbf{Trick.} The plain binary search costs $O(\log n)$ regardless of where the answer lies. To get $O(\log H)$ when the H-index $H$ is small, first \emph{gallop}: probe $i = 1, 2, 4, \ldots, 2^k$ until $A[2^k] < 2^k$, then binary-search inside $[2^{k-1}, 2^k]$. Total: $O(\log H)$.\\
+\textbf{Pattern.} ``Output-sensitive search'': when the answer might be much smaller than $n$, exponentially expand the search range before binary-searching. Same idea as searching in an unbounded sorted stream. See \cref{sec:dnc}.
+
+\subsection{Two-scanner search with a moving target}
+\textbf{Problem.} A fighter hides in one of $n$ bunkers; two scanners may be queried once per day at 6\,AM (each tests an interval); after each scan, the fighter may move to an adjacent bunker. Minimise the number of days.\\
+\textbf{Trick.} With two simultaneous interval scanners, you can quarter the uncertainty per day (four outcome patterns), giving $\log_4 n$ days statically. The mobility adds at most $+2$ to the interval each night, so the recurrence becomes $u_{d+1} \leq u_d/4 + 2$, whose fixed-point is constant; $\lceil \log_4 n\rceil + O(1)$ days still suffice.\\
+\textbf{Pattern.} $k$ parallel binary tests divide the search space by $k+1$, not by~2. With perturbations between rounds, set up a recurrence whose dominant term is the $1/(k+1)$ shrink and absorb the additive perturbation as a geometric tail. See \cref{sec:dnc}.
+
+\subsubsection*{Sorting and lower bounds}
+
+\subsection{\texorpdfstring{Sorting pairs $(x,y)$ by $x + n^y$ in $O(n)$}{Sorting pairs (x,y) by x+n\^{}y in O(n)}}
+\textbf{Problem.} Sort $n$ pairs $(x_i, y_i)$ with $1 \leq x_i, y_i < n^3$ by $\mathrm{val}(x,y) = x + n^y$ in $O(n)$ time.\\
+\textbf{Trick.} The $\Omega(n\log n)$ comparison lower bound does not apply because we can read digits, so radix sort is fair game. \emph{Splitting on $y$ is essential}: when $y_j > 3$, $n^{y_j}$ dominates $x_j$; for $y \leq 3$, $\mathrm{val}$ fits in $2n^3$ and a single radix sort works. Otherwise, two passes (radix-sort by $x$, then stable radix-sort by $y$) finish the rest. Each pass is $O(n)$ since values are $\le n^3$ (constant number of digits in base $n$).\\
+\textbf{Pattern.} When values are polynomial in $n$, view them as $O(1)$-digit base-$n$ numbers and apply radix sort for $O(n)$ sorting. Beware mixing scales: split the input into ``small'' and ``large'' regimes when one component dominates the other. See \cref{sec:sorting}.
+
+\subsubsection*{Randomised algorithms}
+
+\subsection{Existence proofs via the probabilistic method}
+\textbf{Problem.} Show every graph has an independent set of size at least $\sum_{v} \frac{1}{d(v)+1}$.\\
+\textbf{Trick.} Pick a uniform random vertex order; let $I$ contain each $v$ all of whose neighbours come after it. $I$ is independent by construction. By linearity of expectation, $\Pr[v \in I] = \frac{1}{d(v)+1}$, so $\expec[|I|] = \sum_v \frac{1}{d(v)+1}$. Some realisation must achieve at least the expectation.\\
+\textbf{Pattern.} \emph{Probabilistic method}: to prove existence of a structure of size $\geq L$, design a random construction whose expectation is $L$. Indicator + linearity of expectation does the heavy lifting; conditional independence is not needed. See \cref{sec:randomised}.
+
+\subsubsection*{Dynamic programming}
+
+\subsection{\texorpdfstring{Minimise $|S_X - 2 S_Y|$ via subset-sum DP}{Minimise |S\_X - 2 S\_Y| via subset-sum DP}}
+\textbf{Problem.} Partition indices into $X, Y$ minimising $|\sum_{X} A[i] - 2\sum_{Y} A[i]|$, where $0 \le A[i] \le M$.\\
+\textbf{Trick.} Let $S = \sum A[i]$ and $t = \sum_Y A[i]$. Then the objective rewrites as $|S - 3t|$. So we just need a subset-sum closest to $S/3$: a standard pseudo-polynomial $O(nS) = O(n^2 M)$ DP table, then scan for the best feasible $t$.\\
+\textbf{Pattern.} Algebraically reduce a multi-set objective to a single-variable one (here, the target sum $t$); then the problem becomes a known DP. The space of achievable subset sums is the canonical reduction target. See \cref{sec:dp}.
+
+\subsubsection*{Greedy algorithms}
+
+\subsection{Interval cover: pick the latest finish among feasible starts}
+\textbf{Problem.} Cover days $1..M$ with the fewest guard intervals $[a_i, b_i]$.\\
+\textbf{Trick.} Sweep: maintain frontier $m$ (next uncovered day, initially~$1$). Among guards with $a_i \leq m$, pick the one with the largest $b_i$, then advance $m \leftarrow b_i + 1$. Exchange argument: any optimal solution must include some guard active on day~$m$; swap that guard for the latest-finishing such guard without losing feasibility.\\
+\textbf{Pattern.} \emph{Greedy choice with exchange argument}: identify a structural ``pinch point'' (here, day~$m$ must be covered \emph{somehow}), then show the most aggressive feasible choice at that point is safe. Compare to activity selection. Note: this stops being greedy once weights enter (a weighted variant requires DP). See \cref{sec:greedy}.
+
+\subsubsection*{Amortised analysis}
+
+\subsection{Repeated set unions cost \texorpdfstring{$O(n \log n)$}{O(n log n)}}
+\textbf{Problem.} Start with $n$ singletons. Repeatedly union two sets at cost $\min(|A|,|B|)$ until one set remains. Show total cost $\leq \tfrac{n}{2} \log n$ regardless of strategy.\\
+\textbf{Trick.} Charge to elements, not operations. Define $\phi_i = \log|S(i)|$ where $S(i)$ is element $i$'s current set. Merging sets of sizes $a \geq b$: each element on the small side gains $\log\frac{a+b}{b} \geq \log 2 = 1$, each on the large side gains $\log(1 + b/a) \geq b/a$. Summing: total potential rises by $\geq 2b$, twice the cost. Since $\phi_i \in [0, \log n]$, the total potential is at most $n \log n$, giving cost $\leq \tfrac{n}{2}\log n$.\\
+\textbf{Pattern.} \emph{Potential per element} (not per operation) is the right granularity for size-based merge costs. The estimate $\log(1+x) \geq x$ for $x \in [0,1]$ converts a logarithmic potential change into a linear lower bound, matching the merge cost. Same scheme as weighted-union-find analysis. See \cref{sec:amortised}.
+
+\subsubsection*{Reductions and NP-completeness}
+
+\subsection{Decision-to-search via self-reduction (Hamiltonian cycle, 3-SAT)}
+\textbf{Problem.} Given a polynomial-time \emph{decider} for Hamiltonian cycle (resp.\ 3-SAT), find an actual Hamiltonian cycle (resp.\ a satisfying assignment) in polynomial time.\\
+\textbf{Trick.} Iteratively commit and re-test. For HC: at each vertex, try keeping one outgoing edge and deleting the rest; if the decider still says YES, commit. For 3-SAT: set $x_1 \!=\! 1$, ask the decider; if YES, fix it, else set $x_1 \!=\! 0$; repeat for $x_2, \ldots, x_n$. Each commit preserves the YES-instance invariant, and only $\mathrm{poly}(n)$ decider calls are made.\\
+\textbf{Pattern.} \emph{Self-reduction}: when the search problem and the decision problem share the structure ``A solution exists in $G$ iff a solution exists in $G$ restricted by one bit'', reduce search to a polynomial sequence of decisions. This is why search and decision are polynomially equivalent for NP-complete problems. See \cref{sec:reductions}, \cref{sec:npc}.
+
+\subsection{Reducing CLIQUE to Half Clique by padding}
+\textbf{Problem.} Show Half Clique (does $G$ on $|V|$ vertices have a clique of size exactly $|V|/2$?) is NP-complete.\\
+\textbf{Trick.} The size constraint is rigid. From $(\hat G, k)$ with $|V(\hat G)| = n$, build $G$ by adding $n-k$ new vertices forming a clique fully connected to $\hat G$, plus $k$ isolated vertices. Total $2n$ vertices; a clique of size $n$ exists iff $\hat G$ has a $k$-clique.\\
+\textbf{Pattern.} \emph{Padding reductions}: when the target problem fixes a size to half (or another constant fraction) of $|V|$, add cliques to ``promote'' a small clique and isolated vertices to control the vertex count. Same flavour as reducing one fixed-size variant to another. See \cref{sec:npc}.

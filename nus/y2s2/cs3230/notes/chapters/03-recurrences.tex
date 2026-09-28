@@ -1,0 +1,152 @@
+% Chapter 3: Recurrences and Master Theorem.
+\section{Recurrences and Master Theorem}
+\label{sec:recurrences}
+
+The running time of a recursive algorithm is naturally expressed by a \emph{recurrence}: the cost on an input of size $n$ in terms of the cost on the smaller inputs produced by its recursive calls, plus the local work outside those calls. This chapter collects four standard solving techniques -- telescoping, substitution, the recursion tree, and the master theorem -- and gives the master theorem the full treatment, since it dispatches most divide-and-conquer recurrences in a single line. The asymptotic vocabulary of \cref{sec:asymptotic} is presupposed: solutions are stated up to $\Theta(\cdot)$, and the driving function $f(n)$ is described by a $\Theta$, $O$, or $\Omega$ class.
+
+\subsection{Definitions}
+
+\begin{definition}[Recurrence relation]
+\label{def:recurrence}
+\index{recurrence relation}
+A \emph{recurrence relation} for a function $T : \mathbb{N} \to \mathbb{R}_{\ge 0}$ specifies $T(n)$ for small $n$ (the \emph{base case}) and, for larger $n$, expresses $T(n)$ as a function of $T$ evaluated at smaller arguments. The \emph{generic divide-and-conquer form} adopted in this chapter is
+\[
+  T(n) \;=\; a\,T(n/b) + f(n), \qquad a \ge 1,\ b > 1,\ f(n) \in \Omega(1),
+\]
+with $T(n) = \Theta(1)$ on a finite set of base cases. Here $a$ is the number of recursive subproblems, $n/b$ is the size of each subproblem (floors and ceilings are dropped without affecting the asymptotic answer), and $f(n)$ is the \emph{driving function}, accounting for all work outside the recursive calls (typically the cost of splitting the input and combining the subsolutions). Linear recurrences such as $T(n) = T(n-1) + cn$ and recurrences with mixed splits such as $T(n) = T(n/3) + T(2n/3) + n$ also fall under the umbrella of \cref{def:recurrence} but lie outside the master theorem's scope.
+\end{definition}
+
+\begin{definition}[Substitution method]
+\label{def:substitution}
+\index{substitution method}
+The \emph{substitution method} solves a recurrence in two steps. (i) \emph{Guess} a closed-form upper bound (or matching lower bound) for $T(n)$, typically of the form $T(n) \le c\,g(n) - h(n)$ for some constants $c$ and lower-order term $h$. (ii) \emph{Verify} the guess by induction on $n$: confirm the base case and, in the inductive step, substitute the inductive hypothesis on $T(n/b)$ into the recurrence and check that the bound on $T(n)$ follows. The lower-order $h$ is included to make the inductive step go through; without it the induction often fails by a constant slack (see \cref{ex:substitution_mergesort}).
+\end{definition}
+
+\begin{definition}[Recursion-tree method]
+\label{def:recursion_tree}
+\index{recursion-tree method}
+The \emph{recursion-tree method} visualises the unrolled recurrence as a rooted tree: the root is labelled $f(n)$ (the local cost at the top call), each node of cost $f(m)$ has $a$ children of cost $f(m/b)$, and the leaves correspond to base cases. The total cost $T(n)$ equals the sum of all node labels plus the cost at the leaves. Each level of the tree contributes a geometric or polynomial sum, and the dominant level identifies the asymptotic order of $T(n)$. Concretely, level $i$ (root is level $0$) contains $a^i$ nodes each of cost $f(n/b^i)$, the tree has height $\log_b n$, and the number of leaves is $a^{\log_b n} = n^{\log_b a}$. The exponent $d := \log_b a$ is called the \emph{critical exponent} and governs which of the master theorem's three cases applies.
+\end{definition}
+
+\subsection{Substitution method}
+
+The substitution method is the most general -- and therefore the most error-prone -- technique. It is the one to reach for when the recurrence falls outside the master theorem (mixed splits, subtractive recurrences, recurrences with unusual driving functions). The single most common error is to drop the lower-order term in the guess: trying to prove $T(n) \le c\,g(n)$ directly often fails because the inductive step leaves an unabsorbable additive residual. Strengthening the hypothesis to $T(n) \le c\,g(n) - h(n)$ for a suitably chosen lower-order $h$ gives the inductive step exactly the slack needed to close. \cref{ex:substitution_mergesort} illustrates the failure mode and the fix.
+
+\begin{example}[$T(n) = 2T(n/2) + n$ proves $T(n) = O(n \log n)$]
+\label{ex:substitution_mergesort}
+We show by induction that the mergesort recurrence $T(n) = 2T(\lfloor n/2 \rfloor) + n$ with $T(1) = 1$ satisfies $T(n) \le c\,n\log n$ for some constant $c > 0$ and all $n \ge n_0$.
+
+\medskip
+\noindent\textit{Guess.} $T(n) \le c\,n \log n$.
+
+\medskip
+\noindent\textit{Inductive step.} Assume $T(\lfloor n/2 \rfloor) \le c \lfloor n/2 \rfloor \log \lfloor n/2 \rfloor \le c (n/2) \log(n/2)$. Then
+\[
+  T(n) \;\le\; 2 \cdot c\,(n/2)\,\log(n/2) + n \;=\; c\,n\,(\log n - 1) + n \;=\; c\,n\log n - cn + n \;\le\; c\,n\log n
+\]
+provided $-cn + n \le 0$, i.e.\ $c \ge 1$. So the guess holds for any $c \ge 1$ in the inductive step.
+
+\medskip
+\noindent\textit{Base case.} For $n_0 = 2$, $T(2) = 2T(1) + 2 = 4$ and $c \cdot 2 \log 2 = 2c$, so $c \ge 2$ suffices. Choosing $c = 2$ closes the induction; hence $T(n) \le 2n \log n = O(n \log n)$. A symmetric argument with $T(n) \ge c\,n \log n$ gives the matching lower bound, so $T(n) = \Theta(n \log n)$.
+
+\medskip
+\noindent\textit{Why the lower-order term is needed.} Guessing $T(n) \le c \cdot n$ \emph{fails}: the inductive step yields $T(n) \le c\,n + n = (c+1)\,n$, which is not of the form $c\,n$ -- the induction hypothesis must be \emph{exactly} the form one is trying to prove, including constants. The remedy is to subtract a lower-order term: strengthening the guess to $T(n) \le c\,n\log n - dn$ absorbs the additive $+n$ in the inductive step. Conversely, guessing $T(n) \le c\,n^2$ instead of $c\,n \log n$ ``works'' but is not tight: the substitution closes for any $c \ge 1$ but the bound is asymptotically wasteful.
+\end{example}
+
+\subsection{Recursion-tree method}
+
+The recursion tree is the right tool when one wants insight into \emph{which level dominates} -- the root, the leaves, or a uniform contribution across all $\log_b n$ levels. It also doubles as a heuristic for guessing the right ansatz for substitution.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.55\linewidth]{recursion-tree.png}
+  \caption{A recursion tree for $T(n) = aT(n/b) + f(n)$. Level $i$ contains $a^i$ nodes, each contributing $f(n/b^i)$; the tree has $\log_b n$ levels and $n^{\log_b a}$ leaves.}
+  \label{fig:rec_tree}
+\end{figure}
+
+\begin{example}[Recursion tree for $T(n) = 2T(n/2) + cn$]
+\label{ex:rec_tree_mergesort}
+Consider $T(n) = 2T(n/2) + cn$ with $T(1) = \Theta(1)$, drawn as in \cref{fig:rec_tree}. The root contributes $cn$. Each of the two children contributes $cn/2$, so level $1$ totals $2 \cdot cn/2 = cn$. By induction, level $i$ totals $2^i \cdot c\,(n/2^i) = cn$. The tree has $\log_2 n$ levels and $n$ leaves, each of cost $T(1) = \Theta(1)$. Summing,
+\[
+  T(n) \;=\; \underbrace{cn \cdot \log_2 n}_{\text{splitting/combining work}} \;+\; \underbrace{n \cdot \Theta(1)}_{\text{base cases}}
+  \;=\; \Theta(n \log n).
+\]
+The cost is uniform across levels; the log factor is exactly the height. This is the canonical case-2 picture.
+\end{example}
+
+\subsection{Master Theorem}
+
+The master theorem is a \emph{look-up table} for divide-and-conquer recurrences. Given $T(n) = a T(n/b) + f(n)$ with $a \ge 1$ and $b > 1$, one computes the critical exponent $d = \log_b a$, compares $f(n)$ to $n^d$, and reads off the answer. The decision procedure is summarised in \cref{fig:mt_cases}; the case-3 branch additionally requires a \emph{regularity condition} on $f$.
+
+\begin{figure}[h]
+  \centering
+  \input{figures/master-theorem-cases.tex}
+  \caption{Master Theorem -- case selection. The critical exponent $d = \log_b a$ counts leaves of the recursion tree; $f(n)$ is the per-call splitting/combining cost.}
+  \label{fig:mt_cases}
+\end{figure}
+
+\begin{theorem}[Master theorem]
+\label{thm:master}
+Let $T(n) = a\,T(n/b) + f(n)$ with constants $a \ge 1$, $b > 1$, and $f(n) \in \Omega(1)$. Set the critical exponent $d = \log_b a$. Then:
+\begin{enumerate}[(1)]
+  \item \emph{Leaves dominate.} If $f(n) = O(n^{d - \varepsilon})$ for some constant $\varepsilon > 0$, then $T(n) = \Theta(n^d)$.
+  \item \emph{Comparable.} If $f(n) = \Theta(n^d \log^k n)$ for some constant $k \ge 0$, then $T(n) = \Theta(n^d \log^{k+1} n)$.
+  \item \emph{Root dominates.} If $f(n) = \Omega(n^{d + \varepsilon})$ for some constant $\varepsilon > 0$, \emph{and} the \emph{regularity condition} $a\,f(n/b) \le c\,f(n)$ holds for some constant $c < 1$ and all sufficiently large $n$, then $T(n) = \Theta(f(n))$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\sketchproof Unroll the recurrence to a tree of height $\log_b n$, in which level $i$ contains $a^i$ nodes each of cost $f(n/b^i)$, with $a^{\log_b n} = n^d$ leaves of cost $T(1)$. The total cost is
+\[
+  T(n) \;=\; \underbrace{\sum_{i=0}^{\log_b n - 1} a^i\,f(n/b^i)}_{\text{splitting/combining}}
+  \;+\; \underbrace{n^d \cdot T(1)}_{\text{base cases}}.
+\]
+The base-case total is $\Theta(n^d)$. The splitting/combining sum is the geometric series whose ratio between successive levels is $a / b^{e}$ where $e$ is the exponent of $f$.
+
+\emph{Case 1.} If $f(n) = O(n^{d - \varepsilon})$, then $a^i f(n/b^i) \le c \cdot n^{d-\varepsilon} \cdot (a/b^{d-\varepsilon})^i = c\,n^{d-\varepsilon} \cdot b^{i\varepsilon}$ (using $b^d = a$). Summing the geometric series in $b^\varepsilon > 1$ over $\log_b n$ levels gives $O(n^{d-\varepsilon} \cdot b^{\varepsilon \log_b n}) = O(n^{d-\varepsilon} \cdot n^\varepsilon) = O(n^d)$. The leaf contribution $\Theta(n^d)$ dominates, so $T(n) = \Theta(n^d)$.
+
+\emph{Case 2.} With $f(n) = \Theta(n^d \log^k n)$, level $i$ contributes $a^i \cdot \Theta((n/b^i)^d \log^k(n/b^i)) = \Theta(n^d \log^k(n/b^i))$, since $a^i (n/b^i)^d = n^d$. Summing over $i = 0, \dots, \log_b n - 1$ gives $\Theta(n^d) \cdot \sum_{i=0}^{\log_b n - 1} (\log n - i \log b)^k = \Theta(n^d \log^{k+1} n)$ (the standard sum $\sum_{j=1}^{m} j^k = \Theta(m^{k+1})$ for $k \ge 0$). The leaf cost $\Theta(n^d)$ is dominated by this, hence $T(n) = \Theta(n^d \log^{k+1} n)$. The familiar $k = 0$ subcase recovers $T(n) = \Theta(n^d \log n)$.
+
+\emph{Case 3.} The regularity condition $af(n/b) \le c\,f(n)$ with $c < 1$ means the splitting cost shrinks geometrically as we descend the tree, so iteratively $a^i f(n/b^i) \le c^i f(n)$. The total splitting/combining cost is at most $f(n) \sum_{i \ge 0} c^i = f(n)/(1-c) = O(f(n))$, and at least $f(n)$ (the root alone). The leaf cost $n^d \cdot T(1)$ is $o(f(n))$ because $f(n) = \Omega(n^{d+\varepsilon})$. Hence $T(n) = \Theta(f(n))$.
+
+\medskip
+\noindent\textit{Remark.} Floors and ceilings can be ignored: for the recurrence $T(n) = a\,T(\lfloor n/b \rfloor) + f(n)$ the same conclusions hold, because the difference $\lfloor n/b \rfloor$ vs.\ $n/b$ contributes only a lower-order perturbation. The condition $f(n) = \Omega(n^{d+\varepsilon})$ in case 3 is in fact \emph{redundant} given the regularity condition (the regularity condition by itself implies a polynomial separation), but stating both is the standard convention.
+\end{proof}
+
+\begin{remark}[Hypotheses, gaps, and fallbacks]
+\label{rem:master_gaps}
+The form of \cref{thm:master} above requires $a \ge 1$, $b > 1$, and a non-negative driving function $f$. Recurrences like $T(n) = (1/2)\,T(n/2) + n$ ($a < 1$) and subtractive recurrences like $T(n) = T(n-1) + n$ or $T(n) = T(n-1) + T(1) + cn$ (the worst-case quicksort recurrence) are \emph{not} of the form $a\,T(n/b) + f(n)$ and must be solved by telescoping or a direct recursion-tree sum -- the worst-case quicksort recurrence, for instance, gives $\Theta(n^2)$, not $\Theta(n \log n)$.
+
+Beyond hypothesis failures, even within the theorem's scope the standard statement does not cover every regime. The case-2 clause of \cref{thm:master} is restricted to $k \ge 0$. The \emph{extended master theorem} handles the remaining $\log^k$ exponents: for $f(n) = \Theta(n^d \log^k n)$ with $k > -1$ the conclusion $T(n) = \Theta(n^d \log^{k+1} n)$ still holds; with $k = -1$, $T(n) = \Theta(n^d \log\log n)$; with $k < -1$, $T(n) = \Theta(n^d)$. These are extensions beyond \cref{thm:master}. For exotic driving functions outside every $\log^k$-class -- for example $f(n) = 2^{\sqrt{\log n}}$ in $T(n) = T(n/2) + f(n)$ -- the recursion-tree method computes the actual sum directly. The Akra--Bazzi theorem generalises the master theorem to mixed-split recurrences such as $T(n) = T(n/3) + T(2n/3) + n$ and to a wider class of driving functions, at the cost of an integral evaluation in place of the case look-up.
+\end{remark}
+
+\begin{remark}[Case 3's regularity condition is non-negotiable]
+\label{rem:master_regularity}
+The polynomial-separation clause $f(n) \in \Omega(n^{d+\varepsilon})$ alone does not suffice for case 3. Even when polynomial separation holds, the regularity condition $a\,f(n/b) \le c\,f(n)$ for some $c < 1$ is a separate requirement that must be verified independently: it encodes the geometric decay of the per-level cost as one descends the recursion tree, and without it the proof of case 3 breaks down. Always verify regularity explicitly with a concrete $c < 1$, as illustrated by the verification step in \cref{ex:mt_case3}.
+\end{remark}
+
+\begin{example}[Master theorem case 1: $T(n) = 9T(n/3) + n$]
+\label{ex:mt_case1}
+Here $a = 9$, $b = 3$, so $d = \log_3 9 = 2$. The driving function is $f(n) = n = O(n^{2 - 1}) = O(n^{d - \varepsilon})$ for $\varepsilon = 1 > 0$. We are in case 1 of \cref{thm:master}, so $T(n) = \Theta(n^d) = \Theta(n^2)$. Intuitively the work is leaf-dominated: there are $9^{\log_3 n} = n^2$ leaves, each contributing $\Theta(1)$, which already accounts for $\Theta(n^2)$ work; the per-level $f(n)$ is too small to add anything beyond a constant factor.
+\end{example}
+
+\begin{example}[Master theorem case 2: $T(n) = 2T(n/2) + n$ (mergesort)]
+\label{ex:mt_case2}
+Here $a = 2$, $b = 2$, so $d = \log_2 2 = 1$. The driving function is $f(n) = n = \Theta(n^1 \log^0 n) = \Theta(n^d \log^k n)$ with $k = 0 \ge 0$. Case 2 of \cref{thm:master} gives $T(n) = \Theta(n^d \log^{k+1} n) = \Theta(n \log n)$. This reproduces the recursion-tree analysis of \cref{ex:rec_tree_mergesort}: every level of the tree contributes $cn$, there are $\log n$ levels, and the leaves contribute another $\Theta(n)$ subsumed by the level sum. Mergesort, the standard divide-and-conquer presentation of any $O(n)$-work merge step, the in-place mergesort, and Strassen's matrix multiplication all have case-2-style recurrences.
+\end{example}
+
+\begin{example}[Master theorem case 3: $T(n) = 3T(n/4) + n \log n$]
+\label{ex:mt_case3}
+Here $a = 3$, $b = 4$, so $d = \log_4 3 \approx 0.793$. The driving function is $f(n) = n \log n$. We check case 3.
+
+\medskip
+\noindent\textit{Polynomial separation.} For any $\varepsilon$ with $0 < \varepsilon < 1 - \log_4 3 \approx 0.207$, $f(n) = n \log n = \Omega(n^{1}) = \Omega(n^{d + \varepsilon})$, since $n \log n / n^{d+\varepsilon} = n^{1 - d - \varepsilon} \log n \to \infty$ as $n \to \infty$. So $f(n) \in \Omega(n^{d + \varepsilon})$.
+
+\medskip
+\noindent\textit{Regularity.} Need $a\,f(n/b) \le c\,f(n)$ for some $c < 1$. Compute
+\[
+  a\,f(n/b) \;=\; 3 \cdot (n/4) \log(n/4) \;=\; (3/4)\,n\,(\log n - 2) \;\le\; (3/4)\,n \log n \;=\; (3/4)\,f(n).
+\]
+So the regularity condition holds with $c = 3/4 < 1$. Both clauses of case 3 are satisfied; \cref{thm:master} concludes $T(n) = \Theta(f(n)) = \Theta(n \log n)$. The work is root-dominated: at the top level we already pay $n \log n$, and the sum across all $\log_4 n$ levels is bounded by $(1 + 3/4 + (3/4)^2 + \dots) \cdot f(n) = O(f(n))$.
+\end{example}
+

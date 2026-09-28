@@ -1,0 +1,16 @@
+% LCS DP dependency DAG: cell (i,j) depends on (i-1,j-1), (i-1,j), (i,j-1).
+% Computing in row-major order (or column-major) ensures all three predecessors
+% are already filled before (i,j) is touched.
+\begin{tikzpicture}[
+  cell/.style={draw, rectangle, minimum size=1.05cm, inner sep=0pt,
+               font=\small\sffamily, align=center},
+  ->, >={Stealth[length=2mm]}, thick
+]
+  \node[cell] (a) at (0,0)    {$(i{-}1,j{-}1)$};
+  \node[cell] (b) at (2.6,0)  {$(i{-}1,j)$};
+  \node[cell] (c) at (0,-1.6) {$(i,j{-}1)$};
+  \node[cell, fill=black!8] (d) at (2.6,-1.6) {$(i,j)$};
+  \draw[->] (a) -- (d);
+  \draw[->] (b) -- (d);
+  \draw[->] (c) -- (d);
+\end{tikzpicture}

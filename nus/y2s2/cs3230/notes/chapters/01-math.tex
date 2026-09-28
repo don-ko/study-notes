@@ -1,0 +1,118 @@
+% Chapter 1: Mathematical Preliminaries.
+\section{Mathematical Preliminaries}
+\label{sec:math}
+
+Algorithm analysis throughout these notes draws on three small toolkits: discrete probability, elementary asymptotic identities, and a handful of closed-form sums. This chapter fixes notation and collects the working set used throughout the remainder of the notes.
+
+\subsection{Notation and basic concepts}
+
+A \emph{probability space}\index{probability space}\index{sample space}\index{event} consists of a finite sample space $S$ and a probability measure $\prob$ assigning to each event $A \subseteq S$ a value $\prob(A) \in [0,1]$, with $\prob(S) = 1$ and $\prob(A \cup B) = \prob(A) + \prob(B)$ for disjoint $A, B$. Two events are \emph{independent} if $\prob(A \cap B) = \prob(A)\prob(B)$. A \emph{random variable}\index{random variable} $X$ is a function $X : S \to \reals$; its \emph{expectation}\index{expectation} is $\expec[X] = \sum_x x \cdot \prob(X = x)$. The \emph{indicator}\index{indicator variable} $\indic_A$ of an event $A$ is the random variable taking value $1$ when $A$ occurs and $0$ otherwise, so that $\expec[\indic_A] = \prob(A)$. The \emph{variance}\index{variance} of $X$ with mean $\mu$ is $\Var[X] = \expec[(X-\mu)^2] = \expec[X^2] - \mu^2$, and the \emph{standard deviation}\index{standard deviation} is $\sigma_X = \sqrt{\Var[X]}$. Variance scales as $\Var[aX] = a^2 \Var[X]$ and is additive over independent summands: $\Var[\sum_i X_i] = \sum_i \Var[X_i]$ if the $X_i$ are pairwise independent.
+
+\subsection{Key results}
+
+\begin{theorem}[Linearity of expectation]
+\label{thm:linearity}
+For any random variables $X_1, \dots, X_n$ on a common probability space and any constants $a_1, \dots, a_n \in \reals$,
+\[
+  \expec\!\left[\sum_{i=1}^n a_i X_i\right] \;=\; \sum_{i=1}^n a_i\, \expec[X_i].
+\]
+The $X_i$ need \emph{not} be independent.
+\end{theorem}
+
+\begin{theorem}[Markov's inequality]
+\label{thm:markov}
+Let $X$ be a non-negative random variable. Then for every $t > 0$,
+\[
+  \prob(X \ge t) \;\le\; \frac{\expec[X]}{t}.
+\]
+\end{theorem}
+
+\begin{remark}
+Markov requires $X \ge 0$; applied to a possibly-negative variable, the bound fails. It bounds only the upper tail and is informative only when $t > \expec[X]$ (otherwise $\expec[X]/t \ge 1$). For variables that may be negative, apply Markov to $|X|$, $X^2$, or $X - \min$.
+\end{remark}
+
+\begin{theorem}[Chebyshev's inequality]
+\label{thm:chebyshev}
+Let $X$ be a random variable with finite mean $\mu = \expec[X]$ and finite variance $\sigma^2 = \Var[X]$. Then for every $t > 0$,
+\[
+  \prob\bigl(|X - \mu| \ge t\bigr) \;\le\; \frac{\sigma^2}{t^2}.
+\]
+\end{theorem}
+
+\begin{remark}
+The denominator is $t^2$, not $t$: a frequent slip is to write $\Var[X]/t$. Equivalently, $\prob(|X - \mu| \ge k\sigma) \le 1/k^2$.
+\end{remark}
+
+\begin{theorem}[Union bound]
+\label{thm:union_bound}
+For any events $A_1, A_2, \dots, A_n$ on a common probability space,
+\[
+  \prob\!\left(\bigcup_{i=1}^n A_i\right) \;\le\; \sum_{i=1}^n \prob(A_i).
+\]
+\end{theorem}
+
+\begin{remark}
+The union bound is loose but free, and is often tight enough. For highly correlated or numerous events, an inclusion--exclusion or second-moment argument may be sharper.
+\end{remark}
+
+\begin{remark}[Why these four are the workhorses]
+Linearity (which does not require independence) converts expected-count problems into sums of indicator probabilities and underpins average-case running-time analyses. Markov turns a single moment bound into a tail bound; Chebyshev sharpens this when the second moment is available; the union bound concludes ``with high probability nothing bad happens'' from per-event failure probabilities.
+\end{remark}
+
+\subsection{Reference identities}
+
+The following identities are used without proof throughout the notes; they are collected here for reference.
+
+\paragraph{Exponentials and logarithms.} For all $a, b, c > 0$ and real $m, n, x$:
+\begin{align*}
+  a^m a^n &= a^{m+n}, & (a^m)^n &= a^{mn}, & a^{-1} &= 1/a, \\
+  e^x &\ge 1 + x, & \ln x &\le x - 1\ \text{for } x > 0, & a &= b^{\log_b a}, \\
+  \log_c(ab) &= \log_c a + \log_c b, & \log_b(a^c) &= c\log_b a, & \log_b a &= \frac{\log_c a}{\log_c b} = \frac{1}{\log_a b}, \\
+  a^{\log_b c} &= c^{\log_b a}.
+\end{align*}
+The base of a logarithm is irrelevant inside $\Theta(\cdot)$ since $\log_a n = \Theta(\log_b n)$ for any constant bases $a, b > 1$. Bases of \emph{exponentials} are not asymptotically interchangeable: $4^n \notin \Theta(2^n)$.
+
+\paragraph{Arithmetic and geometric series.}
+\begin{align*}
+  \sum_{i=1}^{n} i &= \frac{n(n+1)}{2}, &
+  \sum_{i=1}^{n} i^2 &= \frac{n(n+1)(2n+1)}{6}, &
+  \sum_{i=1}^{n} i^k &= \frac{n^{k+1}}{k+1} + O(n^k), \\
+  \sum_{i=0}^{n} r^i &= \frac{1 - r^{n+1}}{1 - r}\ (r \ne 1), &
+  \sum_{i=0}^{\infty} r^i &= \frac{1}{1 - r}\ (|r| < 1), &
+  \sum_{i=0}^{\infty} i\, r^i &= \frac{r}{(1-r)^2}\ (|r| < 1).
+\end{align*}
+
+\paragraph{Harmonic numbers.} The $n$-th harmonic number is $H_n = \sum_{i=1}^{n} 1/i$. Comparing with $\int_1^n \frac{dx}{x}$ gives the tight envelope
+\[
+  \ln n \;\le\; H_n \;\le\; 1 + \ln n,
+\]
+hence $H_n = \ln n + \Theta(1)$. (More precisely, $H_n = \ln n + \gamma + O(1/n)$, where $\gamma \approx 0.5772$ is the Euler--Mascheroni constant.)
+
+\paragraph{Stirling's approximation.}
+\[
+  n! \;=\; \sqrt{2\pi n}\,\left(\frac{n}{e}\right)^{\!n}\!\left(1 + O\!\left(\frac{1}{n}\right)\right),
+  \qquad \log(n!) \in \Theta(n \log n).
+\]
+The second form is the version invoked in the $\Omega(n \log n)$ comparison-sorting lower bound.
+
+\subsection{Worked examples}
+
+\begin{example}[Expected number of fixed points of a random permutation]
+\label{ex:fixed_points}
+Let $\pi$ be a uniformly random permutation of $\{1, 2, \dots, n\}$, and let $F$ be the number of \emph{fixed points} of $\pi$, i.e.\ $F = |\{i : \pi(i) = i\}|$. We compute $\expec[F]$.
+
+\medskip
+\noindent\textit{Solution.} Define indicator variables $X_i = \indic_{\{\pi(i) = i\}}$ for $i = 1, \dots, n$, so that $F = \sum_{i=1}^n X_i$. By the indicator-expectation identity,
+\[
+  \expec[X_i] \;=\; \prob(\pi(i) = i).
+\]
+Among the $n!$ permutations of $\{1, \dots, n\}$, exactly $(n-1)!$ fix position $i$ (the remaining $n-1$ positions can be permuted freely), so $\prob(\pi(i) = i) = (n-1)!/n! = 1/n$. By linearity of expectation (\cref{thm:linearity}), which crucially does \emph{not} require the $X_i$ to be independent,
+\[
+  \expec[F] \;=\; \sum_{i=1}^{n} \expec[X_i] \;=\; \sum_{i=1}^{n} \frac{1}{n} \;=\; 1.
+\]
+The expected number of fixed points is exactly $1$, independent of $n$.
+
+\medskip
+\noindent\textit{Remarks.} The $X_i$ are \emph{not} independent: if $\pi(1) = 1$ then the conditional probability that $\pi(2) = 2$ is $1/(n-1) \ne 1/n$. Independence was never required; only linearity of expectation. This pattern -- decompose a count into indicators, compute each marginal probability, sum -- recurs throughout average-case running-time analyses.
+\end{example}
+

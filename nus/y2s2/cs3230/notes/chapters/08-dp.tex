@@ -1,0 +1,219 @@
+% Chapter 8: Dynamic Programming.
+\section{Dynamic Programming}
+\label{sec:dp}
+
+Dynamic programming (DP) refines divide-and-conquer (\cref{sec:dnc}) for problems where the naive recursion recomputes the same subinstance exponentially many times. The fix is to enumerate the polynomial-size set of distinct subinstances exactly once, in an order that respects the recursive dependency, and store each answer in a table for $O(1)$ lookup. The two structural properties to check are \emph{optimal substructure} (the recurrence) and \emph{overlapping subproblems} (the polynomial state space); given those, the implementation is either top-down memoisation or bottom-up tabulation, with the same asymptotic cost.
+
+\subsection{Definitions}
+
+\begin{definition}[Subproblem]
+\label{def:subproblem}
+\index{subproblem}
+A \emph{subproblem} of a problem instance $P$ is an instance $P'$ of the same problem on a strictly smaller (or otherwise simpler, in the well-founded order on states) input. For DP one fixes a parameterisation of inputs by a tuple of integers (the \emph{state}, see \cref{def:state_space}); each tuple in the chosen range is a subproblem, and the original problem is the subproblem at the largest state.
+\end{definition}
+
+\begin{definition}[Optimal substructure]
+\label{def:optimal_substructure}
+\index{optimal substructure}
+A problem has \emph{optimal substructure} if an optimal solution to any instance can be expressed as a function (typically a $\min$, $\max$, or sum) of optimal solutions to a fixed, finite collection of strictly smaller subproblems. Equivalently, removing the ``last decision'' from an optimal solution leaves an optimal solution to the residual subproblem; this is the property one verifies by a \emph{cut-and-paste} argument: assume some sub-solution were sub-optimal, paste in a better one, and contradict optimality of the parent (cf.\ the LCS proof in \cref{ex:lcs} and the knapsack proof in \cref{ex:knapsack}).
+\end{definition}
+
+\begin{remark}[Optimal substructure does not imply a greedy algorithm]
+Both DP and greedy require optimal substructure, so observing it does not justify a greedy algorithm. Greedy additionally requires the \emph{greedy-choice property} -- that some specific local choice extends to a global optimum. Coin change (\cref{ex:coin_change}) has optimal substructure but not the greedy-choice property under arbitrary denominations, so DP works and greedy does not; see \cref{sec:greedy}.
+\end{remark}
+
+\begin{definition}[Overlapping subproblems]
+\label{def:overlapping_subproblems}
+\index{overlapping subproblems}
+A recursive solution exhibits \emph{overlapping subproblems} if the (unmemoised) recursion tree contains the same subproblem at exponentially many internal nodes, while the total number of \emph{distinct} subproblems is only polynomial in the input size. This is the property that makes DP profitable: without overlap, memoisation buys nothing and the problem is naturally solved by D\&C (\cref{sec:dnc}); with overlap, memoisation collapses an exponential recursion tree to a polynomial DAG.
+\end{definition}
+
+\begin{definition}[Memoisation, top-down DP]
+\label{def:memoisation}
+\index{memoisation}
+\emph{Memoisation} is the implementation of a recursive solution in which the result of every call $\textsc{Solve}(s)$ is cached in a table $T[s]$ on first computation, and returned from the cache on subsequent calls. The control flow is \emph{top-down}: one invokes $\textsc{Solve}$ at the original instance, and the cache is filled lazily by the recursion in whatever order it descends. Each distinct state $s$ is solved exactly once.
+\end{definition}
+
+\begin{definition}[Tabulation, bottom-up DP]
+\label{def:tabulation}
+\index{tabulation}
+\emph{Tabulation} is the implementation in which the table $T[s]$ is filled iteratively by a (nested) loop that visits every state $s$ in an order consistent with the dependency DAG of the recurrence (every predecessor of $s$ is computed before $s$). The control flow is \emph{bottom-up}: base cases first, then a topological sweep. No recursion stack is used.
+\end{definition}
+
+\begin{definition}[State space]
+\label{def:state_space}
+\index{state space}
+The \emph{state space} of a DP formulation is the set of tuples $s = (s_1, \dots, s_d)$ that index the subproblems, together with their ranges. The state space size $|S|$ is the product of the per-coordinate ranges; for an array DP indexed by $i \in \{0, \dots, n\}$ it is $|S| = n+1$, for a 2-D table $(i, j) \in \{0, \dots, n\} \times \{0, \dots, m\}$ it is $|S| = (n+1)(m+1)$, and so on. Choosing the state space is the central design decision: too coarse and the recurrence cannot close, too fine and the running time blows up.
+\end{definition}
+
+\begin{remark}[Diagnosing a too-coarse state]
+If the recurrence cannot be expressed as a function of $T[s']$ for $s' \prec s$, the state is missing a coordinate. Knapsack with just $T[i]$ (forgetting the capacity) does not close; longest increasing subsequence with $T[i] = $ ``length of LIS of $A[1..i]$'' (without ``ending at $i$'') does not close because the answer for $i+1$ depends on whether the LIS ending at $i+1$ extends an earlier one. The remedy is always to add the coordinate the recurrence wants to read.
+\end{remark}
+
+\begin{definition}[Transition]
+\label{def:transition}
+\index{transition (DP)}
+A \emph{transition} is the recurrence relation expressing $T[s]$ as a function of one or more $T[s']$ with $s'$ a strictly smaller state. The cost of a single transition is the time to evaluate the right-hand side once the predecessor entries are available; this is typically $O(1)$ (constant number of array lookups, e.g.\ LCS, knapsack) but can be $O(n)$ (a $\min$/$\max$ over $n$ predecessors, e.g.\ matrix-chain multiplication, coin change with $k$ denominations) or larger.
+\end{definition}
+
+\subsection{Recipe and analysis}
+
+A complete DP solution comprises the following components:
+\begin{enumerate}[(i)]
+  \item \textbf{Define the state.} Give the high-level meaning of $T[s]$ as a precise English sentence stating what the entry stores (e.g.\ ``$T[i, j]$ is the length of the LCS of $A[1..i]$ and $B[1..j]$'').
+  \item \textbf{Write the recurrence.} State the transition $T[s]$ in terms of $T[s']$ for predecessor states $s' \prec s$, together with the bounds under which each branch applies. Justify it by an optimal-substructure (\cref{def:optimal_substructure}) argument.
+  \item \textbf{Base cases.} Specify $T[s]$ for the smallest states (typically $s = 0$ or one coordinate $= 0$). The recurrence is meaningless without them; the most common error in 2-D DPs is omitting the boundary row or column.
+  \item \textbf{Order of computation.} Choose a topological order on the dependency DAG (\cref{fig:dp_dag}); in $1$-D this is just ``increasing $i$'', in $2$-D it is row-major or column-major depending on how the recurrence reads. Top-down memoisation is forgiving because the recursion discovers the order; bottom-up tabulation requires nominating a topological order explicitly, otherwise the loop reads uninitialised cells.
+  \item \textbf{Time and space analysis.} Use \cref{prop:dp_time}.
+\end{enumerate}
+
+A useful diagnostic is the distinction between a \emph{recurrence relation}, which states $T[s]$ in terms of predecessor entries, and a \emph{closed-form formula}, which evaluates $T[s]$ directly. DP requires only the former; conflating the two is a frequent source of incorrect bottom-up code.
+
+\begin{theorem}[Correctness template for DP]
+\label{thm:dp_correctness}
+Let $\mathcal{A}$ be a DP algorithm with a finite state space $S$ equipped with a strict well-founded order $\prec$, base values $T[s_0]$ correct by direct inspection for the $\prec$-minimal states $s_0$, and a transition $T[s] = \Phi\bigl(T[s'] : s' \prec s\bigr)$ that is correct in the sense ``if every $T[s']$ with $s' \prec s$ holds the true optimum at $s'$, then $\Phi$ produces the true optimum at $s$.'' Then $T[s]$ holds the true optimum at every $s \in S$ on termination.
+\end{theorem}
+
+\begin{proof}
+\sketchproof Strong induction on the well-founded order $\prec$ on $S$. For each $\prec$-minimal $s_0$, $T[s_0]$ is correct by hypothesis on the base cases. For $s$ with $\prec$-predecessors only, assume (strong inductive hypothesis) that $T[s']$ is correct for every $s' \prec s$; by hypothesis on the transition, $\Phi$ produces the true optimum at $s$, so $T[s]$ is correct after it is filled. Since $\prec$ is well-founded and $S$ is finite, induction terminates and every state is correct. The argument is structurally identical to the strong-induction proof for D\&C correctness (\cref{thm:dnc_correctness}); the only change is that the inductive hypothesis ranges over the predecessor states of the DP recurrence rather than over input sizes. The optimal-substructure clause (\cref{def:optimal_substructure}) is exactly what makes the transition-correctness hypothesis verifiable by a cut-and-paste argument.
+\end{proof}
+
+\begin{proposition}[Time complexity of a DP algorithm]
+\label{prop:dp_time}
+Let $\mathcal{A}$ be a DP algorithm with state space $S$ and per-state transition cost $\tau(s)$ (the time to evaluate $\Phi$ at $s$ once predecessor entries are available). Then the running time of bottom-up tabulation is
+\[
+  T(n) \;=\; \Theta\!\left(\sum_{s \in S} \tau(s)\right) \;=\; \Theta\bigl(|S| \cdot \tau_{\max}\bigr)
+\]
+when $\tau$ is uniformly $O(\tau_{\max})$. Top-down memoisation has the same worst-case bound; it can be strictly faster on instances where the recursion never reaches some states.
+\end{proposition}
+
+\begin{proof}
+\sketchproof Bottom-up: the outer loop visits each $s \in S$ exactly once, and the body costs $\Theta(\tau(s))$ (table writes are $\Theta(1)$ in the RAM model). Summing gives $\sum_s \tau(s)$. Top-down: each state is computed at most once thanks to the cache; cache lookups and the bookkeeping per call are $\Theta(1)$, and aggregated over all calls (including the cache-hit calls that no longer recurse) the total is again $\Theta(\sum_s \tau(s))$ in the worst case. The $\tau_{\max}$ form is just $|S| \cdot \tau_{\max}$ as the trivial upper bound; tight analyses substitute the true $\tau(s)$ summation. This is the DP analogue of \cref{prop:dnc_complexity}: instead of a recursion tree resolved by the master theorem (\cref{thm:master}), the recursion DAG is summed directly.
+\end{proof}
+
+\begin{remark}[Counting the per-state cost]
+The bound is $|S| \cdot \tau_{\max}$, not $|S|$ alone: a recurrence whose right-hand side is itself a $\min$ or $\max$ over $k$ predecessors contributes $\tau = \Theta(k)$, not $\Theta(1)$. Coin change (\cref{ex:coin_change}) is $\Theta(nk)$, not $\Theta(n)$, for exactly this reason.
+\end{remark}
+
+\begin{remark}[Subset state spaces are exponential]
+Some problems require a state space indexed by subsets $S \subseteq \{1, \dots, n\}$ -- the canonical example is the Held--Karp DP for the travelling salesman problem -- and so live in $\Theta(2^n \cdot n^c)$ time and $\Theta(2^n)$ space, not in $n^{O(1)}$. The state-space size during analysis flags this immediately; reporting such an algorithm as polynomial is a category error.
+\end{remark}
+
+\begin{figure}[h]
+  \centering
+  \input{figures/dp-dependency-dag.tex}
+  \caption{Dependency DAG for the LCS DP table: cell $(i, j)$ depends on $(i{-}1, j{-}1)$, $(i{-}1, j)$, and $(i, j{-}1)$. Any topological order of this DAG is a valid order of computation; the standard row-major sweep ($i$ outer, $j$ inner) and column-major sweep both work.}
+  \label{fig:dp_dag}
+\end{figure}
+
+\begin{remark}[DP versus D\&C]
+The decisive distinction with D\&C (\cref{sec:dnc}) is whether the recursive subinstances overlap. For mergesort-style D\&C, the two halves of the input are disjoint and each is solved independently; the recursion tree has no shared nodes and the master theorem (\cref{thm:master}) bounds the running time directly. For DP, the recursion tree of the naive recursive formulation has shared nodes -- exponentially many -- and the table is precisely the device that collapses those duplicates into a polynomial-size DAG. A useful diagnostic: if the recursion tree of the recursive formulation has $\le |S|$ distinct nodes and the rest are duplicates, DP gives a polynomial algorithm; if every node is distinct, only D\&C is available.
+\end{remark}
+
+\subsection{Worked examples}
+
+\begin{example}[Fibonacci numbers $F(n) \bmod m$]
+\label{ex:fibonacci}
+\textbf{Problem.} Given $n, m$, compute $F(n) \bmod m$ where $F(0) = 0$, $F(1) = 1$, $F(k) = F(k-1) + F(k-2)$ for $k \ge 2$.
+
+\medskip
+\noindent\textit{State space.} $T[i] \in \{0, 1, \dots, m-1\}$ for $i \in \{0, 1, \dots, n\}$, where $T[i] = F(i) \bmod m$. Size $|S| = n+1$.
+
+\medskip
+\noindent\textit{Recurrence and base cases.}
+\[
+  T[i] \;=\; \begin{cases} 0 & i = 0, \\ 1 & i = 1, \\ (T[i-1] + T[i-2]) \bmod m & i \ge 2. \end{cases}
+\]
+
+\medskip
+\noindent\textit{Order.} Increasing $i$.
+
+\medskip
+\noindent\textit{Time.} $|S| = n+1$, $\tau = O(1)$, so $\Theta(n)$ by \cref{prop:dp_time}. Compare to the naive recursive algorithm, whose running time satisfies $T_{\text{rec}}(n) = T_{\text{rec}}(n-1) + T_{\text{rec}}(n-2) + \Theta(1)$ and so $T_{\text{rec}}(n) \in \Theta(\phi^n)$ with $\phi = (1 + \sqrt 5)/2$.
+
+\medskip
+\noindent\textit{Correctness.} Optimal substructure is the defining recurrence itself, applied to the residue ring $\zee/m\zee$. Strong induction on $i$ via \cref{thm:dp_correctness}.
+\end{example}
+
+\begin{example}[Longest common subsequence (LCS)]
+\label{ex:lcs}
+\textbf{Problem.} Given sequences $A[1..n]$ and $B[1..m]$, find the length of the longest sequence $C$ that is a subsequence of both. ($C$ is a \emph{subsequence} of $A$ if $C$ is obtained from $A$ by deleting zero or more elements while preserving order.)
+
+\medskip
+\noindent\textit{State space.} $L[i, j] \in \{0, 1, \dots, \min(i, j)\}$ for $(i, j) \in \{0, \dots, n\} \times \{0, \dots, m\}$, where $L[i, j]$ is the length of an LCS of $A[1..i]$ and $B[1..j]$. Size $|S| = (n+1)(m+1)$.
+
+\medskip
+\noindent\textit{Recurrence and base cases.}
+\[
+  L[i, j] \;=\; \begin{cases}
+    0 & i = 0 \text{ or } j = 0, \\
+    L[i-1, j-1] + 1 & i, j \ge 1 \text{ and } A[i] = B[j], \\
+    \max\bigl(L[i-1, j],\, L[i, j-1]\bigr) & i, j \ge 1 \text{ and } A[i] \ne B[j].
+  \end{cases}
+\]
+
+\medskip
+\noindent\textit{Order.} Row-major: for $i = 1, \dots, n$, for $j = 1, \dots, m$, fill $L[i, j]$. Each entry depends only on $(i-1, j-1)$, $(i-1, j)$, $(i, j-1)$ (\cref{fig:dp_dag}), all already computed.
+
+\medskip
+\noindent\textit{Time.} $|S| = (n+1)(m+1)$, $\tau = O(1)$, so $\Theta(nm)$ by \cref{prop:dp_time}. Space $\Theta(nm)$, reducible to $\Theta(\min(n, m))$ by keeping only the previous row.
+
+\medskip
+\noindent\textit{Correctness sketch.} Cut-and-paste. If $A[i] = B[j]$, any LCS of $A[1..i], B[1..j]$ may end with the matched pair (else we could append $A[i]$ and grow the LCS by one), so $L[i, j] = L[i-1, j-1] + 1$. If $A[i] \ne B[j]$, an LCS cannot use both as its last symbol; whichever last symbol it does use is absent from the corresponding prefix, giving $L[i, j] = \max(L[i-1, j], L[i, j-1])$. Strong induction over $\prec = $ ``$(i', j') \prec (i, j) \iff i' < i \vee (i' = i \wedge j' < j)$'' via \cref{thm:dp_correctness}.
+\end{example}
+
+\begin{example}[$0/1$ knapsack]
+\label{ex:knapsack}
+\textbf{Problem.} Given $n$ items with positive integer weights $w_1, \dots, w_n$ and values $v_1, \dots, v_n$, and a capacity $W$, find a subset $S \subseteq \{1, \dots, n\}$ maximising $\sum_{i \in S} v_i$ subject to $\sum_{i \in S} w_i \le W$.
+
+\medskip
+\noindent\textit{State space.} $m[i, j]$ for $(i, j) \in \{0, \dots, n\} \times \{0, \dots, W\}$, where $m[i, j]$ is the maximum total value achievable using a subset of items $\{1, \dots, i\}$ with total weight at most $j$. Size $|S| = (n+1)(W+1)$.
+
+\medskip
+\noindent\textit{Recurrence and base cases.}
+\[
+  m[i, j] \;=\; \begin{cases}
+    0 & i = 0 \text{ or } j = 0, \\
+    \max\bigl(m[i-1, j],\ m[i-1, j - w_i] + v_i\bigr) & i \ge 1 \text{ and } w_i \le j, \\
+    m[i-1, j] & i \ge 1 \text{ and } w_i > j.
+  \end{cases}
+\]
+The two arguments of the $\max$ are ``don't take item $i$'' and ``take item $i$''.
+
+\medskip
+\noindent\textit{Order.} Increasing $i$ outer, increasing $j$ inner.
+
+\medskip
+\noindent\textit{Time.} $|S| = (n+1)(W+1)$, $\tau = O(1)$, so $\Theta(nW)$ by \cref{prop:dp_time}. This is \emph{pseudo-polynomial}: it is polynomial in the numerical value $W$, which is exponential in the bit-length $\log W$ of the input. Knapsack is in fact NP-hard (\cref{sec:npc}), and no truly polynomial algorithm is known.
+
+\medskip
+\noindent\textit{Correctness sketch.} Optimal substructure by cut-and-paste: in the optimum at $(i, j)$, either item $i$ is excluded (then the chosen subset of $\{1, \dots, i-1\}$ must itself be optimal at $(i-1, j)$, else paste in a better subset and improve the parent), or item $i$ is included (then the residual choice from $\{1, \dots, i-1\}$ uses weight $\le j - w_i$ and must be optimal at $(i-1, j - w_i)$). The two alternatives give the two arguments of the $\max$. Apply \cref{thm:dp_correctness}.
+\end{example}
+
+\begin{example}[Coin change: minimum number of coins]
+\label{ex:coin_change}
+\textbf{Problem.} Given denominations $d_1, \dots, d_k$ (positive integers) and a target amount $n$, find the minimum number of coins (with repetition allowed) summing to exactly $n$, or report infeasibility.
+
+\medskip
+\noindent\textit{State space.} $M[j]$ for $j \in \{0, 1, \dots, n\}$, where $M[j]$ is the minimum number of coins summing to exactly $j$ (with $M[j] = \infty$ if no such combination exists). Size $|S| = n+1$.
+
+\medskip
+\noindent\textit{Recurrence and base cases.}
+\[
+  M[j] \;=\; \begin{cases}
+    0 & j = 0, \\
+    1 + \min\bigl\{M[j - d_i] : i \in \{1, \dots, k\},\ d_i \le j\bigr\} & j \ge 1.
+  \end{cases}
+\]
+If no $d_i \le j$ (or all such recurrences yield $\infty$), $M[j] = \infty$.
+
+\medskip
+\noindent\textit{Order.} Increasing $j$.
+
+\medskip
+\noindent\textit{Time.} $|S| = n+1$, $\tau(j) = O(k)$ (the inner $\min$ ranges over $k$ denominations), so $\Theta(nk)$ by \cref{prop:dp_time}.
+
+\medskip
+\noindent\textit{Correctness sketch.} Optimal substructure: if $M[j] = t$ is realised by coins $d_{i_1}, \dots, d_{i_t}$ summing to $j$, then $M[j - d_{i_t}] = t - 1$ -- otherwise a strictly better combination for $j - d_{i_t}$ would, by appending $d_{i_t}$, beat $M[j]$. Cut-and-paste, then \cref{thm:dp_correctness}. Note: the natural greedy (``always take the largest coin $\le j$'') is \emph{not} correct in general. Denominations $\{1, 10, 25\}$ with $n = 30$ illustrate this: greedy takes $25 + 1 + 1 + 1 + 1 + 1 = 6$ coins, but DP finds $10 + 10 + 10 = 3$ coins. Greedy works only for ``canonical'' coin systems; see \cref{sec:greedy} for the structural condition (matroid / exchange) it requires.
+\end{example}
+

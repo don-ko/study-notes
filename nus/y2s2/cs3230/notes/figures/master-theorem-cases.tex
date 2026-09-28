@@ -1,0 +1,22 @@
+% Master Theorem case-decision tree.
+% Inputs: T(n) = a T(n/b) + f(n), with a >= 1, b > 1.
+\begin{tikzpicture}[
+  every node/.style={font=\small\sffamily, align=center},
+  decision/.style={draw, rounded corners=2pt, inner sep=4pt},
+  leaf/.style={draw, dashed, rounded corners=2pt, inner sep=4pt},
+  ->, >={Stealth[length=2mm]}
+]
+  \node[decision] (root) {Compare $f(n)$ to $n^{\log_b a}$};
+  \node[decision, below left=1.0cm and 1.5cm of root]   (c1) {$f(n) = O(n^{\log_b a - \varepsilon})$\\ for some $\varepsilon > 0$?};
+  \node[decision, below=1.0cm of root]                  (c2) {$f(n) = \Theta(n^{\log_b a})$?};
+  \node[decision, below right=1.0cm and 1.5cm of root]  (c3) {$f(n) = \Omega(n^{\log_b a + \varepsilon})$\\ for some $\varepsilon > 0$,\\ and regularity holds?};
+  \node[leaf, below=0.8cm of c1] (l1) {Case 1:\\ $T(n) = \Theta(n^{\log_b a})$};
+  \node[leaf, below=0.8cm of c2] (l2) {Case 2:\\ $T(n) = \Theta(n^{\log_b a} \log n)$};
+  \node[leaf, below=0.8cm of c3] (l3) {Case 3:\\ $T(n) = \Theta(f(n))$};
+  \draw (root) -- (c1);
+  \draw (root) -- (c2);
+  \draw (root) -- (c3);
+  \draw (c1) -- (l1) node[midway, right] {yes};
+  \draw (c2) -- (l2) node[midway, right] {yes};
+  \draw (c3) -- (l3) node[midway, right] {yes};
+\end{tikzpicture}

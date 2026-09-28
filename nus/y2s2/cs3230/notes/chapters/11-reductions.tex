@@ -1,0 +1,209 @@
+% Chapter 11: Reductions and Intractability.
+\section{Reductions and Intractability}
+\label{sec:reductions}
+
+A \emph{reduction} from problem $A$ to problem $B$ is a transformation of $A$-instances into $B$-instances that preserves the answer, and so witnesses ``$A$ is no harder than $B$''. Two consequences follow: if $B$ is easy then so is $A$, and contrapositively, if $A$ is hard then so is $B$. This chapter develops the framework -- decision problems, the classes P and NP, polynomial-time mapping reductions, NP-hardness and NP-completeness -- and proves the structural theorems (transitivity, P-preservation, contrapositive) that the catalogue in \cref{sec:npc} relies on.
+
+\subsection{Decision problems and complexity classes}
+
+\begin{definition}[Decision problem]
+\label{def:decision_problem}
+\index{decision problem}
+A \emph{decision problem} is a function $\Pi : I \to \{\text{YES}, \text{NO}\}$ from an instance space $I$ (the set of valid encodings of inputs) to a binary answer. An instance $\alpha \in I$ with $\Pi(\alpha) = \text{YES}$ is a \emph{YES-instance}; otherwise it is a \emph{NO-instance}. Decision problems are the standard form for complexity-theoretic comparisons: every optimisation problem (``find the minimum-weight spanning tree'') has a decision counterpart (``is there a spanning tree of weight $\le k$?''), and the optimisation version is at least as hard as its decision version, since one call to the optimisation oracle answers the decision question by comparing the optimum to $k$. Hardness lower bounds therefore lose nothing by restricting to decision problems.
+\end{definition}
+
+\begin{definition}[Language]
+\label{def:language}
+\index{language (decision problem)}
+The \emph{language} associated with a decision problem $\Pi$ is the set
+\[
+  L_\Pi \;=\; \{\, \alpha \in I : \Pi(\alpha) = \text{YES}\,\}
+\]
+of YES-instances. ``Solving $\Pi$'' and ``deciding membership in $L_\Pi$'' are interchangeable phrasings; the language view lets us treat complexity classes as sets of languages.
+\end{definition}
+
+\begin{definition}[Encoding and input size]
+\label{def:encoding}
+\index{encoding}
+\index{input size}
+The complexity of an algorithm is measured as a function of the \emph{length of the encoding} of the input, not its numeric value. We adopt the standard conventions: integers are encoded in binary (so an integer $W$ has encoding length $\Theta(\log W)$), and structured objects (graphs, matrices, lists) are encoded as sequences of parameters in a fixed scheme. Input size is denoted $n$ throughout; for a graph $G = (V, E)$ this is $\Theta(|V| + |E|)$, and for a list of $n$ integers each at most $W$ it is $\Theta(n \log W)$.
+\end{definition}
+
+\begin{definition}[Deterministic polynomial time]
+\label{def:dtime_poly}
+\index{deterministic polynomial time}
+An algorithm runs in \emph{(deterministic) polynomial time} if there is a constant $c \ge 0$ such that on every input of size $n$ it halts in time $O(n^c)$. A decision problem $\Pi$ is \emph{decidable in polynomial time} if there is a polynomial-time algorithm that on input $\alpha$ outputs $\Pi(\alpha)$. Polynomial time is the formal stand-in for ``efficiently solvable'': it is robust under reasonable changes to the computing model (RAM vs.\ Turing machine alters the exponent but not polynomiality), and the polynomials that arise in practice are small ($n$, $n \log n$, $n^2$, $n^3$), almost never $n^{100}$.
+\end{definition}
+
+\begin{remark}[Polynomial vs.\ pseudo-polynomial]
+An algorithm whose running time is polynomial in the \emph{numeric value} of an input number, rather than in its encoding length, is called \emph{pseudo-polynomial}. The textbook DP for Knapsack runs in $O(nW)$ time on $n$ items with weight bound $W$; the input has size $\Theta(n \log W)$, so $O(nW)$ is exponential in the encoding length. Pseudo-polynomial algorithms do \emph{not} certify membership in P.
+\end{remark}
+
+\begin{definition}[Class P]
+\label{def:class_p}
+\index{class P}
+\[
+  \mathrm{P} \;=\; \{\, L \subseteq \Sigma^* : L \text{ is decidable in polynomial time}\,\}.
+\]
+That is, $\mathrm{P}$ is the collection of decision problems for which a deterministic polynomial-time algorithm exists. Membership in $\mathrm{P}$ is the formal capture of ``tractable''.
+\end{definition}
+
+\begin{definition}[Certificate / witness]
+\label{def:certificate}
+\index{certificate}
+For a decision problem $\Pi$ and a YES-instance $\alpha$, a \emph{certificate} (or \emph{witness}) for $\alpha$ is a string $w$ that proves $\Pi(\alpha) = \text{YES}$ to a polynomial-time verifier. For example, a satisfying assignment is a certificate for SAT; a Hamiltonian cycle is a certificate for HAM-CYCLE; a subset summing to $T$ is a certificate for SUBSET-SUM. The certificate must be polynomial-size in $|\alpha|$, and the verification procedure must run in polynomial time in $|\alpha|$.
+\end{definition}
+
+\begin{definition}[Class NP]
+\label{def:class_np}
+\index{class NP}
+A decision problem $\Pi$ belongs to $\mathrm{NP}$ if there exist a polynomial $p$ and a deterministic polynomial-time algorithm $V$ (the \emph{verifier}) such that for every instance $\alpha$,
+\[
+  \Pi(\alpha) = \text{YES} \;\iff\; \exists\, w \in \{0,1\}^{p(|\alpha|)}\ \text{with}\ V(\alpha, w) = \text{accept}.
+\]
+In words: YES-instances admit a polynomial-size certificate that a polynomial-time verifier accepts; NO-instances admit no such certificate. The two clauses -- polynomial \emph{size} of $w$ and polynomial \emph{time} of $V$ -- are both required; either alone is insufficient.
+\end{definition}
+
+\begin{remark}[Non-deterministic-machine view of NP]
+Equivalently, $\mathrm{NP}$ is the class of decision problems decidable by a \emph{non-deterministic} Turing machine in polynomial time: such a machine, on input $\alpha$, may guess a string $w$ of polynomial length and then verify it deterministically in polynomial time, accepting $\alpha$ iff some guess leads to acceptance. The two views are interchangeable: the certificate is what the non-deterministic machine guesses, and the verifier is the deterministic post-guess computation. The acronym NP stands for \emph{Non-deterministic Polynomial time}, not ``not polynomial''.
+\end{remark}
+
+\begin{proposition}[$\mathrm{P} \subseteq \mathrm{NP}$]
+\label{prop:p_subset_np}
+Every decision problem decidable in deterministic polynomial time is in $\mathrm{NP}$.
+\end{proposition}
+
+\begin{proof}
+Let $\Pi \in \mathrm{P}$, witnessed by a polynomial-time algorithm $A$ that on input $\alpha$ outputs $\Pi(\alpha)$. Define the verifier $V(\alpha, w) := A(\alpha)$, ignoring the certificate $w$ entirely; let the certificate length be $p(n) = 1$ (any polynomial works). Then $V$ runs in polynomial time and $V(\alpha, w) = \text{accept}$ iff $\Pi(\alpha) = \text{YES}$, regardless of $w$. So $\Pi \in \mathrm{NP}$.
+\end{proof}
+
+Whether the inclusion is strict -- the celebrated $\mathrm{P}$ vs.\ $\mathrm{NP}$ question -- is open. The widely held conjecture is $\mathrm{P} \ne \mathrm{NP}$.
+
+\subsection{Reductions}
+
+The intuition is: a reduction from $A$ to $B$ shows that $A$ is no harder than $B$, by exhibiting a way to ``solve $A$ using $B$''. For decision problems the cleanest formulation is a \emph{mapping} (or \emph{many-one}) reduction: a function on instances that preserves YES/NO.
+
+\begin{definition}[Polynomial-time mapping reduction]
+\label{def:poly_reduction}
+\index{polynomial-time reduction}
+Let $A$ and $B$ be decision problems. A \emph{polynomial-time mapping reduction} from $A$ to $B$, written $A \le_p B$, is a function $f$ from instances of $A$ to instances of $B$ such that
+\begin{enumerate}[(i)]
+  \item \textbf{Computability:} $f$ is computable in polynomial time in the size of its input;
+  \item \textbf{Correctness:} for every instance $\alpha$ of $A$,
+  \[
+    A(\alpha) = \text{YES} \;\iff\; B(f(\alpha)) = \text{YES}.
+  \]
+\end{enumerate}
+The biconditional in (ii) is essential: both YES-instances must map to YES-instances and NO-instances to NO-instances. The YES/NO answer is then simply ``copied'' from the $B$-call back to $A$.
+\end{definition}
+
+\begin{remark}[Direction of $\le_p$]
+The notation $A \le_p B$ should be read ``$A$ is no harder than $B$'', or equivalently ``$B$ is at least as hard as $A$''. The reduction lets us solve $A$ \emph{using} $B$: an algorithm for $B$ becomes an algorithm for $A$ by composing with $f$. Reading the inequality backwards is the most frequent error in this material: to show $B$ is hard, one reduces a known-hard problem \emph{to} $B$ (so the easy side, the source $A$, sits on the left of $\le_p$), never the other way around.
+\end{remark}
+
+\begin{remark}[Both directions of the biconditional]
+Clause (ii) is a biconditional, and both halves carry weight: a YES-instance must map to a YES-instance (\emph{forward direction}), \emph{and} a NO-instance must map to a NO-instance (\emph{reverse direction}). Equivalently: $x \in A \Rightarrow f(x) \in B$, and $f(x) \in B \Rightarrow x \in A$. Forgetting one direction is a frequent slip, and a one-sided proof can hide a reduction that turns NO-instances into YES-instances and so destroys the answer. Note that witness (certificate) translation is a \emph{separate} property sometimes needed to argue NP membership of the target problem; it is not part of the mapping-reduction correctness criterion.
+\end{remark}
+
+\begin{definition}[NP-hard]
+\label{def:np_hard}
+\index{NP-hard}
+A decision problem $B$ is \emph{NP-hard} if every problem in $\mathrm{NP}$ reduces to it in polynomial time:
+\[
+  \forall A \in \mathrm{NP},\quad A \le_p B.
+\]
+NP-hard problems are at least as hard as every problem in NP. They are not required to lie in NP themselves -- some NP-hard problems are even undecidable.
+\end{definition}
+
+\begin{definition}[NP-complete]
+\label{def:np_complete}
+\index{NP-complete}
+A decision problem $B$ is \emph{NP-complete} if (i) $B \in \mathrm{NP}$ and (ii) $B$ is NP-hard. NP-complete problems are the ``hardest'' problems in NP: a polynomial-time algorithm for any one of them would yield polynomial-time algorithms for \emph{every} problem in NP, collapsing $\mathrm{P} = \mathrm{NP}$. The Cook--Levin theorem (\cref{sec:npc}) establishes that 3-SAT is NP-complete; subsequent NP-completeness proofs then proceed by reduction from 3-SAT (or one of its descendants) to the target.
+\end{definition}
+
+\subsection{Properties of reductions}
+
+The three structural theorems below are what make reductions useful. They are the engine that turns a single hardness result (Cook--Levin) into a catalogue of hundreds.
+
+\begin{theorem}[Transitivity of $\le_p$]
+\label{thm:reduction_transitive}
+If $A \le_p B$ and $B \le_p C$, then $A \le_p C$.
+\end{theorem}
+
+\begin{proof}
+Let $f$ witness $A \le_p B$, computable in time $p(n)$ on inputs of size $n$, with $A(\alpha) = \text{YES} \iff B(f(\alpha)) = \text{YES}$. Let $g$ witness $B \le_p C$, computable in time $q(m)$ on inputs of size $m$, with $B(\beta) = \text{YES} \iff C(g(\beta)) = \text{YES}$. Define $h(\alpha) := g(f(\alpha))$.
+
+\emph{Correctness:} chaining the biconditionals,
+\[
+  A(\alpha) = \text{YES} \iff B(f(\alpha)) = \text{YES} \iff C(g(f(\alpha))) = \text{YES} \iff C(h(\alpha)) = \text{YES}.
+\]
+
+\emph{Running time:} computing $f(\alpha)$ takes time $p(n)$ and produces an output of size at most $p(n)$ (an algorithm cannot write more than its running time). Then computing $g$ on an input of size $p(n)$ takes time $q(p(n))$. Total time $p(n) + q(p(n))$. Since the composition of two polynomials is a polynomial, $h$ is computable in polynomial time. Hence $A \le_p C$.
+\end{proof}
+
+\begin{remark}[The polynomial-time clause is not free]
+The composition argument above relies essentially on clause (i) of \cref{def:poly_reduction}: only because $f$ runs in polynomial time does its output have polynomial size, and only then is $g$ applied to a polynomial-size input. A reduction whose transformation alone runs in superpolynomial time invalidates every consequence drawn from $\le_p$, even if the YES/NO biconditional is correct. Verifying the running time of the transformation is part of every reduction proof, not an afterthought.
+\end{remark}
+
+\begin{remark}[Reflexivity]
+$A \le_p A$ trivially, via the identity reduction $f(\alpha) = \alpha$ (computable in linear time, correctness immediate). Together with transitivity, $\le_p$ is a preorder on decision problems.
+\end{remark}
+
+\begin{theorem}[Reductions preserve P]
+\label{thm:reduction_preserves_p}
+If $A \le_p B$ and $B \in \mathrm{P}$, then $A \in \mathrm{P}$.
+\end{theorem}
+
+\begin{proof}
+Let $f$ witness $A \le_p B$, computable in time $p(n) = O(n^{c_1})$ on inputs of size $n$. Let $A_B$ be a polynomial-time algorithm for $B$ running in time $q(m) = O(m^{c_2})$ on inputs of size $m$. Define an algorithm for $A$ as follows: on input $\alpha$ of size $n$, compute $\beta := f(\alpha)$ in time $p(n)$, then run $A_B(\beta)$ and output its answer.
+
+\emph{Correctness:} by definition of the reduction, $A(\alpha) = \text{YES} \iff B(\beta) = \text{YES}$, and $A_B$ correctly outputs $B(\beta)$.
+
+\emph{Running time:} step 1 costs $p(n) = O(n^{c_1})$ and the output $\beta$ has size at most $p(n)$. Step 2 then costs $q(p(n)) = O((n^{c_1})^{c_2}) = O(n^{c_1 c_2})$. Total $O(n^{c_1}) + O(n^{c_1 c_2}) = O(n^{c_1 c_2})$ (assuming $c_1, c_2 \ge 1$), which is polynomial. So $A \in \mathrm{P}$.
+\end{proof}
+
+\begin{theorem}[Hardness propagates along reductions]
+\label{thm:np_hard_via_reduction}
+If $A \le_p B$ and $A$ is NP-hard, then $B$ is NP-hard. Consequently, if additionally $B \in \mathrm{NP}$, then $B$ is NP-complete.
+\end{theorem}
+
+\begin{proof}
+This is the contrapositive of \cref{thm:reduction_preserves_p} stated at the level of NP-hardness, and it is what every NP-completeness proof uses.
+
+Let $C$ be any problem in $\mathrm{NP}$. Since $A$ is NP-hard, $C \le_p A$. By hypothesis $A \le_p B$. By transitivity (\cref{thm:reduction_transitive}), $C \le_p B$. Since $C \in \mathrm{NP}$ was arbitrary, every problem in $\mathrm{NP}$ reduces to $B$, i.e.\ $B$ is NP-hard.
+
+For the second clause: if in addition $B \in \mathrm{NP}$, then $B$ satisfies both clauses of NP-completeness, so $B$ is NP-complete.
+\end{proof}
+
+\begin{remark}[The recipe for NP-completeness proofs]
+\Cref{thm:np_hard_via_reduction} dictates the standard pattern for showing $B$ is NP-complete. (1) Show $B \in \mathrm{NP}$ by exhibiting a polynomial-size certificate and a polynomial-time verifier. NP membership is a separate obligation from NP-hardness and is often the easier half; skipping it leaves only an NP-hardness claim, which is strictly weaker. (2) Pick a problem $A$ already known to be NP-hard, typically 3-SAT or one of its descendants. Picking the wrong source problem -- one that is in P, or whose hardness is unknown -- proves nothing. (3) Construct $f$ in polynomial time and prove the biconditional $x \in A \iff f(x) \in B$ in both directions: the forward direction ($x \in A \Rightarrow f(x) \in B$) and the reverse direction ($f(x) \in B \Rightarrow x \in A$). Witness translation (showing a certificate for $f(x)$ decodes into one for $x$) is a separate concern relevant to NP membership of the target, not to the reduction correctness itself. The catalogue of canonical reductions is in \cref{sec:npc}.
+\end{remark}
+
+\subsection{Worked example}
+
+We give a complete decision-problem reduction in detail; the more involved canonical 3-SAT $\le_p$ Independent-Set reduction is deferred to \cref{sec:npc}.
+
+\begin{example}[\textsc{Independent-Set} $\le_p$ \textsc{Vertex-Cover}]
+\label{ex:toy_reduction}
+Recall the two problems:
+\begin{itemize}
+  \item \textsc{Independent-Set}: given an undirected graph $G = (V, E)$ and an integer $k$, does $G$ contain a set $S \subseteq V$ of $k$ or more vertices such that no edge of $E$ has both endpoints in $S$?
+  \item \textsc{Vertex-Cover}: given $G = (V, E)$ and an integer $k'$, does $G$ contain a set $C \subseteq V$ of at most $k'$ vertices such that every edge has at least one endpoint in $C$?
+\end{itemize}
+
+\medskip
+\noindent\textit{The reduction.} Given an instance $(G, k)$ of \textsc{Independent-Set} with $n = |V|$, output the instance $(G, n - k)$ of \textsc{Vertex-Cover}. The graph is unchanged; only the threshold flips from $k$ to $n - k$.
+
+\medskip
+\noindent\textit{Polynomial-time computability.} The transformation copies $G$ and computes the integer $n - k$. This runs in linear time in the input size, hence in polynomial time.
+
+\medskip
+\noindent\textit{Correctness, forward direction ($\Rightarrow$).} Suppose $(G, k)$ is a YES-instance of \textsc{Independent-Set}, witnessed by an independent set $S$ with $|S| \ge k$. We claim $C := V \setminus S$ is a vertex cover of size $\le n - k$. Size: $|C| = n - |S| \le n - k$. Cover property: take any edge $(u, v) \in E$. If both $u, v \in S$, then the edge is internal to $S$, contradicting independence. So at least one of $u, v$ lies in $V \setminus S = C$, i.e.\ the edge is covered. Hence $(G, n-k)$ is a YES-instance of \textsc{Vertex-Cover}.
+
+\medskip
+\noindent\textit{Correctness, reverse direction ($\Leftarrow$).} Suppose $(G, n-k)$ is a YES-instance of \textsc{Vertex-Cover}, witnessed by a vertex cover $C$ with $|C| \le n - k$. We claim $S := V \setminus C$ is an independent set of size $\ge k$. Size: $|S| = n - |C| \ge n - (n-k) = k$. Independence: suppose for contradiction that some edge $(u, v) \in E$ has both endpoints in $S = V \setminus C$. Then $u, v \notin C$, so $C$ does not cover $(u, v)$, contradicting that $C$ is a vertex cover. Hence $S$ is independent. So $(G, k)$ is a YES-instance of \textsc{Independent-Set}.
+
+\medskip
+\noindent\textit{Conclusion.} Both directions hold and the transformation is polynomial-time, so \textsc{Independent-Set} $\le_p$ \textsc{Vertex-Cover}. By symmetry of the construction (the same map $(G, k) \mapsto (G, n-k)$ also reduces \textsc{Vertex-Cover} to \textsc{Independent-Set}), the two problems are polynomially equivalent: any polynomial-time algorithm for one yields one for the other. The construction also illustrates the general principle from \cref{thm:np_hard_via_reduction}: if either problem is NP-hard, so is the other.
+\end{example}
+

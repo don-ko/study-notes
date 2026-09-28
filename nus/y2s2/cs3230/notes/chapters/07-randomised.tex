@@ -1,0 +1,197 @@
+% Chapter 7: Randomised Algorithms.
+\section{Randomised Algorithms}
+\label{sec:randomised}
+
+A \emph{randomised} algorithm reads a stream of unbiased random bits in addition to its input, so its running time and correctness are random variables. The pay-off is simple, fast algorithms whose deterministic counterparts are slower (Freivalds' $O(n^2)$ matrix-product check vs.\ $\Theta(n^{2.37\dots})$ for re-multiplying) or substantially more intricate; the price is a controlled error probability, driven down by independent repetition. The probabilistic guarantees here hold \emph{for every input}, with the expectation taken over the algorithm's coin flips — distinct from the average-case analysis of \cref{sec:asymptotic} where the input itself is random.
+
+\subsection{Definitions}
+
+\begin{definition}[Randomised algorithm]
+\label{def:randomised_algorithm}
+\index{randomised algorithm}
+A \emph{randomised algorithm} $\mathcal{A}$ is one that, in addition to its input $x$, reads a sequence of independent fair random bits $r$. Its output $\mathcal{A}(x; r)$ and running time $T_\mathcal{A}(x; r)$ are therefore functions of both $x$ and $r$, and we treat them as random variables over the choice of $r$ (with $x$ fixed). Probabilistic statements about $\mathcal{A}$, such as ``$\prob_r[\mathcal{A}(x; r) \text{ is correct}] \ge 1/2$,'' are required to hold \emph{for every} $x$; this is what distinguishes randomised analysis from average-case analysis, where the input $x$ is itself drawn from a distribution.
+\end{definition}
+
+\begin{definition}[Las Vegas algorithm]
+\label{def:las_vegas}
+\index{Las Vegas algorithm}
+A \emph{Las Vegas} algorithm always outputs the correct answer; its running time is a random variable, and we measure efficiency by the \emph{expected} running time. The canonical example is randomised quicksort (\cref{prop:randomised_quicksort}): the output is the correctly sorted array on every run, but the running time depends on the random pivot choices and is $\Theta(n^2)$ in the worst case while $O(n \log n)$ in expectation.
+\end{definition}
+
+\begin{definition}[Monte Carlo algorithm]
+\label{def:monte_carlo}
+\index{Monte Carlo algorithm}
+A \emph{Monte Carlo} algorithm runs in a fixed (or worst-case bounded) time but may produce an incorrect answer. We measure efficiency by the worst-case running time and quality by an \emph{error probability} $\varepsilon < 1/2$, with the guarantee
+\[
+  \forall x,\quad \prob_r\bigl[\mathcal{A}(x; r) \ne f(x)\bigr] \;\le\; \varepsilon,
+\]
+where $f$ is the function being computed. Freivalds' algorithm (\cref{thm:freivalds}) is the canonical example.
+\end{definition}
+
+\begin{definition}[One-sided error]
+\label{def:one_sided_error}
+\index{one-sided error}
+A Monte Carlo algorithm for a decision problem has \emph{one-sided error} if it errs on only one of the two answers. Concretely, with $\varepsilon < 1$ and the convention that the algorithm may err only on \texttt{YES}-instances:
+\[
+  f(x) = \texttt{NO} \implies \prob[\mathcal{A}(x) = \texttt{NO}] = 1,
+  \qquad f(x) = \texttt{YES} \implies \prob[\mathcal{A}(x) = \texttt{YES}] \ge 1 - \varepsilon.
+\]
+Freivalds' algorithm has one-sided error of this form, with the roles of \texttt{YES}/\texttt{NO} swapped: when $AB = C$ the algorithm is always right; only when $AB \ne C$ can it err.
+\end{definition}
+
+\begin{definition}[Two-sided error]
+\label{def:two_sided_error}
+\index{two-sided error}
+A Monte Carlo algorithm has \emph{two-sided error} if it can err on either answer, but with total error bounded:
+\[
+  \forall x,\quad \prob[\mathcal{A}(x) \ne f(x)] \;\le\; \varepsilon,
+\]
+for some $\varepsilon < 1/2$. The error gap $1/2 - \varepsilon$ is what makes amplification by majority vote work; without it, repeated runs cannot improve confidence.
+\end{definition}
+
+\begin{definition}[Expected running time]
+\label{def:expected_runtime}
+\index{expected running time}
+The \emph{expected running time} of a randomised algorithm $\mathcal{A}$ on input $x$ is
+\[
+  \expec[T_\mathcal{A}(x)] \;=\; \sum_{r} T_\mathcal{A}(x; r) \cdot \prob[r],
+\]
+i.e.\ the expectation of the running-time random variable over the algorithm's internal randomness. The \emph{worst-case expected running time} is $\max_x \expec[T_\mathcal{A}(x)]$, and this is the quantity bounded by, e.g.\ ``randomised quicksort runs in expected $O(n \log n)$ time'': the bound is over the random pivot choices, uniformly over all inputs of size $n$.
+\end{definition}
+
+\begin{remark}[Las Vegas $\leftrightarrow$ Monte Carlo conversion]
+A Las Vegas algorithm with expected running time $T$ can be converted to a Monte Carlo algorithm by truncation: run for $100T$ steps and output a default answer if it has not finished. By Markov's inequality (\cref{thm:markov}), the truncation aborts with probability at most $1/100$, giving a Monte Carlo algorithm with error $\le 1/100$ and worst-case time $100T$. The reverse conversion (Monte Carlo $\to$ Las Vegas) requires an efficient way to \emph{check} an answer's correctness: keep rerunning the Monte Carlo algorithm until the check succeeds. The Markov argument is also the standard route from an expected $O(n \log n)$ bound to a ``runs in $O(n \log n)$ with probability $\ge 0.99$'' statement: $\expec[T] \le t$ gives $\prob[T \ge 100t] \le 1/100$.
+\end{remark}
+
+\subsection{Freivalds' algorithm}
+
+The matrix-product verification problem: given three $n \times n$ matrices $A, B, C$, decide whether $AB = C$. Computing $AB$ deterministically and comparing entrywise costs $\Theta(n^{2.37\dots})$ via the best-known matrix-multiplication algorithms (or $O(n^{2.807\dots})$ via Strassen, $\Theta(n^3)$ for the schoolbook algorithm); Freivalds' algorithm settles the verification (not multiplication) question in $O(n^2)$ time with bounded error.
+
+\medskip
+\noindent\textbf{Algorithm (Freivalds).} On input $A, B, C$:
+\begin{enumerate}[(1)]
+  \item Sample $v \in \{0, 1\}^n$ uniformly: each coordinate $v_i$ is independently $0$ or $1$ with probability $1/2$.
+  \item Compute $w = A(Bv) - Cv$ via three matrix--vector products in $O(n^2)$ total time.
+  \item If $w = 0$, output ``$AB = C$''; else output ``$AB \ne C$''.
+\end{enumerate}
+
+\begin{theorem}[Correctness of Freivalds' algorithm]
+\label{thm:freivalds}
+For every $A, B, C \in \reals^{n \times n}$, one round of Freivalds' algorithm satisfies:
+\begin{itemize}
+  \item if $AB = C$, the algorithm outputs ``$AB = C$'' with probability $1$ (no error);
+  \item if $AB \ne C$, the algorithm outputs the wrong answer ``$AB = C$'' with probability at most $1/2$.
+\end{itemize}
+The algorithm runs in $O(n^2)$ time, has one-sided error (\cref{def:one_sided_error}), and is a Monte Carlo algorithm (\cref{def:monte_carlo}).
+\end{theorem}
+
+\begin{proof}
+If $AB = C$, then $ABv = Cv$ for every vector $v$, so $w = 0$ deterministically and the algorithm answers correctly with probability $1$.
+
+Now suppose $AB \ne C$, and write $D = AB - C$. By assumption $D$ has at least one non-zero entry; fix indices $(i^*, j^*)$ with $D_{i^*, j^*} \ne 0$. The algorithm errs iff $Dv = 0$, which forces in particular the $i^*$-th coordinate to vanish:
+\[
+  (Dv)_{i^*} \;=\; \sum_{k=1}^{n} D_{i^*, k}\, v_k \;=\; 0.
+\]
+Isolate the $j^*$-term and condition on the other coordinates: for any fixing of $\{v_k : k \ne j^*\}$, write $S = \sum_{k \ne j^*} D_{i^*, k}\, v_k$ (a fixed real number once we condition). The equation $(Dv)_{i^*} = 0$ then becomes
+\[
+  D_{i^*, j^*}\, v_{j^*} \;=\; -S.
+\]
+Since $D_{i^*, j^*} \ne 0$, this equation has at most one solution $v_{j^*} \in \{0, 1\}$ (in fact exactly one if $-S/D_{i^*, j^*} \in \{0, 1\}$, and zero otherwise). As $v_{j^*}$ is independent of $\{v_k : k \ne j^*\}$ and uniform over $\{0, 1\}$, conditional on the other coordinates we have
+\[
+  \prob\bigl[(Dv)_{i^*} = 0 \mid \{v_k\}_{k \ne j^*}\bigr] \;\le\; \tfrac{1}{2}.
+\]
+This bound holds for \emph{every} fixing of the other coordinates, so by the principle of deferred decisions (\cref{rem:deferred}) the unconditional probability also satisfies $\prob[(Dv)_{i^*} = 0] \le 1/2$. Since $\{Dv = 0\} \subseteq \{(Dv)_{i^*} = 0\}$, the error probability $\prob[Dv = 0]$ is also at most $1/2$.
+
+The running time is the cost of three matrix--vector products, $O(n^2)$.
+\end{proof}
+
+\begin{remark}[Principle of deferred decisions]
+\label{rem:deferred}
+\index{principle of deferred decisions}
+The step ``$\prob[\mathcal{E} \mid X = x] \le p$ for every $x$ implies $\prob[\mathcal{E}] \le p$'' is the \emph{principle of deferred decisions}: instead of analysing all the random choices simultaneously, freeze all but one and analyse the remaining one conditionally; if the conditional bound is uniform, it lifts to an unconditional bound. Formally,
+\[
+  \prob[\mathcal{E}] \;=\; \sum_{x} \prob[\mathcal{E} \mid X = x]\, \prob[X = x] \;\le\; p \sum_x \prob[X = x] \;=\; p.
+\]
+The technique is used pervasively in the analysis of randomised algorithms whenever ``the worst random coordinate is the one revealed last''.
+\end{remark}
+
+\begin{example}[Freivalds on a $2 \times 2$ counter-example]
+\label{ex:freivalds_walkthrough}
+Let
+\[
+  A = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix},\quad
+  B = \begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix},\quad
+  C = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix},
+\]
+so that $AB = I_2 \ne C$ and $D = AB - C = \begin{pmatrix} 0 & -1 \\ 0 & 0 \end{pmatrix}$. The four possible vectors $v \in \{0,1\}^2$ each have probability $1/4$:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+$v$ & $Dv$ & algorithm output \\
+\midrule
+$(0, 0)$ & $(0, 0)$ & ``$AB = C$'' (\textbf{wrong}) \\
+$(0, 1)$ & $(-1, 0)$ & ``$AB \ne C$'' (correct) \\
+$(1, 0)$ & $(0, 0)$ & ``$AB = C$'' (\textbf{wrong}) \\
+$(1, 1)$ & $(-1, 0)$ & ``$AB \ne C$'' (correct) \\
+\bottomrule
+\end{tabular}
+\end{center}
+The error probability on this instance is exactly $2/4 = 1/2$, attaining the upper bound of \cref{thm:freivalds}. The bad coordinate is $j^* = 2$: among the two choices $v_2 \in \{0, 1\}$, exactly one of them ($v_2 = 0$) makes $-v_2 = 0$. This matches the proof: ``at most one of the two choices of $v_{j^*}$ kills the $i^*$-th row'', and the value of $v_1$ is irrelevant because column $1$ of $D$ is zero.
+\end{example}
+
+\subsection{Amplification by repetition}
+
+\begin{theorem}[Error amplification]
+\label{thm:amplification}
+Let $\mathcal{A}$ be a Monte Carlo algorithm with one-sided error $\le 1/2$ for a decision problem (as in Freivalds, where the algorithm errs only when the true answer is \texttt{NO}, and even then with probability $\le 1/2$). Run $\mathcal{A}$ independently $k$ times on the same input and output \texttt{YES} iff every run output \texttt{YES}. The resulting algorithm has error probability at most $2^{-k}$. In particular, to drive the error below $f \in (0, 1)$ it suffices to take
+\[
+  k \;=\; \left\lceil \log_2 \frac{1}{f} \right\rceil
+\]
+independent rounds, multiplying the running time by a $\log(1/f)$ factor.
+\end{theorem}
+
+\begin{proof}
+On a \texttt{YES}-instance every run outputs \texttt{YES} with probability $1$, so the combined algorithm is correct with probability $1$.
+
+On a \texttt{NO}-instance, let $\mathcal{E}_i$ be the event that the $i$-th run errs (outputs \texttt{YES}). The combined algorithm errs iff $\bigcap_{i=1}^k \mathcal{E}_i$; by independence of the runs,
+\[
+  \prob\!\left[\bigcap_{i=1}^k \mathcal{E}_i\right] \;=\; \prod_{i=1}^k \prob[\mathcal{E}_i] \;\le\; \prod_{i=1}^k \tfrac{1}{2} \;=\; 2^{-k}.
+\]
+Setting $2^{-k} \le f$ rearranges to $k \ge \log_2(1/f)$, giving the round count above.
+
+For two-sided error, replace ``every run \texttt{YES}'' by majority vote and bound the probability that more than half the runs err using a Chernoff bound; the cruder union bound (\cref{thm:union_bound}), $\prob[\bigcup_i \mathcal{E}_i] \le \sum_i \prob[\mathcal{E}_i]$, also gives a useful but weaker $k \cdot \varepsilon$ statement.
+\end{proof}
+
+\begin{remark}[Independence and the one-sided-error structure]
+The bound $2^{-k}$ uses $\prob[\bigcap_i \mathcal{E}_i] = \prod_i \prob[\mathcal{E}_i]$, which requires the rounds to be independent: reusing the same random vector $v$ across all rounds of Freivalds leaves the error at $1/2$ forever, so each round must draw fresh random bits. The AND-rule (output \texttt{YES} iff every run says \texttt{YES}) further relies on the one-sided structure of the error: a Freivalds-style algorithm errs only on \texttt{NO}-instances (where $AB \ne C$), so a single run answering \texttt{NO} is conclusive and a single \texttt{YES} carries the round's $\le 1/2$ uncertainty. If errors could land on either side independently, the AND-rule would be invalid and majority vote (with a Chernoff or union-bound analysis) would be required. The union bound (\cref{thm:union_bound}) is loose but free, and is the workhorse whenever the events of interest are not independent.
+\end{remark}
+
+\begin{example}[Concrete amplification numbers]
+\label{ex:amplification_numbers}
+With Freivalds' single-round error of $1/2$ and $k$ independent rounds, the error probability is at most $2^{-k}$:
+\begin{center}
+\begin{tabular}{rll}
+\toprule
+$k$ & error bound $2^{-k}$ & total time \\
+\midrule
+$1$  & $0.5$                       & $O(n^2)$ \\
+$10$ & $\le 9.8 \times 10^{-4}$    & $O(n^2)$ \\
+$20$ & $\le 9.5 \times 10^{-7}$    & $O(n^2)$ \\
+$50$ & $\le 8.9 \times 10^{-16}$   & $O(n^2)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+At $k = 20$ rounds the error is below $10^{-6}$, far smaller than the probability of a hardware bit-flip during execution; at $k = 50$ the error is below the standard double-precision floating-point epsilon. The total time stays $O(n^2)$ because $k$ is a constant, comfortably beating $\Theta(n^{2.37\dots})$ for re-multiplication. Conversely, to achieve a target error $f = 10^{-9}$, take $k = \lceil \log_2(10^9) \rceil = 30$ rounds.
+\end{example}
+
+\subsection{Randomised quicksort}
+
+\begin{proposition}[Randomised quicksort]
+\label{prop:randomised_quicksort}
+The Las Vegas algorithm \emph{Randomised Quicksort} (partition around a pivot chosen uniformly at random from the current sub-array, recurse on the two sides) sorts $n$ distinct numbers in expected time $O(n \log n)$, uniformly over all input arrays. The full analysis -- via indicator variables $X_{i,j} = \indic[a_i \text{ is compared with } a_j]$ with $\prob[X_{i,j} = 1] = 2/(j - i + 1)$, summing through linearity of expectation (\cref{thm:linearity}) and a harmonic-sum bound -- is given in \cref{thm:quicksort_avg}.
+\end{proposition}
+
+\begin{remark}[Randomised vs.\ average-case]
+The expected running-time bound for Randomised Quicksort holds for \emph{every} input array; the expectation is over the algorithm's coin flips. By contrast, the classical ``average-case $O(n \log n)$ for deterministic Quicksort with first-element pivot'' bound holds when the input is uniformly random; on a sorted input that algorithm is $\Theta(n^2)$. The randomisation moves the worst-case bad input from the input distribution to the algorithm's randomness, which is under our control: an adversary who picks the input cannot also pick the pivots.
+\end{remark}
+

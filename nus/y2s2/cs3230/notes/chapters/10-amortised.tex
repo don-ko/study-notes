@@ -1,0 +1,206 @@
+% Chapter 10: Amortised Analysis.
+\section{Amortised Analysis}
+\label{sec:amortised}
+
+For data structures deployed in long sequences of operations, the worst case for any single call is often rare: one resize buys many cheap insertions, one cascade of bit-flips buys many silent increments. \emph{Amortised analysis} accounts for the cost of a sequence of $n$ operations as a whole, reporting the per-operation average as a worst-case guarantee over input sequences. This is \emph{not} average-case analysis: no probability distribution on inputs is involved. Three techniques compute the bound -- aggregate, accounting, and potential methods -- which differ only in the bookkeeping.
+
+\subsection{Definitions}
+
+Throughout, fix a data structure and a sequence of operations $o_1, o_2, \dots, o_n$. Let $t_i$ denote the \emph{actual} (true) cost of $o_i$ (e.g., the number of RAM steps), and let $T(n) = \sum_{i=1}^n t_i$ denote the total actual cost.
+
+\begin{definition}[Amortised cost]
+\label{def:amortised_cost}
+\index{amortised cost}
+Given a sequence of $n$ operations with actual costs $t_1, \dots, t_n$, the \emph{amortised cost} of the sequence is the average actual cost
+\[
+  \frac{T(n)}{n} \;=\; \frac{1}{n}\sum_{i=1}^{n} t_i.
+\]
+We say each operation has \emph{amortised cost $f(n)$} when $T(n) \le n \cdot f(n)$ for every legal input sequence, equivalently when the per-operation average is $O(f(n))$ in the worst case over input sequences. The amortised cost is a \emph{worst-case} guarantee on the average; no probability is involved. Different operations sharing the same data structure may be assigned \emph{different} amortised costs (see the queue example below).
+\end{definition}
+
+\begin{remark}[Amortised is not average-case]
+Average-case analysis averages over a probability distribution on inputs; amortised analysis averages over a sequence of operations on a single (worst-case) input. There is no random variable, no $\expec$, and no probability assumption -- the bound holds against an adversarial sequence.
+\end{remark}
+
+\begin{definition}[Aggregate method]
+\label{def:aggregate_method}
+\index{aggregate method}
+The \emph{aggregate method} bounds the total cost $T(n)$ of any sequence of $n$ operations directly, then divides by $n$ to obtain a uniform per-operation amortised cost $T(n)/n$. The same amortised cost is assigned to every operation, regardless of which operation it is. The method is conceptually simple but inflexible: it cannot give different amortised costs to different operations.
+\end{definition}
+
+\begin{definition}[Accounting method]
+\label{def:accounting_method}
+\index{accounting method}
+\index{banker's method}
+The \emph{accounting method} (also \emph{banker's method}) assigns to the $i$-th operation a \emph{fictitious amortised cost} $c_i$, possibly different per operation type. The difference $c_i - t_i$ is treated as \emph{credit} deposited in a bank account associated with the data structure (or with specific items inside it). Cheap operations are over-charged so they leave behind credit; expensive operations are under-charged and pay the deficit out of accumulated credit. The analysis must verify the \emph{bank invariant}: the running total $\sum_{j=1}^{i}(c_j - t_j) \ge 0$ for every prefix $i$ -- not merely at $i = n$, since a transient deficit would mean an actual cost paid by credit not yet earned. When this holds,
+\[
+  \sum_{i=1}^{n} t_i \;\le\; \sum_{i=1}^{n} c_i,
+\]
+so the total amortised cost upper-bounds the total actual cost.
+\end{definition}
+
+\begin{definition}[Potential function]
+\label{def:potential_function}
+\index{potential function}
+A \emph{potential function} for a data structure is a map $\Phi$ from the set of states the structure can take to $\reals_{\ge 0}$. We write $\Phi(i)$ for the potential after the $i$-th operation, and $\Phi(0)$ for the initial potential. Conventionally $\Phi(0) = 0$ and $\Phi(i) \ge \Phi(0)$ for all $i$, so the potential is always non-negative relative to the start.
+\end{definition}
+
+\begin{definition}[Potential method]
+\label{def:potential_method}
+\index{potential method}
+Given a potential function $\Phi$ as above, the \emph{potential method} defines the amortised cost of the $i$-th operation by
+\[
+  c_i \;=\; t_i + \Phi(i) - \Phi(i-1).
+\]
+The change in potential $\Delta\Phi_i = \Phi(i) - \Phi(i-1)$ acts as a virtual deposit into ($\Delta\Phi_i > 0$) or withdrawal from ($\Delta\Phi_i < 0$) the data structure. Telescoping over $i = 1, \dots, n$,
+\[
+  \sum_{i=1}^{n} c_i \;=\; \sum_{i=1}^{n} t_i + \Phi(n) - \Phi(0).
+\]
+Whenever $\Phi(n) \ge \Phi(0)$ (in particular, with $\Phi(0) = 0$ and $\Phi \ge 0$), the right-hand side dominates $\sum t_i$, so $\sum c_i$ is a valid upper bound on the total actual cost. The potential method is the most flexible of the three: choosing $\Phi$ cleverly often yields constant amortised costs even when actual costs are wildly variable.
+\end{definition}
+
+\begin{remark}[Keep the potential non-negative]
+The bound $\sum t_i \le \sum c_i$ relies on $\Phi(n) \ge \Phi(0)$. With the standard convention $\Phi(0) = 0$, this requires $\Phi$ to stay non-negative on every state reachable by the operation sequence. A potential that can dip below its starting value silently invalidates the analysis; sign errors here are the most common defect in potential-method proofs.
+\end{remark}
+
+\subsection{The three methods}
+
+\begin{theorem}[Amortised cost bounds total actual cost]
+\label{thm:amortised_definition}
+For any sequence of $n$ operations with actual costs $t_1, \dots, t_n$ and any assignment of amortised costs $c_1, \dots, c_n$ satisfying either
+\begin{enumerate}[(i)]
+  \item (accounting) $\sum_{j=1}^{i} c_j \ge \sum_{j=1}^{i} t_j$ for all $i \in \{1, \dots, n\}$, or
+  \item (potential) $c_i = t_i + \Phi(i) - \Phi(i-1)$ for some $\Phi$ with $\Phi(n) \ge \Phi(0)$,
+\end{enumerate}
+the total amortised cost upper-bounds the total actual cost: $\sum_{i=1}^{n} t_i \le \sum_{i=1}^{n} c_i$. In particular, if every $c_i \le \bar c$ then the per-operation amortised cost is at most $\bar c$, i.e.\ $T(n)/n \le \bar c$.
+\end{theorem}
+
+\begin{proof}
+Case (i) is immediate from the prefix inequality at $i = n$. For case (ii), telescope:
+\[
+  \sum_{i=1}^{n} c_i \;=\; \sum_{i=1}^{n}\bigl(t_i + \Phi(i) - \Phi(i-1)\bigr)
+  \;=\; \sum_{i=1}^{n} t_i + \Phi(n) - \Phi(0)
+  \;\ge\; \sum_{i=1}^{n} t_i,
+\]
+where the last inequality uses $\Phi(n) \ge \Phi(0)$. Both forms therefore yield $\sum t_i \le \sum c_i$. The aggregate method is the special case of (i) in which all $c_i$ are equal to $T(n)/n$.
+\end{proof}
+
+\begin{figure}[h]
+  \centering
+  \input{figures/potential-method.tex}
+  \caption{Amortised analysis smooths the spiky actual cost into a flat per-operation cost via a potential function. Solid bars are actual costs $t_i$; the dashed line is the amortised cost $c_i$. Tall spikes (resizes, cascading bit-flips) are paid for by accumulated potential.}
+  \label{fig:potential}
+\end{figure}
+
+\begin{remark}[Choosing a method]
+The aggregate method (\cref{def:aggregate_method}) is fastest when one can write down a clean closed form for $T(n)$, e.g.\ the doubling pattern below. The accounting method (\cref{def:accounting_method}) shines when the structure suggests a natural ``charge per item''; it and the potential method both permit different amortised costs for different operation types, whereas the aggregate method assigns a single uniform cost. The potential method (\cref{def:potential_method}) is the most powerful and the standard tool for non-trivial structures (Fibonacci heaps, splay trees), but it requires the right $\Phi$, which is sometimes the whole problem. All three methods are bookkeeping reformulations of the same accounting identity (\cref{thm:amortised_definition}) and so produce the same asymptotic bound -- a discrepancy in constants between two methods on the same problem signals an error in one of them.
+\end{remark}
+
+\begin{example}[Queue with INSERT and EMPTY]
+\label{ex:queue_amortised}
+A queue supports $\textsc{Insert}(x)$ at $\Theta(1)$ actual cost and $\textsc{Empty}()$ which deletes all $k$ current elements at $\Theta(k)$ actual cost. A naive worst-case bound gives $O(n)$ per $\textsc{Empty}$, so $O(n^2)$ for $n$ operations. \textbf{Aggregate.} Each element is inserted at most once and deleted at most once, so over $n$ operations the total work is $\le 2n$, giving amortised cost $O(1)$. \textbf{Accounting.} Charge $\textsc{Insert}$ amortised cost $2$ (true cost $1$, with $1$ stored on the inserted element) and $\textsc{Empty}$ amortised cost $0$ (the $k$ deletions are paid by the $k$ stored credits). \textbf{Potential.} Set $\Phi(i) = $ number of elements in the queue. Then $c_{\textsc{Insert}} = 1 + 1 = 2$ and $c_{\textsc{Empty}} = k + (0 - k) = 0$. All three give the same conclusion.
+\end{example}
+
+\subsection{Binary counter}
+
+A $k$-bit binary counter supports $\textsc{Increment}$, which scans the array $A[0..k-1]$ from the low end, flipping $1$s to $0$s until it finds a $0$, then flips that $0$ to $1$. The actual cost is the number of bit-flips. A single $\textsc{Increment}$ on the all-ones counter flips $k$ bits, so the worst-case per-operation cost is $\Theta(k) = \Theta(\log n)$ over $n$ increments -- giving the loose bound $O(n \log n)$. The amortised analysis sharpens this to $O(n)$.
+
+\begin{theorem}[Binary counter has $O(1)$ amortised increment]
+\label{thm:binary_counter_amortised}
+Starting from the all-zeros counter, a sequence of $n$ $\textsc{Increment}$ operations performs at most $2n$ bit-flips. Hence the amortised cost per increment is $O(1)$.
+\end{theorem}
+
+\begin{proof}
+We give the accounting and potential proofs; the aggregate proof is recorded as \cref{ex:binary_counter}.
+
+\smallskip
+\noindent\emph{Accounting method.} Charge each bit-flip $0 \to 1$ a fictitious cost of $\$2$: $\$1$ pays for the actual flip, and $\$1$ is deposited on the bit. Charge the bit-flip $1 \to 0$ nothing -- it is paid by withdrawing the $\$1$ stored on that bit when it was last set. Bank invariant: at any point, every $1$-bit of the counter holds exactly $\$1$ of credit (proof by induction on the number of increments: setting a bit deposits $\$1$, resetting it withdraws $\$1$). The bank balance equals the number of $1$-bits in the counter, which is $\ge 0$ always. Each $\textsc{Increment}$ performs exactly one $0 \to 1$ flip (the final bit it sets), so its amortised cost is exactly $\$2 = O(1)$. Total amortised cost over $n$ increments is $2n$, which upper-bounds the total actual cost.
+
+\smallskip
+\noindent\emph{Potential method.} Take $\Phi(i) = $ number of $1$-bits after the $i$-th increment. Then $\Phi(0) = 0$ and $\Phi(i) \ge 0$. Suppose the $i$-th increment flips $r_i$ trailing $1$s to $0$s and then sets one $0$ to $1$. Its actual cost is $t_i = r_i + 1$ and the change in potential is $\Phi(i) - \Phi(i-1) = -r_i + 1$. Hence
+\[
+  c_i \;=\; t_i + \Phi(i) - \Phi(i-1) \;=\; (r_i + 1) + (-r_i + 1) \;=\; 2.
+\]
+By \cref{thm:amortised_definition}, $\sum t_i \le \sum c_i = 2n$, and the per-increment amortised cost is $O(1)$.
+
+\smallskip
+\noindent The two analyses are equivalent: the bank balance ``$\$1$ per $1$-bit'' is exactly the potential function ``number of $1$-bits''.
+\end{proof}
+
+\begin{example}[Binary counter via aggregate method]
+\label{ex:binary_counter}
+Bit $j$ flips every $2^{j+1}$ increments (it toggles when increment $i$ has $2^j \mid i$ for the appropriate parity). Over $n$ increments, bit $j$ flips at most $\lfloor n/2^j \rfloor$ times. The total number of flips is therefore
+\[
+  T(n) \;=\; \sum_{j=0}^{k-1} \left\lfloor \frac{n}{2^j} \right\rfloor
+  \;\le\; n \sum_{j=0}^{\infty} \frac{1}{2^j} \;=\; 2n.
+\]
+The geometric series swallows the cost of all higher-order bits: bit $0$ flips $n$ times, bit $1$ flips $n/2$ times, bit $2$ flips $n/4$ times, and so on. Dividing by $n$ gives amortised cost $\le 2 = O(1)$ per increment. The aggregate method recovers the same bound as the accounting and potential analyses, and is arguably the cleanest of the three for this problem.
+\end{example}
+
+\subsection{Dynamic array}
+
+A \emph{dynamic array} (Java \texttt{ArrayList}, C++ \texttt{std::vector}, Python \texttt{list}) supports $\textsc{Push}(x)$, which appends $x$ to the array. When the underlying buffer is full, a new buffer of \emph{double} the capacity is allocated, all existing elements are copied over, and the old buffer is freed. We charge $\Theta(1)$ for an in-place push and $\Theta(n)$ for a doubling push that copies $n$ elements. A single doubling push therefore costs $\Theta(n)$, but doublings are rare: between successive doublings the array absorbs $\Theta(n)$ cheap pushes.
+
+\begin{theorem}[Dynamic-array push has $O(1)$ amortised cost]
+\label{thm:dyn_array_amortised}
+Starting from an empty dynamic array with doubling growth, a sequence of $n$ $\textsc{Push}$ operations costs at most $3n$ slot-writes total. Hence the amortised cost per push is $O(1)$, even though a single push may cost $\Theta(n)$ in the worst case.
+\end{theorem}
+
+\begin{remark}[Geometric growth is essential]
+Growing by a constant additive $c$ each resize gives total cost $\Theta(n^2)$ and amortised cost $\Theta(n)$, not $O(1)$. Any constant geometric growth factor $> 1$ keeps the series convergent and yields $O(1)$ amortised cost; doubling is the standard choice. With deletions, halving the buffer when load drops below $1/4$ (rather than $1/2$) preserves $O(1)$ amortised: halving at $1/2$ admits an adversarial alternation of insert/delete that forces a resize on every other operation.
+\end{remark}
+
+\begin{proof}
+Three independent proofs follow, one per method. They are recorded as worked examples to make the proof patterns visible side-by-side.
+
+\smallskip
+\noindent\emph{Aggregate method (\cref{ex:dyn_array_aggregate}).} Doubling occurs after pushes that fill the array exactly. Among $n$ pushes, the doublings happen at sizes $1, 2, 4, 8, \dots$ up to the largest power of two $\le n$, copying $1 + 2 + 4 + \dots + 2^{\lfloor \log_2 (n-1) \rfloor} \le 2(n-1) < 2n$ elements in total. Adding the $n$ ordinary writes for the pushes themselves, $T(n) \le n + 2n = 3n$, so the amortised cost is $\le 3 = O(1)$.
+
+\smallskip
+\noindent\emph{Accounting method (\cref{ex:dyn_array_accounting}).} Charge each push $\$3$. The full proof is in the example.
+
+\smallskip
+\noindent\emph{Potential method (\cref{ex:dyn_array_potential}).} Take $\Phi(D) = 2 \cdot \mathrm{size}(D) - \mathrm{capacity}(D)$, defined on states $D$ where size $\ge$ capacity$/2$ (the standard regime after the first doubling); set $\Phi = 0$ when size $<$ capacity$/2$. The amortised cost works out to $3$ in both cases. Details in the example.
+\end{proof}
+
+\begin{example}[Dynamic array, aggregate method]
+\label{ex:dyn_array_aggregate}
+Suppose the array starts at capacity $1$ and the buffer doubles whenever full. After $n$ pushes the buffer has been doubled $\lceil \log_2 n \rceil$ times; the $j$-th doubling copies $2^{j-1}$ elements (since the new buffer has capacity $2^j$ and the old one is full at size $2^{j-1}$). The copy cost is therefore
+\[
+  \sum_{j=1}^{\lceil \log_2 n \rceil} 2^{j-1} \;=\; 2^{\lceil \log_2 n \rceil} - 1 \;<\; 2n.
+\]
+Add $n$ for the slot-writes done by the $n$ pushes themselves: $T(n) \le n + 2n = 3n$. Dividing by $n$ gives amortised cost $\le 3 \in O(1)$. Doubling -- as opposed to ``add a constant'' growth, which would give $\Theta(n^2)$ total -- is essential: any growth factor $\ge 1 + \varepsilon$ for fixed $\varepsilon > 0$ keeps the geometric series convergent and gives $O(1)$ amortised; growth ``by one'' makes the series arithmetic and gives $\Theta(n)$ amortised.
+\end{example}
+
+\begin{example}[Dynamic array, accounting method]
+\label{ex:dyn_array_accounting}
+Charge each $\textsc{Push}$ a fictitious $\$3$:
+\begin{itemize}
+  \item $\$1$ pays for the actual write of the new element into its slot.
+  \item $\$1$ is deposited on the new element, to pay for moving it during the \emph{next} doubling.
+  \item $\$1$ is deposited on one of the older elements, to pay for moving it during the next doubling.
+\end{itemize}
+Bank invariant: just after a doubling at size $m$ (so the new capacity is $2m$ and there are $m$ filled slots), every one of the $m$ ``old'' slots has zero credit and the array is half-full. As the next $m$ pushes fill the second half, each new push deposits $\$1$ on itself and $\$1$ on a distinct old element, so by the time the buffer is full again ($m$ pushes later), every one of the $2m$ elements carries $\$1$ of credit. The next doubling copies $2m$ elements, paid for entirely by the $2m$ stored credits. Bank balance is $\ge 0$ at every prefix. Total amortised cost $\le 3n$, which upper-bounds the total actual cost.
+\end{example}
+
+\begin{example}[Dynamic array, potential method]
+\label{ex:dyn_array_potential}
+Define
+\[
+  \Phi(D) \;=\; 2 \cdot \mathrm{size}(D) - \mathrm{capacity}(D),
+\]
+which is non-negative whenever the array is at least half-full -- the regime sustained by doubling. (The first few pushes can be handled by setting $\Phi = 0$ until size first reaches capacity, or simply by starting with capacity $1$ and size $1$ after the first push, so $\Phi = 1$.) Two cases for the $i$-th push:
+
+\smallskip
+\textbf{Case 1 (no doubling).} The push writes one slot. Size grows by $1$, capacity is unchanged, so $\Delta\Phi = 2$. Amortised cost $c_i = 1 + 2 = 3$.
+
+\smallskip
+\textbf{Case 2 (doubling).} Just before the push, $\mathrm{size} = \mathrm{capacity} = i - 1$, so $\Phi(i-1) = 2(i-1) - (i-1) = i-1$. The push copies $i-1$ elements (cost $i-1$) into a buffer of capacity $2(i-1)$, then writes the new element (cost $1$); total $t_i = i$. After the push, size $= i$, capacity $= 2(i-1)$, so $\Phi(i) = 2i - 2(i-1) = 2$. Hence $\Delta\Phi = 2 - (i-1) = 3 - i$, and
+\[
+  c_i \;=\; t_i + \Delta\Phi \;=\; i + (3 - i) \;=\; 3.
+\]
+
+\smallskip
+\noindent In both cases $c_i = 3$, so the per-push amortised cost is exactly $3 = O(1)$. The choice $\Phi = 2 \cdot \mathrm{size} - \mathrm{capacity}$ is tuned so that the potential lost at a doubling exactly cancels the linear copy cost.
+\end{example}
+
