@@ -329,3 +329,6 @@ TSWLatexianTemp*
 
 ## Claude Code worktrees
 .claude/worktrees/
+
+## Planning docs (specs, plans) stay local; they name private paths
+docs/superpowers/
