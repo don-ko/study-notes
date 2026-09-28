@@ -1,4 +1,4 @@
-# latexmkrc — canonical build for cs3230_notes.tex
+# latexmkrc — canonical build for cs3230-algorithms-notes.tex
 $pdf_mode = 1;                  # produce PDF directly via pdflatex
 $pdflatex = 'pdflatex -interaction=nonstopmode -synctex=1 -file-line-error %O %S';
 $bibtex_use = 1;
