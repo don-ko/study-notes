@@ -1,0 +1,280 @@
+\section{Classification}
+In Classification we learn a mapping $f:\mathbb{R}^{m+1}\mapsto \left\{ 0,1,\ldots,k \right\}$,
+drawn from a function class $\mathcal{f}$.
+
+\begin{itemize}
+  \item \textbf{Representation}
+    \[f \in \mathcal{F}\] 
+  \item \textbf{Evaluation}
+    \[\text{Loss Measure: }\mathcal{E}\left(f\left(\mathbf{x}\right),y\right)=\mathbb{I}\left[ y\neq f(\mathbf{x}) \right]\] 
+    \[\text{Generalisation Loss: }L(\mathcal{E},\mathcal{D}, f)=\mathbb{E}_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{X}) \right] \right]\] 
+  \item \textbf{Optimisation}
+    \[f^{*}=\argmin_{f \in \mathcal{F}}\left\{ \mathbb{E}_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{X}) \right] \right] \right\}\] 
+\end{itemize}
+\subsubsection{Classification Approaches}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{classifications}
+\end{figure}
+\textbf{Distribution-free Classification} paradigm: We seek to learn the
+classification boundary directly without probabilistic inference.\ e.g. PAC
+approach where we seek to approximate $\mathbb{E}_\mathcal{D}\left[
+  \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{X}) \right] \right]$.
+\textbf{Probabilitistic Classification} paradigm: The classification problem
+reduces to an inference problem in which we learn the posterior output class
+probability, each $p_\mathcal{Y}\left( y=1|\mathbf{x} \right) $characterising
+an inhomogeneous Bernoulli distribution, for which we must parameterise a
+distribution for each $\mathbf{x}\in dom(\mathcal{X})$\\
+\textbf{Generative Classification}: To learn $p_\mathcal{Y}(y|\mathbf{x})$
+indirectly by inferring the likelihood $p_\mathcal{X}(\mathbf{x}|y)$ and the
+prior $p_\mathcal{Y}(y)$ for each class separately. Requires the most number of
+parameters to learn, but allows us to learn $p_\mathcal{X}(\mathbf{x})$.\\
+\textbf{Discriminative Classification}: To learn $p_\mathcal{Y}(y|\mathbf{x})$
+directly. Less demanding in terms of number of parameters to learn, but is
+inflexible, requiring re-running the lagorithm for changes of the loss
+function and does not deal well with class imbalances.
+\subsection{Baye's Optimal Classifier}
+For the binary classification problem, we have Baye's Optimal Classifier
+minimising misclassification loss: 
+\[f*(\mathbf{x})=
+\begin{cases}
+  1&\text{if}\quad p_\mathcal{Y}(y=1|\mathbf{x})\ge 0.5\\
+  0&\text{if}\quad p_\mathcal{Y}(y=1|\mathbf{x})< 0.5
+\end{cases}\] 
+\begin{proof}
+  \begin{align*}
+    f^{*}=&\argmin_{f \in \mathcal{F}}\left\{ \mathbb{E}_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{X}) \right] \right] \right\}\\
+         =&\argmin_{f \in \mathcal{F}}\left\{ \sum_{y\in \left\{ 0,1 \right\}} \int p_\mathcal{Y}(y|x)p_\mathcal{X}(\mathbf{x})\mathbb{I}\left[ y\neq f(\mathbf{x}) \right] \,d\mathbf{x} \right\}\\
+         =&\argmin_{f \in \mathcal{F}}\left\{ \sum_{y\in \left\{ 0,1 \right\}} \int p_\mathcal{Y}(y|x)p_\mathcal{X}(\mathbf{x})\left( f\left(\mathbf{x}\right) \left(1-y\right) +\left(1-f\left(\mathbf{x}\right)\right)y\right)  \,d\mathbf{x} \right\}\\
+         =&\argmin_{f \in \mathcal{F}}\left\{ \int \left( p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \left(1-f\left(\mathbf{x}\right)\right) +p_\mathcal{Y}\left( y=0|\mathbf{x} \right) f\left( \mathbf{x} \right)  \right) p_\mathcal{X}(\mathbf{x})\,d\mathbf{x}  \right\}\\
+         =&\argmin_{f \in \mathcal{F}}\left\{ \int \left( p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \left(1-f\left(\mathbf{x}\right)\right) +\left( 1-p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \right)  f\left( \mathbf{x} \right)  \right) p_\mathcal{X}(\mathbf{x}) \,d\mathbf{x}  \right\}\\
+         =&\argmin_{f \in \mathcal{F}}\left\{ \int \left( p_\mathcal{Y}\left( y=1|\mathbf{x} \right) +f\left( \mathbf{x} \right) \left( 1-2p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \right) \right) p_\mathcal{X}(\mathbf{x}) \,d\mathbf{x}  \right\}
+  \end{align*}
+  Let $M(\mathbf{x})=p_\mathcal{Y}\left( y=1|\mathbf{x} \right) +f\left( \mathbf{x} \right) \left( 1-2p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \right)$.\\
+  We need to find function $f^{*}$ that is optimal for all $\mathbf{x}\in dom(\mathcal{X})$, 
+  \[f^{*}(\mathbf{x})=\argmin_{f(\mathbf{x})}\left\{ M(\mathbf{x}) \right\}\]
+  If $f^{*}(\mathbf{x})=1$ optimality implies:
+  \begin{align*}
+    1-p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \le p_\mathcal{Y}\left( y=1|x \right) 
+    p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \ge 0.5
+  \end{align*}\qed%
+\end{proof}
+\begin{remark}
+  WLOG, we may consider the Bayes Optimal Classifier for Generative Classification as follows:
+  \begin{align*}
+    f^{*}(\mathbf{x})=&\argmax_{y\in \left\{ 0,1 \right\}}\left\{ p_\mathcal{Y}(y|\mathbf{x}) \right\}\\
+    =&\argmax_{y\in \left\{ 0,1 \right\}}\left\{ \frac{p_\mathcal{X}\left( \mathbf{x}|y \right)P_\mathcal{Y}(y) }{\sum_{y\in \left\{ 0,1 \right\}} p_\mathcal{X}(\mathbf{X}|y)p_\mathcal{Y}(y)} \right\}\\
+    =&\argmax_{y\in \left\{ 0,1 \right\}}\left\{ p_\mathcal{X}(\mathbf{x}|y)p_\mathcal{Y}(y) \right\}
+  \end{align*}
+\end{remark}
+\subsection{Logistic Regression}
+We seek to model $p_\mathcal{Y}(y=1|\mathbf{x})$ with a function
+$f:\mathbb{R}^{m}\mapsto [0,1]$. In Logistic Regression, we assume that the probability can be
+modelled by the logistic sigmoid:
+\[S(x)=\frac{1}{1+e^{-\mathbf{w\cdot x}}}.\]
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{logistic-sigmoid}
+\end{figure}
+\begin{itemize}
+  \item \textbf{Representation}
+    \[\mathcal{F}=\left\{ f_\mathbf{w}\left( \mathbf{x} \right) =\mathbb{I}\left[ p_\mathcal{Y}\left( y=1|\mathbf{x} \right) \ge 0.5 \right] | p_\mathcal{Y}\left( y=1|\mathbf{x} \right) =\frac{1}{1+e^{-\mathbf{w\cdot x}}},\mathbf{w}\in \mathbb{R}^{m+1} \right\}\] 
+  \item \textbf{Evaluation}
+      \[\mathcal{L}(\mathbf{w})= \sum_{i=1}^{n} y^{(i)}\mathbf{w\cdot
+      x^{(i)}}-\ln\left( 1+e^{\mathbf{w\cdot x^{(i)}}} \right) \]
+  \item \textbf{Optimisation}
+    \[\mathbf{w}_{MLE}=\argmin_{\mathbf{w}}\left\{ \sum_{i=1}^{n} \ln\left( 1+e^{\mathbf{w\cdot x}^{(i)}} \right) - y^{(i)}\mathbf{w\cdot x}^{(i)}\right\}\] 
+\end{itemize}
+Rearranging, we have
+\begin{align*}
+  p_\mathcal{Y}\left( y=1|\mathbf{x} \right) =&\frac{1}{1+e^{-\mathbf{w\cdot x}}}\\
+  e^{-\mathbf{w\cdot x}}=&\frac{1}{p_\mathcal{Y}(y=1|\mathbf{x})}-1\\
+  \mathbf{w\cdot x}=&\ln\left( \frac{p_\mathcal{Y}(y=1|\mathbf{x})}{1-p_\mathcal{Y}(y=1|\mathbf{x})} \right)\\
+  =&logit(p_\mathcal{Y}(y=1|\mathbf{x}))
+\end{align*}
+\begin{remark}
+$\mathbf{w\cdot x}=0$ defines a linear discriminant separating hyperplane.
+\end{remark}
+\subsubsection{Evaluation}
+\begin{multicols}{2}
+  [With the logistic regression model, we have the following:]
+   \begin{align*}
+    \mathcal{Y}\left( y=1|\mathbf{x} \right)=\frac{1}{1+e^{-\mathbf{w\cdot x}}}\\\\
+   \end{align*}
+   \begin{align*}
+     p_\mathcal{Y}\left( y=0|\mathbf{x} \right)=&\frac{e^{-\mathbf{w\cdot x}}}{1+e^{-\mathbf{w\cdot x}}}\\
+     =&\frac{1}{1+e^{\mathbf{w\cdot x}}}
+   \end{align*}
+\end{multicols}
+We can then derive the Cross-Entropy loss function for logistic regression:
+\begin{align*}
+\mathcal{L}(\mathbf{w})=&\ln\left( \prod_{i=1}^{n} p_\mathcal{Y}\left( y^{(i)}|\mathbf{x}^{(i)} \right)   \right) \\
+=&\sum_{i=1}^{n} \ln\left( p_\mathcal{Y}\left( y^{(i)}|\mathbf{x}^{(i)} \right)  \right) \\
+=&\sum_{i=1}^{n} y^{(i)}\ln\left( p_\mathcal{Y}\left( y^{(i)}=1|\mathbf{x}^{(i)} \right)  \right) + \left( 1-y^{(i)}\right) \ln\left( p_\mathcal{Y}\left( y^{(i)}=0|\mathbf{x}^{(i)} \right)  \right)  \\
+=&\sum_{i=1}^{n} \ln\left( p_\mathcal{Y}\left( y^{(i)}=0|\mathbf{x}^{(i)} \right)  \right) + y^{(i)} \ln\left( \frac{p_\mathcal{Y}\left( y^{(i)}=1|\mathbf{x}^{(i)} \right)}{p_\mathcal{Y}\left( y^{(i)}=0|\mathbf{x}^{(i)} \right)} \right)  \\
+=&\sum_{i=1}^{n} y^{(i)}\mathbf{w\cdot x^{(i)}}-\ln\left( 1+e^{\mathbf{w\cdot x^{(i)}}} \right) 
+\end{align*}
+Hence we seek $\mathbf{w}_{MLE}$:
+\[\mathbf{w}_{MLE}=\argmin_{\mathbf{w}}\left\{ \sum_{i=1}^{n} \ln\left( 1+e^{\mathbf{w\cdot x}^{(i)}} \right) - y^{(i)}\mathbf{w\cdot x}^{(i)}\right\}\] 
+\subsubsection{Motivation}
+We assume some latent random variable $\mathcal{Y}^{*}$ such that
+$y^{*}=\mathbf{w\cdot x}+\epsilon$ where $\epsilon\sim Logistic(0,1)$. Then
+\[\varepsilon\sim Logistic(\mu,s)\quad\text{where:}\quad\mu\in \mathbb{R},s>0.\]
+\begin{definition}[Logistic Distribution]
+  The Logistic Distribution has the characteristic pdf:
+\[f_\epsilon\left( \varepsilon;\mu,s \right) =\frac{e^{-\frac{\varepsilon-\mu}{s}}}{s{\left( 1+e^{-\frac{\varepsilon-\mu}{s}} \right) }^{2}}.\] 
+\[E_\mathcal{D}[\epsilon]=\mu.\] 
+\[P(\epsilon<z)=\frac{1}{1+e^{-\frac{z-\mu}{s}}}.\] 
+\end{definition}
+We link a latent variable outcome to an output assuming the classification
+model:
+\[y^{(i)}=\begin{cases}
+  1&\text{if }\quad y^{*(i)}\ge 0\\
+  0&\text{if }\quad y^{*(i)}< 0\\
+\end{cases}.\]
+\begin{align*}
+  p_\mathcal{Y}\left( y^{(i)}=1|\mathbf{x}^{(i)} \right)=&P\left(\mathcal{Y}^{*(i)}\ge 0|\mathbf{x}^{(i)}\right)\\
+  =&P\left( \mathbf{w\cdot x}^{(i)}+\varepsilon^{(i)} \ge 0\right)\\
+  =&1-\frac{1}{1+e^{\mathbf{w\cdot x}^{(i)}}}\\
+  =&\frac{e^{\mathbf{w\cdot x}^{(i)}}}{1+e^{\mathbf{w\cdot x}^{(i)}}}\\
+  =&\frac{1}{1+e^{-\mathbf{w\cdot x}^{(i)}}}\\
+\end{align*}
+\subsubsection{Optimisation}
+However, the $\mathbf{w}_{MLE}$ we seek has no analytic solution. We may apply
+a numerical technique to optimise. This optimisation is a convex problem, hence the
+local optimum found would also be a global optimum.
+\[\nabla_\mathbf{w}^{2} \mathcal{L}\ge 0.\] 
+\begin{proof}
+  \begin{align*}
+    \nabla_\mathbf{w} (-y\mathbf{w\cdot x})=&-y\mathbf{x}\\
+    \nabla_\mathbf{w}^{2} (-y\mathbf{w\cdot x})=&\mathbf{0}\\
+    \implies \mathcal{H}=&\mathbf{0}
+  \end{align*}
+  $-y\mathbf{w\cdot x}$ is convex.\\
+  \begin{align*}
+  \nabla_\mathbf{w}\left(  \ln(1+e^{\mathbf{w\cdot x}}) \right)=&\frac{e^{\mathbf{w\cdot x}}}{1+e^{\mathbf{w\cdot x}}} \mathbf{x}\\
+  \frac{\partial \ln(1+e^{\mathbf{w\cdot x}})}{\partial w_i} =&\frac{e^{\mathbf{w\cdot x}}}{1+e^{\mathbf{w\cdot x}}} x_i\\
+  \frac{\partial^{2} \ln(1+e^{\mathbf{w\cdot x}})}{\partial w_i\partial w_j} =&\frac{e^{\mathbf{w\cdot x}}}{{(1+e^{\mathbf{w\cdot x}})}^{2}} x_i x_j\\
+  \mathcal{H}=&\frac{e^{\mathbf{w\cdot x}}}{{(1+e^{\mathbf{w\cdot x}})}^{2}}\mathbf{xx}^{T}\\
+  \implies\mathcal{H}\succeq&0
+  \end{align*}
+  The objective is convex.\qed%
+\end{proof}
+\subsubsection{Linearly Separable Data}
+Consider that the training data is linearly separable. Consider the objective
+function for some $w=c\tilde{w}, c>0$:
+\[\sum_{i=1}^{n} \ln\left( 1+e^{c\mathbf{\tilde{w}\cdot x}^{(i)}} \right)-y^{(i)}c\mathbf{\tilde{w}\cdot x}^{(i)}\] 
+Taking the derivative with respect to $c$, we have:
+ \[\sum_{i=1}^{n} \mathbf{\tilde{w}\cdot x}^{(i)}\left( \frac{e^{c\mathbf{\tilde{w}\cdot x}^{(i)}}}{1+e^{c\mathbf{\tilde{w}\cdot x}^{(i)}}}-y^{(i)} \right).\]
+Since the data is well classified, there always exists a $\tilde{w}$ such that
+the objective has a negative derivative with respect to $c$, and gradient
+descent will cause $c$ to grow without bound. The sigmoid function approaches
+a Heaviside function. This is a case of overfitting and can be circumvented
+through regularisation:
+\[\sum_{i=1}^{n} \ln\left( 1+e^{c\mathbf{\tilde{w}\cdot x}^{(i)}} \right)-y^{(i)}c\mathbf{\tilde{w}\cdot x}^{(i)}+\lambda c^{2}\left\lVert \mathbf{\tilde{w}} \right\rVert_2^{2} \]
+We may discern a unique stationary point with respect to $c$ with the
+derivative, using the addition of a Ridge Regulariser. Apart from the linearly
+separable non-regularised case, Logistic Regression in general leads to unique
+solutions.
+\subsubsection{Multinomial Logistic Regression}
+Supposing we have $k$ classes such that $y\in \left\{ 1,\ldots,k \right\}$, the Bayes
+Optimal Classifier becomes:
+\[f^{*}(\mathbf{x})=\argmax_{y\in \left\{ 1,\ldots,k \right\}}\left\{ p_\mathcal{Y}(y|\mathbf{x}) \right\}.\] 
+The model is now defined using the softmax function, and we seek to learn an
+inhomogeneous multinomial distribution:
+\[p_\mathcal{Y}(y=k|\mathbf{x})=\frac{e^{\mathbf{w}_j\cdot \mathbf{x}}}{\sum_{j=1}^{k} e^{\mathbf{w}_j\cdot\mathbf{x}}}.\] 
+The maximum likelihood solution will now make use of the multinomial cross
+entropy which results in a convex optimisation problem.
+
+\subsection{Naïve Bayes}
+In Naïve Bayes, we simplify the likelihood by assuming the conditional
+independence assumption of the input attributes given $\mathcal{Y}$:
+\[p_\mathcal{X}(\mathbf{x}|y)=\prod_{i=1}^{m} p_\mathcal{X_i} (x_i|y)\] 
+Supposing $\mathcal{Y}$ is a Bernoulli random variable,
+$y\sim Bern(\theta_y)$. We find the log-likelihood function:
+\begin{align*}
+\mathcal{L}\left( \theta \right) =& \ln\left( \prod_{i=1}^{n} p_\mathcal{Y}\left( y^{(i)};\theta_y \right) \right)\\
+=&\sum_{i=1}^{n} \ln\left( p_\mathcal{Y}\left( y^{(i)};\theta_y \right)  \right)\\
+=&\sum_{i=1}^{n} y^{(i)}\ln\theta_y+\left(1-y^{(i)}\right)\ln\left( 1-\theta_y \right) 
+\end{align*}
+Hence we seek $\theta_{yMLE}$ such that:
+\[\theta_{yMLE}=\argmax_{\theta_y}\left\{ \sum_{i=1}^{n} y^{(i)}\ln\theta_y+\left(1-y^{(i)}\right)\ln\left( 1-\theta_y \right) \right\}\] 
+Taking the derivative and setting to 0, we have:
+\begin{align*}
+\nabla_{\theta_y}L=&\sum_{i=1}^{n} \frac{y^{(i)}}{\theta_y}-\frac{(1-y^{(i)})}{1-\theta_y}\\
+\implies\theta_{yMLE}=&\frac{n_1}{n}
+\end{align*}
+\subsubsection{Categorical Naïve Bayes}
+Suppose that the features $x_i$ are discrete-valued and take $m_i$ different
+values, such that each outcome $x_i$ is taken from the set ${\left\{ x_{ij}
+\right\}}_{j=1}^{m_i}$
+\begin{itemize}
+  \item \textbf{Representation}
+      \[\mathcal{F}=\left\{ f_{\theta_y,\left\{ \theta_{ijk} \right\}} (\mathbf{x})=\argmax_{y\in \left\{ 0,1 \right\}} \left\{ p_\mathcal{Y}(y)\prod_{i=1}^{m} p_\mathcal{X_i} (x_i|y) \right\} \mid p_\mathcal{Y}(y=1)=\theta_y,{\left\{ p_\mathcal{X_i}(x_{ij}|k)=\theta_{ijk} \right\}}^{m,m_i,1}_{i=1,j=1,k=0} \right\}.\] 
+  \item \textbf{Evaluation}
+    \[\ln\left( L(\theta_y) \right)\quad\text{and}\quad {\left\{ \ln\left( L\left( \theta_{ik} \right)  \right) \right\}}^{m,1}_{i=1,k=0}\] 
+  \item \textbf{Optimisation}
+    \[\theta_{yMLE}=\frac{n_1}{n}\quad\text{and}\quad {\left\{\theta_{ijkMLE}=\frac{n_{ijk}}{n_k}\right\}}^{m,m_i,1}_{i=1,j=1,k=0}\] 
+\end{itemize}
+Each $(x_i|y=k)$ is a categorical random variable, of which we seek to
+parameterise its categorical distribution.
+\begin{definition}[Categorical Distribution]
+  The Categorical Distribution is a generalisation of the Bernoulli
+  Distribution with more than 2 discrete outcomes ($m_i$ discrete outcomes):
+  \[(\mathbf{x}_i|y=k)\sim Categorical(\Theta_{ik})\]
+  \[\Theta_{ik}\text{ has elements }{\left\{ \theta_{ijk} \right\}}_{j=1}^{m_i}\]
+  \[p_\mathcal{X_i}\left( \mathcal{X}_i=x_{ij}|y=k;\Theta_{ik} \right)=\theta_{ijk} \] 
+  \[\sum_{j=1}^{m_i} \theta_{ijk}=1\]
+\end{definition}
+By forming the log-likelihood, and performing a constrained optimisation of the
+resulting function, we can obtain:
+\[\theta_{ijkMLE}=\frac{n_{ijk}}{n_k}.\]
+where $n_{ijk}$ is the number of training points for which the $i$-th attribute
+belongs to the $j$-th category and $\mathcal{Y}=k$, and $n_k$ is the number of
+training points of which $\mathcal{Y}=k$.
+\subsubsection{Additive Smoothing}
+To remedy the problem such that any category does not contain any instances,
+and prevent a case of overfitting where we estimate the probability of the
+event to be zero, we may utilise additive smoothing, adjusting the MLE
+estimates such that:
+\[\theta_{ijk}=\frac{n_{ijk}+\alpha}{n_k+\alpha J}.\] 
+\[\theta_y=\frac{n_1+\alpha}{n+\alpha K}.\]
+where:
+\begin{itemize}
+  \item $J=$ \# of distinct values outcomes of $\mathcal{X}_i$ can take ($m_i$ in this case)
+  \item $K=$ \# of distinct values outcomes of $\mathcal{Y}$ can take
+  \item $\alpha=$ the strength of smoothing
+\end{itemize}
+\subsubsection{Gaussian Naïve Bayes}
+Suppose that the features $x_i\in \mathbb{R}$ are continuous valued, such that
+each $(\mathcal{X}_i|y=k)$ is a Gaussian random variable, $(x_i|y=k)\sim
+\mathcal{N}\left( \mu_{ik},\sigma_{ik} \right) $. We then find the
+log-likelihood:
+\begin{align*}
+  \mathcal{L}(\theta)=&\ln\left( \prod_{j=1}^{n_k} \frac{1}{\sqrt{2\pi\sigma_{ik}^{2}}}\exp\left(-\frac{{(x_i^{(j)}-\mu_{ik})}^{2}}{2\sigma_{ik}^{2}}\right)  \right) \\
+  =&-n_k \ln\sigma_{ik}-\sum_{j=1}^{n_k} \left(-\frac{{(x_i^{(j)}-\mu_{ik})}^{2}}{2\sigma_{ik}^{2}}\right)+const.
+\end{align*}
+We can optimise the log-likelihood with:
+\[\mu_{ikMLE}=\sum_{j=1}^{n_k} \frac{x_i^{(j)}}{n_k}.\] 
+\[\sigma_{ikMLE}^{2}=\frac{1}{n_k}\sum_{j=1}^{n_k} {(x_i^{(j)}-\mu_{ik})}^{2}.\] 
+\begin{itemize}
+  \item \textbf{Representation}
+    \[\mathcal{F}=\left\{ f_{\theta_y,\left\{ \theta_{ijk} \right\}} (\mathbf{x})=\argmax_{y\in \left\{ 0,1 \right\}} \left\{ p_\mathcal{Y}(y)\prod_{i=1}^{m} \mathcal{N}\left(X_i;\mu_{ik},\sigma_{ik}\right) \right\} \mid p_\mathcal{Y}(y=1)=\theta_y,{\left\{ \mu_{ik}\in \mathbb{R},\sigma_{ik}>0 \right\}}^{m,1}_{i=1,k=0} \right\}.\] 
+  \item \textbf{Evaluation}
+    \[\ln\left( L(\theta_y) \right)\quad\text{and}\quad {\left\{ \ln\left( L\left( \mu_{ik},\sigma_{ik}\right)  \right) \right\}}^{m,1}_{i=1,k=0}\] 
+  \item \textbf{Optimisation}
+    \[\theta_{yMLE}=\frac{n_1}{n}\quad\text{and}\quad {\left\{\mu_{ikMLE}=\sum_{j=1}^{n_k} \frac{x_i^{(j)}}{n_k},\sigma_{ikMLE}=\frac{1}{n_k}\sum_{j=1}^{n_k} {(x_i^{(j)}-\mu_{ik})}^{2} \right\}}^{m,1}_{i=1,k=0}\] 
+\end{itemize}
+\begin{remark}
+  GNB results in a similar form of linear discriminant as LR\@. However, they do
+  not result in the same classifier, as GNB makes certain model assumptions
+  that defines a dependence between $w_0$ and $w_i$.
+\end{remark}
+
+\subsection{Comparisons}
+Using a generative classifier requires learning more parameters than
+discriminative classifiers, but the generative approach is often intractable
+and require certain model assumptions (e.g. Conditional Independence). Since LR
+makes fewer model assumptions than a generative one such as NB, LR is
+considered more robust and less sensitive to modelling choices than NB, but NB
+requires less data for similar levels of convergence.

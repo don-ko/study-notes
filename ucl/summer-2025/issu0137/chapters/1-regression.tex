@@ -1,0 +1,329 @@
+\section{Regression}
+\subsection{Linear Regression}
+In Linear Regression we learn a mapping $\mathbf{f_w}:\mathbb{R}^{m}\mapsto
+\mathbb{R}$ between input attributes $x$ and a single output $y$,
+drawn from a function class $\mathcal{F}$:
+\[\mathcal{F}=\left\{ \mathbf{f_w(X)=w\cdot x|w}={\left[ w_0,w_1,\ldots,w_m \right]}^{T}\in \mathbb{R}^{m+1} \right\}.\] 
+$\mathbf{f_w}$ is characterised by a weight vector $\mathbf{w}$ of which we define:
+\[\mathbf{f_w(x)=w\cdot x,\quad x}={[1,x_1,\ldots,x_m]}^{T}\]
+\subsubsection{Training Data}
+Suppose we draw $n$ observations, each consisting $m$ features (each $i$-th
+observation encoded $x^{(i)}\in \mathbb{R}^{m}$), as well as the output labels
+$y_i\in \mathbb{R}$. We represent our output training data as $y$:
+\[\mathbf{y}=\begin{bmatrix} y^{(1)}\\y^{(2)}\\\vdots\\y^{(n)} \end{bmatrix}.\] 
+\begin{definition}[Design Matrix]
+  To represent the input attribute data more compactly, we define the design matrix $X$:
+  \[\mathbf{X}=\begin{bmatrix}
+    \mathbf{x}^{(1)T}\\\mathbf{x}^{(2)T}\\\vdots\\\mathbf{x}^{(n)T}
+    \end{bmatrix} =\begin{bmatrix}
+  1&x_1^{(1)}&\cdots&x_m^{(1)}\\
+  1&x_2^{(2)}&\cdots&x_m^{(2)}\\
+  \vdots&\vdots&\ddots&\vdots\\
+  1&x_1^{(n)}&\cdots&x_m^{(n)}
+\end{bmatrix}.\] 
+\end{definition}
+We therefore seek $\mathbf{w}$ such that $\mathbf{y=Xw}$. We have a solution
+only if $rank(\mathbf{X})=rank(\mathbf{X|y})=(m+1)\le n$. In general this is
+not true.
+
+\subsubsection{Evaluation}
+To make the problem well-defined, we choose an evaluation function
+to help us select the optimal weight vector. We consider the empirical squared
+error evaluation function:
+\[L(\mathcal{E},\mathcal{S},\mathbf{f_w})=\frac{1}{2n}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}.\] 
+We seek the $\mathbf{w}$ at which this evaluation function is minimised.
+\[\mathbf{w}_{OLS}=\argmin_\mathbf{w}\left(\frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}\right).\] 
+The optimal ${\mathbf{w}}_{OLS}$ is known as the Ordinary Least Squares
+estimator and this approach is known as OLS regression.
+Assuming the features and the output are related by an additive noise model:
+\[y^{(i)}=\mathbf{w\cdot x}^{(i)}+\epsilon^{(i)}.\]
+The Gauss Markov Theorem demonstrates that $\mathbf{w}_{OLS}$ is the Best
+Linear Unbiased Estimator (BLUE).
+Further assuming the noise is normally distributed:
+\[\epsilon\sim\mathcal{N}(0,\sigma^{2})\quad \implies\quad
+\mathbf{y|x}\sim\mathcal{N}(\mathbf{w\cdot x}, \sigma^{2})\] 
+The Maximum Likelihood Estimator $\mathbf{w}_{MLE}$ is:
+\begin{align*}
+  \mathbf{w}_{MLE}=&\argmax_\mathbf{w}{\left\{\ln\left( \prod_{i=1}^{n} \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left(-\frac{{(y^{(i)}-w\cdot x^{(i)})}^{2}}{2\sigma^{2}}\right)  \right)\right\} }\\
+  =&\argmax_\mathbf{w}{\sum_{i=1}^{n} \ln\left( \frac{1}{\sqrt{2\pi\sigma^{2}}}\exp\left(-\frac{{(y^{(i)}-w\cdot x^{(i)})}^{2}}{2\sigma^{2}}\right)  \right) }\\
+  =&\argmax_\mathbf{w}{\left(-n \ln \sqrt{2\pi\sigma^{2}} - \sum_{i=1}^{n} \left(\frac{{(y^{(i)}-w\cdot x^{(i)})}^{2}}{2\sigma^{2}}\right)  \right) }\\
+  =&\argmin_\mathbf{w}{\left( \frac{1}{2}\sum_{i=1}^{n} {\left(y^{(i)}-\mathbf{w\cdot x}^{(i)}\right)}^{2} \right) }\\
+  =&\mathbf{w}_{OLS}
+\end{align*}
+
+\subsection{Linear Regression --- Analytic Solution}
+\subsubsection{Critical Points}
+We first find the gradient of the loss function:
+\begin{align*}
+  L(\mathcal{E},\mathcal{S},f_w)=&\frac{1}{2n}{\left\lVert \mathbf{y-Xw} \right\rVert_2}^2\\
+  =&\frac{1}{2n}\mathbf{{(y-Xw)}^{T}(y-Xw)}\\
+  \nabla_w L =& \frac{1}{2n}\nabla_w \left(\mathbf{{(y-Xw)}^{T}(y-Xw)}\right)\\
+  =& \frac{1}{2n}\nabla_w\left( \mathbf{y^{T}y-y^{T}Xw-w^{T}X^{T}y+w^{T}X^{T}Xw}\right)\\
+  =&\frac{1}{2n}\nabla_w\left(\mathbf{w^{T}X^{T}Xw-2y^{T}Xw}\right) \\
+  =&\frac{1}{n} \left( \mathbf{X^{T}Xw-X^{T}y} \right)
+\end{align*}
+and solve for the criticial points of the function:
+\begin{align*}
+  \nabla_w L =& 0\\
+  0=&\frac{1}{n} \left( \mathbf{X^{T}Xw}_{OLS}-\mathbf{X^{T}y} \right)\\
+  \mathbf{X^{T}Xw}_{OLS}=&\mathbf{X^{T}y}
+\end{align*}
+Since $rank(\mathbf{X^{T}X})=rank(\mathbf{X^{T}X|X^{T}y})$, the system is
+consistent and we have one or infinitely many solutions.\\
+If ${(\mathbf{X^{T}X})}^{-1}$ exists we have the unique solution:
+\[\mathbf{w}_{OLS}=\mathbf{(X^{T}X)}^{-1}\mathbf{X^{T}y}.\]
+known as the \textbf{Normal Equations} with an analytic solution to the OLS approach.\\
+\begin{itemize}
+  \item \textbf{Representation} \[\mathcal{F}=\left\{ \mathbf{w\cdot x}|\mathbf{w}\in \mathbb{R}^{m+1} \right\}\]
+  \item \textbf{Evaluation} \[\frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}\]
+  \item \textbf{Optimisation} \[\mathbf{w}_{OLS}=\argmin_\mathbf{w}\left\{
+      \frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2} \right\}\]
+\end{itemize}
+If ${(\mathbf{X^{T}X})}$ is non-invertible then $rank(\mathbf{X^{T}X})<(m+1)$,
+the problem is undetermined and we have an infinite number of solutions. This
+is known as overfitting.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{overfitting}
+\end{figure}
+\subsubsection{Optimality}
+To check for the optimality of the solution, we first obtain the Hessian:
+\[\nabla_w^{2}L=\mathbf{X^{T}X}\]
+Since the Hessian matrix is positive semidefinite
+($\mathbf{a^{T}X^{T}Xa={\left\lVert Xa \right\rVert_2}^{2}}\ge 0\quad \forall
+\mathbf{a}\in \mathbb{R}^{m+1}$), L is convex and a critical point is globally
+optimal
+\subsubsection{Uniqueness}
+Uniqueness of the solution requires that Hessian is positive definite
+$\iff\mathbf{(X^{T}X)}^{-1}$, such that the function is strictly convex.
+Otherwise, the function is not strictly convex (but still bounded since
+$\mathbf{X^{T}y}\in range(\mathbf{X^{T}X})$).
+\begin{remark}
+  Matrix Derivation Results w.r.t. $w$:
+  \begin{itemize}
+    \item Linear form: \(a^T w\implies\nabla_w (a^T w) = a\) for some constant vector \(a\)
+    \item Quadratic form: \(w^T A w \implies\nabla_w (w^T A w) = (A + A^T) w\)for some constant matrix \(A\)
+  \end{itemize}
+\end{remark}
+\subsubsection{Limitations}
+The problem does not scale well with the dimensionality of the input attributes
+$m$. Matrix inversion requires $O(m^{3})$ operations --- which is expensive for
+large $\mathbf{X^{T}X}$. There are also space constraints for very high $m$ to
+store $\mathbf{X^{T}X}$.
+
+\subsection{Linear Regression --- Numerical Optimisation}
+To overcome these limitations, we consider a first order iterative numerical
+optimisation algorithm, \textbf{Gradient Descent}. Intuitively, we take steps proportional
+to the negative of the gradient (which is in the direction of steepest descent)
+at each step.
+\subsubsection{Batch Gradient Descent}
+\begin{lstlisting}
+def LinearRegression_OLS_GD(X, y, w_init, alpha, max_epoch=10):
+    n = len(y)
+    w_t = w_init
+    L_hist = (1/(2*n)) * (y + np.matmul(X, w_t)).T.dot(y - np.matmul(X, w_t))
+    w_hist = w_t.T
+    epoch = 0
+    while epoch < max_epoch:
+        grad = (1/n) * X.T.dot(X.dot(w_t) - y).reshape(np.shape(X)[1], 1)
+        w_t = (w_t - alpha * grad)
+        loss = (1/(2*n)) * (y - X.dot(w_t)).T.dot(y - X.dot(w_t))[0][0]
+        L_hist = np.vstack((L_hist, loss))
+        w_hist = np.vstack((w_hist, w_t.T))
+        epoch += 1
+    return w_hist, L_hist
+\end{lstlisting}
+$\alpha>0$ is the learning rate which determines the step size (factor of
+proportionality to the gradient).For $\alpha$ too small, convergence is slow,
+and for $\alpha$ too large, we get divergence.\\
+Since the loss function is a convex objective, gradient descent guarantees the
+local optimum found is a global optimum. However, Batch Gradient Descent may be
+costly, as we need to scan through the entire training set for each step.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{learning-rate}
+\end{figure}
+\subsubsection{Stochastic Gradient Descent}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{sgd}
+\end{figure}
+In Stochastic Gradient Descent, we randomly shuffle the dataset for each step,
+and estimate the gradient using one observation. Hence, each SGD update is less
+optimal than a BGD update, and it will not converge monotonically, but overall
+convergence is generally faster.
+\subsubsection{Data Scaling}
+For multi-dimensional data, even if we make an optimal setting of the learning
+rate, \textbf{ill-conditioning} of the loss surface may result in a slow
+convergence. This is caused by the gradient of the largest attribute dominating
+the overall gradient. We may alleviate the effect through data scaling to scale our attributes. This
+ensures that all parameters are updated in similar proportions, leading to
+faster convergence.
+
+\subsection{Polynomial Regression}
+In Polynomial Regression we learn a mapping $\mathbf{f_W}:\mathbb{R}^{m}\mapsto
+\mathbb{R}$ between input attributes $x$ and an output $y$ drawn from a function
+class $\mathcal{F}$.$\mathbf{f_w}$ is characterised by a weight vector $\mathbf{w}$:
+\[\mathbf{f_w}=w\cdot \hat{z}\]
+for some vector $\hat{z}$ to encode the attributes (with higher degree
+polynomials and cross-terms).\\
+The design matrix $X$ grows with the dimensionality of the input data and the
+degree of the polynomial.
+\begin{example}[Polynomial of second degree with $2$ attributes]
+\[X=\begin{bmatrix} 1&x_1&x_2&x_1^2&x_2^{2}&x_1 x_2 \\
+\vdots&\vdots&\vdots&\vdots&\vdots&\vdots\end{bmatrix} \] 
+\end{example}
+In general, the total number of terms (or multinomial coefficients) is
+$\binom{k+p-1}{p-1}$ for $p$ attributes in the $k$-th degree polynomial.
+
+\subsection{Polynomial Regression --- OLS}
+We can generate a solution via the normal equations with an analogue to the
+normal equations.
+\begin{itemize}
+  \item \textbf{Representation} \[\mathcal{F}=\left\{ \mathbf{w\cdot x} \right\}\]
+  \item \textbf{Evaluation} \[\frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}\]
+  \item \textbf{Optimisation} \[\mathbf{w}_{OLS}=\argmin_\mathbf{w}\left\{
+      \frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2} \right\}\]
+\end{itemize}
+
+\subsubsection{Overfitting vs. Underfitting}
+Underfitting occurs when we restrict ourselves to a representation that is not
+rich enough to encompass the relationships. This is characterised by high bias,
+and can be remedied by extending our representation to accommodate greater
+functional complexity.\\
+While increasing functional complexity, we have the scope to overfit the data.
+This occurs when the model fits the residual variation (the noise) and contains
+more parameters that can be justified by the data. This results in poor
+generalisation. It can be characterised by high variance (between empirical and
+generalisation loss).
+\subsubsection{Learning Curves}
+To prevent underfitting and overfitting, we may compare how well the function
+performs on test data and training data:
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{learning-curve}
+\end{figure}
+\subsubsection{Bias-Variance Tradeoff}
+We will never be able to completely reduce both effects in the absence of
+complete population data. As we increase the complexity of the function class
+the bias decreases but the variance increases as the hypothesis space grows.
+
+The OLS analytical solution is given by the normal equations
+$\mathbf{w}=\mathbf{X^{T}X}^{-1}\mathbf{X^{T}y}$. For $X\in \mathbb{R}^{n\times
+k+1}$, $\mathbf{X^{T}X}$ is non-invertible if $k+1>n$ and we do not have a
+unique solution.
+\begin{remark}
+  With a high enough degree polynomial we can always reduce our training error
+  to zero.
+\end{remark}
+This can be remedied through regularisation, to manage model complexity.
+Intuitively, this reduces potential for larger magnitude weights related to
+higher complexity, and shrinks some of the weights towards zero.
+
+\subsubsection{Regularisation}
+In adoption of a Bayesian perspective, we model $\mathbf{w}$ as a random
+variable, and the MAP solution to weight optimisation results in a regularised
+objective. Depending on the distribution we select for $\mathbf{w}$, we may
+derive ridge regression or LASSO.\\
+With the PAC approach, we model a worst case probabilistic bound on the
+generalised evaluation function $E_\mathcal{D}[L]$ given some function class.
+We may also derive ridge regression or LASSO depending on which function class
+is selected.
+
+\subsection{Polynomial Regression --- Ridge Regression}
+In Ridge Regression we optimise the empirical squared error loss function subject
+to a constraint on $\left\lVert \mathbf{w} \right\rVert_2 \le t$.
+\begin{itemize}
+  \item \textbf{Representation} \[\mathcal{F}=\left\{ \mathbf{w\cdot x}|{\left\lVert \mathbf{w} \right\rVert}_2^2\le t \right\}\]
+  \item \textbf{Evaluation} \[\frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}\]
+  \item \textbf{Optimisation} \[\mathbf{w}_{OLS}=\argmin_\mathbf{w}\left\{
+  \frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2} +\frac{\lambda}{2}\sum_{i=1}^{m+1} {\left(w^{(i)}\right)}^2\right\}\]
+\end{itemize}
+Using Lagrange Multipliers, our optimisation problem is now as follows:
+\[\nabla_\mathbf{w}\mathcal{L}(\mathbf{w},\lambda)=\mathbf{0}\]
+\begin{align*}
+  \text{subject to:}\quad&\left\lVert \mathbf{w} \right\rVert_2^2-t\le 0\\
+                         &\lambda\ge 0\\
+                         &\lambda\left( \left\lVert \mathbf{w} \right\rVert_2^2 -t \right) =0
+\end{align*}
+where $\mathcal{L}(\mathbf{w},\lambda)=\frac{1}{2}\sum_{i=1}^{n} \left( y^{(i)}-{\mathbf{w\cdot x}^{(i)}}^{2} \right) +\frac{\lambda}{2}\left( \left\lVert \mathbf{w} \right\rVert_2^2-t \right) $\\
+If $\lambda=0$, the constraint is redundant, and the solution is the
+non-regularised one. If $\lambda>0$, $\left\lVert \mathbf{w} \right\rVert_2
+^2=t$ and we have an equality constraint.\\
+For any given $t$, we can find the optimal $\lambda^{*}$ by solving for
+$\nabla_\lambda \mathcal{L}(\mathbf{w},\lambda^{*})=\mathbf{0}$. Additionally,
+$\mathcal{L}$ is convex w.r.t. $\mathbf{w}$ and we achieve optimum at
+$\nabla_\mathbf{w} \mathcal{L}\left( \mathbf{w},\lambda \right) =\mathbf{0}$.
+The new evaluation function then corresponds to this new objective:
+\[\tilde{L}\left( \mathcal{E},\mathcal{S},\mathbf{f_w} \right)=\frac{1}{2}\left\lVert \mathbf{y-Xw} \right\rVert_2 ^{2}+\frac{\lambda}{2}\left\lVert \mathbf{w} \right\rVert_2 ^{2}\]
+We can then solve for optimal $\mathbf{w}_{RR}$:
+\begin{align*}
+  \nabla_\mathbf{w}\tilde{L}=&\mathbf{X^{T}Xw-X^{T}y+\lambda w}\\
+  \mathbf{w}_{RR}=&{\left( \mathbf{X^{T}X+\lambda I} \right) }^{-1}\mathbf{X^{T}y}.
+\end{align*}
+Since the Hessian $\mathcal{H}=\left( \mathbf{X^{T}X+\lambda I} \right) \succeq
+0$ and is always invertible, $\tilde{L}$ is strictly convex and we obtain an
+unique solution (with gradient descent).
+\subsubsection{Complexity Tuning}
+The regularisation parameter $\lambda$ and polynomial degree $k$ together are
+complexity tuning hyperparameters:
+\begin{itemize}
+  \item High $\lambda$, low $k\implies$ low functional complexity $\implies$ underfitting
+  \item Low $\lambda$, high $k \implies$ high functional complexity $\implies$ overfitting
+\end{itemize}
+However, in ridge regression, with a large number of weights, most of the
+regularised weights can shrink to almost zero but will rarely reach zero. This
+makes model interpretation difficult, especially with large number of
+parameters.
+
+\subsection{Polynomial Regression --- LASSO}
+In LASSO, we optimise for the empirical squared error loss function, now
+subject to a contraint on $\left\lVert \mathbf{w} \right\rVert_1 \le t$. This
+has the effect of shrinking some weights more aggressively to zero.
+\begin{itemize}
+  \item \textbf{Representation} \[\mathcal{F}=\left\{ \mathbf{w\cdot x}|\left\lVert \mathbf{w} \right\rVert_1 \le t\right\}\]
+  \item \textbf{Evaluation} \[\frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}\]
+  \item \textbf{Optimisation} \[\mathbf{w}_{OLS}=\argmin_\mathbf{w}\left\{
+    \frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}
++\frac{\lambda}{2}\sum_{i=1}^{m+1} {\left(w^{(i)}\right)}\right\}\]
+\end{itemize}
+However the evaluation function
+\[\tilde{L}\left( \mathcal{E},\mathcal{S},\mathbf{f_w} \right)=\frac{1}{2}\sum_{i=1}^{n} {\left( \mathbf{y-Xw} \right)}^{T}\left( \mathbf{y-Xw} \right) +\frac{\lambda}{2}\left\lVert \mathbf{w} \right\rVert_1\] 
+is non-differentiable and we cannot look for stationary points in order to
+solve. We consider the subgradients:
+\[\begin{cases}
+  \frac{\partial L}{\partial w_j} +\frac{\lambda}{2} & \text{for } w_j>0\\
+  \frac{\partial L}{\partial w_j} -\frac{\lambda}{2}& \text{for }w_j<0
+\end{cases}\]
+At $w_j=0$ we are at an optimal point if
+\begin{align*}
+  \frac{\partial L}{\partial w_j} +\frac{\lambda}{2}>0\quad & \text{and;}\quad \frac{\partial L}{\partial w_j} -\frac{\lambda}{2}<0\\
+  \implies \frac{\lambda}{2}< &\frac{\partial L}{\partial w_j} <\frac{\lambda}{2}
+\end{align*}
+\subsubsection{Limitations}
+\begin{itemize}
+  \item When dealing with high dimensional data with few examples ($n<k+1$), LASSO
+  selects at most $n$ variables before it saturates.
+  \item With a highly correlated set of variables, LASSO tends to select one from the group and 
+  ignore the others.
+  \item LASSO optimisation is not necessarily strictly convex, and in general will not
+  yield an unique solution.
+\end{itemize}
+
+\subsection{Polynomial Regression --- Elastic Net}
+In Elastic Net Regularisation, Ridge Regression and LASSO is combined to remedy
+various shortcomings.
+\begin{itemize}
+  \item \textbf{Representation} \[\mathcal{F}=\left\{ \mathbf{w\cdot x}|{\left\lVert \mathbf{w} \right\rVert}_2^2\le t_1 \wedge\left\lVert \mathbf{w} \right\rVert_1 \le t_2\right\}\]
+  \item \textbf{Evaluation} \[\frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2}\]
+  \item \textbf{Optimisation} \[\mathbf{w}_{OLS}=\argmin_\mathbf{w}\left\{
+  \frac{1}{2}\sum_{i=1}^{n} {(y^{(i)}-\mathbf{w\cdot x^{(i)}})}^{2} +\frac{\lambda}{2}\left( \alpha \sum_{i=1}^{m+1} {\left(w^{(i)}\right)}^2+(1-\alpha)\sum_{i=1}^{m+1} w^{(i)} \right) \right\}\]
+  for some $0\le \alpha\le 1,\lambda\ge 0$
+\end{itemize}
+\subsubsection{Beneficial Properties}
+\begin{itemize}
+  \item Objective is strictly convex, and optimal Elastic Net weights are unique.
+  \item The 1-norm term promotes sparsity.
+  \item The 2-norm term promotes a grouping effect and removes the limitation
+    on the number of selected variables.
+\end{itemize}

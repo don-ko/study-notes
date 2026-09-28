@@ -1,0 +1,185 @@
+\section{Dimensionality Reduction}
+In Dimensionality Reduction, we assume that although the data is
+high-dimensional, it lies on or near a low-dimensional subspace or manifold.
+\subsection{Principal Component Analysis}
+Considering a linear subspace $\mathbb{R}^{d}$ within $\mathbb{R}^{m}$ where
+$d<<m$, we can reduce the dimensionality of our data, since we only require
+$\mathbb{R}^{d}$ coordinates to describe the point. For this problem, we
+consider Principal Component Analysis, a method of linear dimensionality
+reduction.
+\subsubsection{Problem Setting}
+We assume our data consists $n$ instances: ${\left\{ \mathbf{x}^{(i)}
+\right\}}_{i=1}^{n}$ where $\mathbf{x}^{(i)}\in \mathbb{R}^{m}$ of which we are
+projecting (lienarly) onto a space $\mathbb{R}^{d}$ where $d<m$ such that the
+variance of projected data is maximised. The space is spanned by a set of
+orthonormal basis vectors ${\left\{ \mathbf{u}^{[i]} \right\}}^{d}_{i=1}$ where
+$\mathbf{u}^{[i]}\in \mathbb{R}^{m}$.\\
+Additionaly, we define the mean of the projected data onto each
+basis vector $\mathbf{u}^{[j]}\cdot\bar{\mathbf{x}}$ where $\bar{\mathbf{x}}$ is the
+sample mean:
+\[\bar{\mathbf{x}}=\frac{1}{n}\sum_{i=1}^{n} \mathbf{x}^{(i)}.\]
+\subsubsection{Projected Variance Maximisation}
+We adopt the view of PCA of Projected Variance Maximisation, where the idea is
+to project our high-dimensional data onto a lower-dimensional subspace such
+that sample variance is maximally preserved. 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\textwidth]{variance-max}
+\end{figure}
+\begin{definition}[Sample Variance]
+  The sample variance of the projected data is given by:
+  \[\frac{1}{n}\sum_{i=1}^{n} {\left( \mathbf{u}^{[j]}\cdot\mathbf{x}^{(i)}-\mathbf{u}^{[j]}\cdot\bar{\mathbf{x}} \right)}^{2}=\mathbf{u}^{[j]T}\mathbf{Su}^{[j]}\] 
+  The sample covariance matrix $\mathbf{S}$ is defned by:
+\[\mathbf{S}=\frac{1}{n}\sum_{i=1}^{n} \left( \mathbf{x}^{(i)}-\bar{\mathbf{x}} \right) {\left( \mathbf{x}^{(i)}-\bar{\mathbf{x}} \right)}^{T}=\frac{1}{n}\mathbf{X}^{T}\mathbf{X}\] 
+\end{definition}
+where the centred design matrix $\mathbf{X}$ is defined:
+\[\mathbf{X}=\begin{bmatrix} {\left( \mathbf{x}^{(1)}-\bar{\mathbf{x}}
+\right)}^{T}\\ {\left( \mathbf{x}^{(2)}-\bar{\mathbf{x}}
+\right)}^{T}\\\vdots\\{\left( \mathbf{x}^{(n)}-\bar{\mathbf{x}}
+\right)}^{T}\end{bmatrix}.\] 
+\begin{remark}
+  PCA can also be viewed as a search for the $d$-dimensional subspace minmising
+  the reconstruction error:
+  \[\sum_{i=1}^{n} \left\lVert \left( \mathbf{x}^{(i)}-\bar{\mathbf{x}} \right) -\sum_{j=1}^{d} \left( \mathbf{u}^{[j]}\cdot\left( \mathbf{x}^{(i)}-\bar{\mathbf{x}} \right)  \right) \mathbf{u}^{[j]} \right\rVert_2^{2}.\]
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{residual-min}
+  \end{figure}
+\end{remark}
+
+\subsubsection{Optimisation}
+Re-writing our optimisation problem, we have:
+\[\argmax_{{\left\{ \mathbf{u}^{[j]} \right\}}_{j=1}^{d}}L\quad\text{where:}\quad L=\sum_{j=1}^{d} \mathbf{u}^{[j]T}\mathbf{Su}^{[j]}.\]
+for some orthonormal ${\left\{ \mathbf{u}^{[i]} \right\}}^{d}_{i=1}$.\\
+In this algorithm, we attempt to learn each dimension greedily.
+We first search for the direction of highest variance, and write the objective
+as follows:
+\[\mathcal{L}(\mathbf{u}^{[1]},\lambda^{[1]})=\mathbf{u}^{[1]T}\mathbf{Su}^{[1]}-\lambda^{[1]}\left( \mathbf{u}^{[1]}\cdot\mathbf{u}^{[1]}-1 \right)\] 
+for some lagrange multiplier $\lambda^{[1]}$ associated with the orthogonality
+constraint. Seeking stationarity w.r.t. $\mathbf{u}^{[1]}$, we have:
+\begin{align*}
+  2\mathbf{Su}^{[1]}-2\lambda^{[1]}\mathbf{u}^{[1]}=&0\\
+  \implies\mathbf{Su}^{[1]}=&\lambda^{[1]}\mathbf{u}^{[1]}
+\end{align*}
+Hence $\mathbf{u}^{[1]}$ is an eigenvector of $\mathbf{S}$ associated with the
+eigenvalue $\lambda^{[1]}$.  To find the variance of the projected data, we
+have:
+\[\mathbf{u}^{[1]T}\mathbf{Su}^{[1]}=\lambda^{[1]}\] 
+To maximise this variance, we select the eigenvector associated with the
+largest eigenvalue. We have found the first basis vector of greatest variance.
+Now we seek to the second basis vector $\mathbf{u}^{[2]}$ to further increase
+the projected variance, such that $\mathbf{u}^{[2]}\cdot \mathbf{u}^{[2]}=1$
+and $\mathbf{u}^{[1]}\cdot \mathbf{u}^{[2]}=0$. We write the objective as
+follows:
+\[\mathcal{L}(\mathbf{u}^{[2]},\lambda^{[2]},\lambda^{[1][2]|})=\mathbf{u}^{[2]T}\mathbf{Su}^{[2]}-\lambda^{[2]}\left( \mathbf{u}^{[2]}\cdot\mathbf{u}^{[2]}-1 \right)-\lambda^{[1][2]}\left( \mathbf{u}^{[2]}\cdot\mathbf{u}^{[1]} -0\right) \] 
+for some lagrange multipliers $\lambda^{[2]}, \lambda^{[1][2]}$. Seeking
+stationarity w.r.t. $\mathbf{u}^{[2]}$, we have:
+\[2\mathbf{Su}^{[2]}-2\lambda^{[2]}\mathbf{u}^{[2]}-\lambda^{[1][2]}\mathbf{u}^{[1]}=0.\] 
+Left multiplying with $\mathbf{u}^{[1]T}$, $\lambda^{[1][2]}=0$.
+Hence:
+\[\mathbf{Su}^{[2]}=\lambda^{[2]}\mathbf{u}^{[2]}.\] 
+Similarly, we want to maximise the variance so we select the eigenvector
+associated with the largest remaining eigenvalue. The solution proceeds in a
+similar step-wise fashion to give:
+\[{\left\{ \mathbf{u}^{[j]*}=\mathbf{q}_j \right\}}_{j=1}^{d}\]
+implying a total projected variance of:
+\[L^{*}=\sum_{j=1}^{d} \mathbf{q}_j^{T}\mathbf{Sq}_j=\sum_{j=1}^{d} \lambda_j.\] 
+This solution assumes orthogonality of basis vectors, normality of different
+basis vectors and the orientation of the first basis vector. Other choices are
+also possible yielding similar solutions. While the original problem is
+non-convex, it is possible to show that the greedy local optima gives rise to
+\textbf{globally optimal points}.\\
+PCA allows estimation of the input space as the space spanned by the first $d$
+eigenvectors with the largest eigenvalues of the sample covariance matrix.
+\begin{definition}[Ambient and Intrinsic Dimensionalities]
+  The dimensionality of the input space is known as the ambient dimensionality
+  of the data, and the dimensionality of the subspace upon which the data is
+  assumed to lie is known as the intrinsic dimensionality of the data.
+\end{definition}
+\subsubsection{Pattern Stabilility}
+To be sure that the training sample has discerned a reliable subspace
+(intuitively, how extensible the subspace is to other data) we consider two
+other approaches:
+\begin{itemize}
+  \item \textbf{Generative Modelling}: Seeking a Gaussian latent variable model to be
+    learned using MLE or Bayesian treatment
+  \item \textbf{PAC Approach}: Bounding generalisation error resulting from
+    projection $E_\mathcal{D}\left[ \mathbf{x}-\sum_{j=1}^{d} \left(
+    \mathbf{u}^{[j]}\cdot\mathbf{x} \right) \mathbf{u}^{[j]} \right]$ with high
+    probability. Bound consists terms in sample residual eigenspectrum and
+    complexity of data space. With a subspace capturing a high proportion of
+    the variance with a small relative dimensionality, we have low
+    generalisation error.
+\end{itemize}
+
+\subsection{Probabilistic PCA}
+In Probabilistic PCA, we seek a Gaussian latent variable model and learn its parameters
+as a probabilistic generalisation of PCA.\@
+\subsubsection{PPCA Model}
+We assume that each point has an unknown latent variable $\mathbf{z}\in
+\mathbb{R}^{d}$ associated with it corresponding to its position in the
+principal component subspace. We assume this variable is a outcome of a Gaussian random variable
+$\mathcal{Z}$:
+\[\mathbf{z}\sim\mathcal{N}\left( \mathbf{0},\mathbf{I}_d \right).\] 
+Additionally, each $\mathbf{x}$ is a outcome of a Gaussian random variable $\mathcal{X}$:
+\[\mathbf{x|z}\sim\mathcal{N}\left( \mathbf{Wz+\mu},\sigma^{2}\mathbf{I}_m \right).\]
+where $\mathbf{W}\in \mathbb{R}^{m\times d}$ defining the directions of the
+principal subspace, $\mu\in \mathbb{R}^{m},\sigma\in \mathbb{R}^{+}$.\\
+
+Intuitively, we can understand the model as follows:
+\begin{itemize}
+  \item We draw an outcome for the latent variable $\mathbf{z}$.
+  \item The observed variable is sample conditional on the latent variable $\mathbf{x}|\mathbf{z}$.
+  \item We observe residual noise $\varepsilon$ such that:
+    \[\mathbf{x}=\mathbf{Wz+\mu+\varepsilon}.\] 
+    \[\mathbf{z}\sim\mathcal{N}\left( \mathbf{0},\mathbf{I}_d \right).\] 
+    \[\mathbf{\varepsilon}\sim\mathcal{N}\left( \mathbf{0},\sigma^{2}\mathbf{I}_m \right).\] 
+    \begin{remark}
+      Given a marginal distribution for $\mathbf{\tilde{x}}$ and a conditional
+      Gaussian distribution for $\mathbf{\tilde{y}}$ given
+      $\mathbf{\tilde{x}}$:
+      \[\mathbf{\tilde{x}}\sim\mathcal{N}(\mathbf{\mu},\mathbf{\Lambda}^{-1})\] 
+      \[\mathbf{\tilde{y}|\tilde{x}}\sim\mathcal{N}(\mathbf{A\tilde{x}+b},\mathbf{L}^{-1})\] 
+      for some $\mathbf{\tilde{x}}\in \mathbb{R}^{n},\mathbf{\tilde{y}}\in \mathbb{R}^{m},\mathbf{\mu}\in \mathbb{R}^{n},\mathbf{\Lambda}\in \mathbb{R}^{n\times n},\mathbf{A}\in \mathbb{R}^{m\times n},\mathbf{b}\in \mathbb{R}^{m},\mathbf{L}\in \mathbb{R}\in ^{m\times m}$. Then:
+    \[\mathbf{\tilde{y}}\sim\mathcal{N}\left( \mathbf{A\mu+b,L}^{-1}+\mathbf{A\Lambda}^{-1}\mathbf{A^{T}} \right).\] 
+      \[\mathbf{\tilde{x}|\tilde{y}}\sim\mathcal{N}(\mathbf{\Sigma} \left[ \mathbf{A}^{T}\mathbf{L(\tilde{y}-b)+\Lambda\mu} \right],\mathbf{\Sigma})\] 
+      where $\Sigma={(\mathbf{\Lambda}+\mathbf{A}^{T}\mathbf{LA})}^{-1}$
+    \end{remark}
+    Given this, we have:
+    \[\mathbf{x}\sim\mathcal{N}\left( \mathbf{\mu},\mathbf{WW}^{T}+\sigma^{2}\mathbf{I}_m \right).\] 
+\end{itemize}
+Since the covariance matrix of the distribution of $\mathbf{x}$ is symmetric,
+we can interpret $p_\mathcal{X}(\mathbf{x})$ as a density determined by
+$\sigma^{2}$ of taking an isotropic Gaussian `spray can' across the principal
+subspace. We have a `pancake' shaped distribution.
+\subsubsection{Rotational Invariance}
+Suppose $\mathbf{R}$ an orthogonal (rotation) matrix (hence $\mathbf{R}^{T}\mathbf{R}=\mathbf{I}$).
+Applying it to the latent space coordinate matrix $\mathbf{W}$:
+\begin{align*}
+  \mathbf{\tilde{W}}=&\mathbf{WR}\\
+  \implies\mathbf{\tilde{W}\tilde{W}}^{T}=&\mathbf{WRR}^{T}\mathbf{W}^{T}\\
+  =&\mathbf{WW}^{T}
+\end{align*}
+The distribution of $\mathbf{x}$ can be characterised by any
+$\mathbf{\tilde{W}}$. THis is the analogue of the non-uniqueness in PCA.\@
+\subsubsection{Optimisation}
+We find the log-likelihood function to optimise as follows:
+\begin{align*}
+  \mathcal{L}=&\sum_{i=1}^{n} \ln p_\mathcal{X}\left( \mathbf{x}^{(i)};\mathbf{W,\mu},\sigma^{2} \right) \\
+  =&-\frac{nm}{2}\ln\left( 2\pi \right) -\frac{n}{2}\ln\left| \mathbf{C} \right| -\frac{1}{2}\sum_{i=1}^{n} {\left( \mathbf{x}^{(i)}-\mathbf{\mu} \right)}^{T}\mathbf{C}^{-1}\left( \mathbf{x}^{(i)}-\mathbf{\mu} \right) 
+\end{align*}
+It can be demonstrated that the following closed form solutions flow from the optimisation of this
+function (Tipping \& Bishop, 1999):
+\[\mathbf{\mu}_{MLE}=\mathbf{\bar{x}}.\]
+\[\sigma_{MLE}=\frac{1}{m-d}\sum_{i=d+1}^{m} \lambda_i.\] 
+\[\mathbf{W}_{MLE}=\mathbf{Q}{\left( \mathbf{\Lambda}-\sigma^{2}\mathbf{I} \right)}^{\frac{1}{2}\mathbf{R}}.\] 
+where $\mathbf{Q}\in \mathbb{R}^{m\times d}$ whose columns are given by the
+leading $d$ eigenvectors of the covariance matrix $\mathbf{S}$,
+$\Lambda=\diag(\lambda_1,\lambda_2,\ldots,\lambda_d)$ contains the $d$
+eigenvalues associated with these eigenvectors, and $\mathbf{R}$ is an
+arbitrary orthogonal matrix. We can set $\mathbf{R=I}$ without loss of
+generality, when $\mathbf{W}$ are the principal component eigenvectors scaled
+by the square root of the variance parameters ${(\lambda_i-\sigma^{2})}^{\frac{1}{2}}$.
+Hence, the variance of $p_\mathcal{X}(\mathbf{x})$ in the $\mathbf{q}_i$
+direction is $\lambda_i$.
+

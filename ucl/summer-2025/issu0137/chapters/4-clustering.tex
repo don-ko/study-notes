@@ -1,0 +1,242 @@
+\section{Clustering}
+In Clustering, we seek to learn groups or clusters from our input data, and in
+so doing assign each instance to a cluster. Intuitively, we group objects such
+that similar objects end up in the same group.
+\subsubsection{Measures of Similarity}
+\begin{figure}[h!]
+  \centering
+  \raisebox{-0.5\height}{\includegraphics[width=0.4\textwidth]{transitivity}}
+  \hspace*{.2in}
+  \raisebox{-0.5\height}{\includegraphics[width=0.4\textwidth]{proximity}}
+\end{figure}
+As measures of similarity, we can consider transitivity, where points are
+clustered according to whether they are closely related to neighbours
+regardless of how far apart the first and last neighbours are.\\
+Alternatively, we may consider proximity, where points are clustered according
+to some mutual shared distance, of which they cluster around a shared point.
+\subsubsection{Evaluation}
+Without labels of our data, we often are unable to evaluate how well our
+predictions compare with the ground truth, and we are unsure of the number of
+``clusters''.\\
+It is hence not possible to have a clustering function that fits all kinds of
+data, but for different problem settings we may be able to employ different
+clustering algorithms:
+\begin{itemize}
+  \item \textbf{Partitional Algorithms}: Algorithms such as $k$-means clustering,
+    Spectral Clustering techniques that divide data into a fixed number of
+    clusters directly
+  \item \textbf{Hierachical Algorithms}: Algorithms that build a hierarchy of clusters
+    by either merging or splitting, such as Agglomerative Clustering techniques
+\end{itemize}
+These clustering algorithms allow us to focus on specific tasks at hand, such as data
+exploration and data preprocessing.
+
+\subsection{$k$-means Algorithm}
+In $k$-means algorithm, instances that lie inside a cluster have small
+inter-point distances (similarity by proximity). Assuming we are interested in
+finding $k$ clusters, of which the $i$-th cluster is represented by a centroid
+or prototype denoted $\mu^{[j]}\in \mathbb{R}^{m}$. We seek to find centroids
+such that the sum of squares of distances to each instance to its closest
+centroid is minimised.
+\subsubsection{Problem Setting}
+We have input data consisting of $n$-instances $ {\left\{ \mathbf{x}^{(i)}
+\right\}}^{n}_{i=1}$ where $\mathbf{x}^{(i)}\in \mathbb{R}^{m}$.
+For each instance, we create a set of indicator variables ${\left\{ \rho^{i[j]}
+\right\}}^{k}_{j=1}$ where $\rho^{i[j]}\in \left\{ 0,1 \right\}$ for whether
+$\mathbf{x}^{(i)}$ is assigned to cluster $j$. For each point
+$\mathbf{x}^{(i)}$, let:
+\[j^{*}=\argmin_l\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}^{[l]} \right\rVert_2^2.\] 
+\[\rho^{i[j]}=\begin{cases}
+  1,&\text{if }j=j^{*}\\
+  0&\text{otherwise}
+\end{cases}.\] 
+Our objective function is defined as the sum of squared distances between each
+instance and its assigned cluster:
+\[\Theta=\sum_{i=1}^{n} \sum_{j=1}^{k} \rho^{i[j]}\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}^{[j]} \right\rVert_2^2.\]
+This is known as the distortion function.
+\subsubsection{Optimisation}
+This function is hard to minimise: with ideal prototypes, we can solve by
+assigning data points to the nearest cluster; with ideal assignments, we could
+solve for the prototypes.
+The $k$-means algorithm, or \textbf{Lloyd's Algorithm} is a greedy algorithm
+that attempts to solve the optimisation problem:
+\begin{itemize}
+  \item Start by choosing a initial (random) value for each $\mu^{[j]}$
+  \item \textbf{E-Step}: Minimise $\Theta$ w.r.t. ${\left\{ \rho^{i[j]}
+    \right\}}^{n,k}_{i=1,j=1}$, keeping all $\mu^{[j]}$ constant.
+    \begin{itemize}
+      \item Each of the $n$ terms are independent and we can optimise each
+        independently.
+      \item We choose $p^{i[j]}=1$ for the value of $j$ giving the minimum
+        value of the squared Euclidean distances:
+        \[\rho^{i[j]}=\begin{cases} 1,&\text{if }j=\argmin_l\left\lVert
+        \mathbf{x}^{(i)}-\mathbf{\mu}^{[l]} \right\rVert_2^2\\
+      0&\text{otherwise}\end{cases}\]
+    \end{itemize}
+  \item \textbf{M-Step}: Minimise $\Theta$ w.r.t. ${\left\{ \mu^{[j]}
+    \right\}}^{k}_{j=1}$, keeping all $\rho^{[j]}$ constant.
+    \begin{itemize}
+      \item $\Theta$ is a convex quadratic function of $\mu^{[j]}$. Taking the
+        derivative and setting it to zero, we obtain:
+        \[2 \sum_{i=1}^{n} \rho^{i[j]}\left( \mathbf{x}^{(i)}-\mathbf{\mu}^{[j]} \right).\] 
+        \[\mathbf{\mu}^{[j]}=\frac{\sum_{i=1}^{n} \rho^{i[j]}\mathbf{x}^{(i)}}{\sum_{i=1}^{n} \rho^{i[j]}}.\] 
+    \end{itemize}
+  \item The E-Step and M-Step are repeated until convergence.\\
+    \begin{proof}
+      By definition,
+      \[\Theta\left( \rho^{i[j]}_{(t)},\mathbf{\mu}^{[j]}_{(t)} \right)=
+      \sum_{i=1}^{n} \sum_{j=1}^{k} \rho^{i[j]}_{(t)}\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}_{(t)}^{[j]} \right\rVert_2^2.\] 
+      On the M-step:
+      \[\Theta\left( \rho^{i[j]}_{(t)},\mathbf{\mu}^{[j]}_{(t)} \right)\le 
+      \sum_{i=1}^{n} \sum_{j=1}^{k} \rho^{i[j]}_{(t)}\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}_{(t-1)}^{[j]} \right\rVert_2^2.\] 
+      On the E-step:
+      \[\sum_{i=1}^{n} \sum_{j=1}^{k} \rho^{i[j]}_{(t)}\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}_{(t-1)}^{[j]} \right\rVert_2^2\le \sum_{i=1}^{n} \sum_{j=1}^{k} \rho^{i[j]}_{(t-1)}\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}_{(t-1)}^{[j]} \right\rVert_2^2=\Theta\left( \rho^{i[j]}_{(t-1)},\mathbf{\mu}^{[j]}_{(t-1)} \right).\] 
+      \[\therefore \Theta\left( \rho^{i[j]}_{(t)},\mathbf{\mu}^{[j]}_{(t)} \right)\le\Theta\left( \rho^{i[j]}_{(t-1)},\mathbf{\mu}^{[j]}_{(t-1)} \right)\qed\] 
+    \end{proof}
+    Hence the algorithm converges, but not necessarily to the global optimum.
+\end{itemize}
+\subsubsection{Limitations}
+\begin{itemize}
+  \item $k$ has to be specified prior to performing the algorithm.
+  \item The object is non-convex, and the converged optimum is not necessarily global.
+  \item Assumes clusters are hyperspheres, and works poorly on non-convex shaped clusters.
+  \item Works poorly on clusters of different sizes.
+  \item Sensitive to data-scaling
+  \item Sensitive to noise and other small perturbations of data, due to hard
+    assignments to clusters.
+\end{itemize}
+\subsection{Gaussian Mixture Model}
+\subsubsection{Latent Variable Models}
+\begin{definition}[Latent Variables]
+  Variables that cannot be observed directly, and can only be inferred through
+  a model.
+\end{definition}
+\begin{definition}[Latent Variable Model]
+  A statistical model that relates a set of observable variables to a set of latent variables.
+\end{definition}
+Through usage of latent variable models, we are able to express joint
+distributions more efficiently at the expense of model assumptions. We assume
+conditional independence of the attributes on the latent variable.
+\subsubsection{Mixture Models}
+Not all random variables can be modelled solely with standard probability
+distribution functions.  With a mixture model, we have access to a richer set
+of probability distribution functions (often multimodal).
+\subsubsection{Problem Setting}
+Consider a set of unlabelled points ${\left\{ \mathbf{x}^{(i)}\in \mathbb{R}^{m}
+\right\}}^{n}_{i=1}$ and $k$ clusters. Each point has an unknown latent cluster
+assignment associated with it, $z^{(i)}\in \left\{ 1,\ldots,k \right\}$, which
+is the outcome of a multinomial random variable $\mathcal{Z}$:
+\[z^{(i)}\sim\text{Multinomial}\left( \pi^{[1],\ldots,\pi^{[k]}} \right).\] 
+\[p_{\mathcal{Z}}\left( z^{(i)}=j \right) =\pi^{[j]},\quad \sum_{i=1}^{k}
+\pi^{[i]}=1,\quad\pi^{[j]}\ge 0,\quad\forall j.\] 
+Additionally, each $\mathbf{x}^{(i)}$ is the outcome of a Gaussian random
+variable, $\mathcal{X}$:
+\[\mathbf{x}^{(i)}|\left( z^{(i)}=j \right) \sim \mathcal{N}\left(
+\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]} \right).\]
+where $\mathbf{\mu}^{[j]}\in \mathbb{R}^{m},\mathbf{\Sigma}^{[j]}\in
+\mathbb{R}^{m\times m}$ are the mean and covariance associated with cluster
+$j$.\\
+The joint distribution is hence given by:
+\[p_{\mathcal{X}, \mathcal{Z}}\left( \mathbf{x}^{(i)},z^{(i)} \right)
+=p_{\mathcal{X}}\left( \mathbf{x}^{(i)}|z^{(i)} \right) p_{\mathcal{Z}}\left(
+z^{(i)} \right).\] 
+\begin{align*}
+  p_{\mathcal{X}}\left( \mathbf{x}^{(i)} \right) =&
+  \sum_{z=1}^{k} p_{\mathcal{X}}\left( \mathbf{x}^{(i)}|z^{(i)} \right)
+  p_{\mathcal{Z}}\left( z^{(i)} \right)\\
+  =&\sum_{j=1}^{k} \mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)\pi^{[j]}
+\end{align*}
+The unconditional probability of each $\mathbf{x}^{(i)}$ is modelled as a
+Gaussian Mixture Model.
+\subsubsection{Optimisation}
+We derive the log-likelihood:
+\[\mathcal{L}=\sum_{i=1}^{n} \log\left( \pi^{[j]}\sum_{j=1}^{k}
+\mathcal{N}\left( \mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}
+\right) \right)\]
+subject to:
+\[\sum_{j=1}^{k} \pi^{[j]}=1,\quad\mathbf{\Sigma}^{[j]}\succ 0\] 
+which is a constrained, non-concave optimisation problem.
+Differentiating $L$ with respect to each variable, we have:
+\begin{align*}
+  \nabla_{\mathbf{\mu}^{[j]}} L=&\sum_{i=1}^{n} \frac{\partial L}{\partial \mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)} \frac{\partial \mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}{\partial \mathbf{\mu}^{[j]}}\\
+  =&\sum_{i=1}^{n} \frac{\pi^{[j]}}{\sum_{j=1}^{k} \pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}\frac{\partial \mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}{\partial \mathbf{\mu}^{[j]}} \\
+  =&\sum_{i=1}^{n} \frac{\pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}{\sum_{j=1}^{k} \pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}\frac{\partial}{\partial \mathbf{\mu}^{[j]}} \log\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)\\
+  =&-\sum_{i=1}^{n} \gamma^{i[j]}\frac{1}{2}\frac{\partial}{\partial \mathbf{\mu}^{[j]}} {\left( \mathbf{x}^{(i)}-\mathbf{\mu}^{[j]} \right) }^{T}\mathbf{\Sigma}^{-1}\left( \mathbf{x}^{(i)}-\mathbf{\mu}^{[j]}\right) \times \text{const.}\\
+  =&\sum_{i=1}^{n} \gamma^{i[j]}\mathbf{\Sigma}^{-1}\left( \mathbf{x}^{(i)}-\mathbf{\mu}^{[j]}\right) \times \text{const.}
+\end{align*}
+where $\gamma^{i[j]}=\frac{\pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}{\sum_{j=1}^{k} \pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}$
+\[\frac{\partial L}{\partial \Sigma^{[j]}}=\sum_{i=1}^{n} \gamma^{i[j]}\frac{\partial}{\partial \mathbf{\Sigma}^{[j]}} \log\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right).\]
+Using Lagrange Multipliers to enforce the $\sum_{j=1}^{k} \pi^{[k]}=1$
+constraint, we have:
+\[\mathcal{L}=\sum_{i=1}^{n} \log\left( \sum_{j=1}^{k} \pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right) \right) +\lambda\left( \sum_{k=1}^{k} \pi_j-1 \right).\] 
+\[\frac{\partial \mathcal{L}}{\partial \pi^{[j]}} =\sum_{i=1}^{n} \frac{\gamma^{i[j]}}{\pi^{[j]}}+\lambda.\] 
+Solving for critical points of $L$ with respect to each variable, we have:
+\[\mathbf{\mu}^{[j]*}=\frac{\sum_{i=1}^{n} \gamma^{i[j]}\mathbf{x}^{(i)}}{\sum_{i=1}^{n} \gamma^{i[j]}}.\] 
+\[\mathbf{\Sigma}^{[j]*}=\frac{\sum_{i=1}^{n} \gamma^{i[j]}{\left(\mathbf{x}^{(i)}-\mathbf{\mu}^{[j]}\right)} {\left(\mathbf{x}^{(i)}-\mathbf{\mu}^{[j]}\right)}^{T}}{\sum_{i=1}^{n} \gamma^{i[j]}}.\] 
+\[\pi^{[j]*}=\frac{1}{n}\sum_{i=1}^{n} \gamma^{i[j]}.\] 
+\subsubsection{Responsibility}
+$\gamma^{i[j]}$ can be viewed as the responsibility that component $j$ takes
+for explaining $\mathbf{x}^{(i)}$:
+\[\gamma^{i[j]}=\frac{\pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}{\sum_{j=1}^{k}
+\pi^{[j]}\mathcal{N}\left(\mathbf{x}^{(i)};\mathbf{\mu}^{[j]},\mathbf{\Sigma}^{[j]}\right)}\]
+Each optimal variable expression is in terms of the responsibility, and the
+responsibility itself is a function of the optimal variables. 
+\subsubsection{Expectation Maximisation}
+Hence, we adopt an analoguue to the $k$-means algorithm to solve this problem.
+\begin{itemize}
+  \item Start by choosing a initial (random) value for
+    ${\left\{\mathbf{\mu}^{[j]*},\mathbf{\Sigma}^{[j]*},\pi^{[j]*}\right\}}_{j=1}^{k}$
+  \item \textbf{E-Step}: Compute the responsibilities $\gamma^{i[j]}$ given the
+    current parameters
+%    ${\left\{\mathbf{\mu}^{[j]*},\mathbf{\Sigma}^{[j]*},\pi^{[j]*}\right\}}_{j=1}^{k}$
+%    \begin{itemize}
+%      \item Each of the $n$ terms are independent and we can optimise each
+%        independently.
+%      \item We choose $p^{i[j]}=1$ for the value of $j$ giving the minimum
+%        value of the squared Euclidean distances:
+%        \[\rho^{i[j]}=\begin{cases} 1,&\text{if }j=\argmin_l\left\lVert
+%        \mathbf{x}^{(i)}-\mathbf{\mu}^{[l]} \right\rVert_2^2\\
+%      0&\text{otherwise}\end{cases}\]
+%    \end{itemize}
+  \item \textbf{M-Step}: Minimise $\mathcal{L}$ w.r.t.
+    ${\left\{\mathbf{\mu}^{[j]*},\mathbf{\Sigma}^{[j]*},\pi^{[j]*}\right\}}_{j=1}^{k}$,
+    keeping all $\gamma^{i[j]}$ constant.
+\[\mathbf{\mu}^{[j]*}=\frac{\sum_{i=1}^{n} \gamma^{i[j]}\mathbf{x}^{(i)}}{\sum_{i=1}^{n} \gamma^{i[j]}}\qquad
+\mathbf{\Sigma}^{[j]*}=\frac{\sum_{i=1}^{n} \gamma^{i[j]}{\left(\mathbf{x}^{(i)}-\mathbf{\mu}^{[j]}\right)} {\left(\mathbf{x}^{(i)}-\mathbf{\mu}^{[j]}\right)}^{T}}{\sum_{i=1}^{n} \gamma^{i[j]}}\qquad
+\pi^{[j]*}=\frac{1}{n}\sum_{i=1}^{n} \gamma^{i[j]}.\] 
+  \item The E-Step and M-Step are repeated until convergence.\\
+    \begin{proof}
+      At the end of the $t$-th epoch, we have (By Jensen's Inequality):
+      \[\mathcal{L}\left( \theta_{(t)} \right) \le \sum_{i} \sum_{z^{(i)}} q_{\mathcal{Z}(t)}^{(i)}\left( z^{(i)} \right) \log\left( \frac{p_{\mathcal{X},\mathcal{Z}}\left( \mathbf{x}^{(i)},z^{(i)};\theta_{(t)} \right)}{q^{(i)}_{\mathcal{Z}(t)}\left( z^{(i)} \right) } \right) \]
+      In the preceding M-step,
+      \[\theta_{(t)}=\argmax_\theta\left(  q_{\mathcal{Z}(t)}^{(i)}\left( z^{(i)} \right) \log\left( \frac{p_{\mathcal{X},\mathcal{Z}}\left( \mathbf{x}^{(i)},z^{(i)};\theta_{(t)} \right)}{q^{(i)}_{\mathcal{Z}(t)}\left( z^{(i)} \right) } \right)\right).\] 
+      \[\sum_{i} \sum_{z^{(i)}}  q_{\mathcal{Z}(t)}^{(i)}\left( z^{(i)} \right) \log\left( \frac{p_{\mathcal{X},\mathcal{Z}}\left( \mathbf{x}^{(i)},z^{(i)};\theta_{(t)} \right)}{q^{(i)}_{\mathcal{Z}(t)}\left( z^{(i)} \right) } \right)\ge\sum_{i} \sum_{z^{(i)}}  q_{\mathcal{Z}(t)}^{(i)}\left( z^{(i)} \right) \log\left( \frac{p_{\mathcal{X},\mathcal{Z}}\left( \mathbf{x}^{(i)},z^{(i)};\theta_{(t-1)} \right)}{q^{(i)}_{\mathcal{Z}(t)}\left( z^{(i)} \right) } \right)\] 
+      RHS is the output of the preceding E-step, in which the tightest bound is achieved from
+      setting $q_{\mathcal{Z}(t)}$:
+      \[\sum_{i} \sum_{z^{(i)}}  q_{\mathcal{Z}(t)}^{(i)}\left( z^{(i)} \right) \log\left( \frac{p_{\mathcal{X},\mathcal{Z}}\left( \mathbf{x}^{(i)},z^{(i)};\theta_{(t-1)} \right)}{q^{(i)}_{\mathcal{Z}(t)}\left( z^{(i)} \right) } \right).\] 
+    \[\mathcal{L}\left( \theta_{(t)}\right)\ge \mathcal{L}\left( \theta_{(t-1)} \right)\qed\]
+    \end{proof}
+    Similarly, the algorithm converges but not necessarily to the global optimum.
+\end{itemize}
+\subsubsection{Relationship with $k$-means}
+Consider a GMM where we have `spherical' clusters, i.e.
+$\mathbf{\Sigma}^{[j]}=\epsilon\mathbf{I},\forall j,\epsilon=$const.:
+\[p_\mathcal{X}\left( \mathbf{x}^{(i)}|z^{(i)}=j \right) =\frac{1}{{\left( 2\pi\epsilon \right)}^{\frac{m}{2}} }\exp\left( -\frac{1}{2\epsilon}\left\lVert \mathbf{x}^{(i)}-\mathbf{\mu}^{[j]} \right\rVert_2^2 \right).\]
+The responsibilities are given by:
+\[\gamma^{i[j]}=\frac{\pi^{[j]}\exp\left( \frac{1}{2\epsilon}\left\lVert \mathbf{x}^{(i)}-\mu^{[j]}\right\rVert_2^2\right)}{\sum_{j} \pi^{[j]}\exp\left( \frac{1}{2\epsilon}\left\lVert \mathbf{x}^{(i)}-\mu^{[j]} \right\rVert_2^2\right)}\]
+As $\epsilon\to 0$:
+\begin{align*}
+  \gamma^{i[j]}\to&\begin{cases}1,&\text{if }j=\argmin_g\left\lVert
+  \mathbf{x}^{(i)}-\mathbf{\mu}^{[g]}
+\right\rVert_2^2\\0&\text{otherwise}\end{cases}\\
+      =&\rho^{i[j]}
+\end{align*}
+In this case, $pi^{[j]}$ no longer plays an active role and the only important
+M-step update is $\mu^{[j]}$.\ i.e.\ as $\epsilon\to 0$, GMM clustering $\to$
+$k$-means.
+\subsubsection{Limitations}
+With GMM, we are able to accommodate for less restrictive cluster shapes and
+sizes than $k$-means (ellipsoids rather than circles). $k$ can be selected with
+reference to validation set likelihood and is more robust than $k$-means.\\
+The objective is non-convex and works poorly on non-convex clusters.
+

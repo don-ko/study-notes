@@ -1,0 +1,193 @@
+\section{Probability and Statistics}
+\subsection{Probability Results and Concentration Inequalities}
+Some probability results:
+\begin{itemize}
+  \item Principle of Inclusion Exclusion (PIE)
+    \begin{equation*}
+      \begin{split}
+        P(\bigcup\limits_{i=1}^n E_i)	 =P(E_1\cup E_2\cup\ldots\cup E_n)
+           & =\sum\limits_{i=1}^{n}P(E_i)-\sum\limits_{i_1<i_2}P(E_{i_1}E_{i_2})+\ldots\\
+                                      & +{(-1)}^{r+1}\sum\limits_{i_1<i_2<\cdots<i_r}P(E_{i_1}E_{i_2}\ldots E{i_r})
+           +\cdots+{(-1)}^{n+1}P(E_1E_2\ldots E_n)
+      \end{split}
+    \end{equation*}
+  \item $\begin{aligned}[t]
+      P(\bigcup\limits_{i=1}^n E_i)\le&\sum\limits_{i=1}^{n}P(E_i)\\
+      \ge&\sum\limits_{i=1}^{n}P(E_i)-\sum\limits_{j<i}P(E_{i}E_j)\\
+      \le&\sum\limits_{i=1}^{n}P(E_i)-\sum\limits_{j<i}P(E_{i}E_j)+\sum\limits_{k<j<i}P(E_{i}E_{j}E_{k})
+    \end{aligned}$
+  \item \( P(E_{1}E_{2}…E_{n}) = P(E_{1}) P(E_{2}|E_{1})…P(E_n|E_{1}…E_{n-1})\)
+  \item For $F_1,F_2,…,F_n$ partitioning $S$,
+    \[ P(E) = \sum_{i=1}^{n} P(EF_i) = \sum_{i=1}^{n} P(F_i) P(E|F_i) \] 
+  \item Baye's Theorem: $E$ occurred. Which $F_j$ most likely led to $E$:
+    \begin{equation*}
+      \begin{split}
+        P(F_j|E) & = \frac{P(EF_j)}{P(E)} = \frac{P(F_j)P(E|F_j)}{P(E)}\\
+                 & = \frac{P(F_j)P(E|F_j)}{\sum_{i=1}^{n} P(F_i)P(E|F_i)}
+      \end{split}
+    \end{equation*}
+    $P(A)$ is known as the prior.\\
+    $P(A|B)$ is known as the posterior.\\
+    $P(B|A)$ is known as the likelihood.\\
+    $P(B)$ is known as the evidence.
+  \item Odds of $E=\frac{P(F)}{P(F^C)}$
+\end{itemize}
+Some concentration inequalities:
+\begin{itemize}
+  \item Markov's Inequality [For non-negative $\mathcal{X}$ with expectation $E(X)$], $\forall a>0$
+    \[P(X\ge0)=1\Rightarrow P(X\ge a)\le \frac{E(X)}{a}\]
+  \item Chebyshev's Inequality [For finite $\mu,Var(X)$], $\forall k>0$
+  \[P(|X-\mu|>k)\le \frac{\sigma^{2}}{k^{2}}\]
+  \item Hoeffding's Inequality [For i.i.d random variables $X_1,X_2,\ldots$,
+    such that each is bounded $[a_i,b_i]$, and let
+    $\bar{\mathcal{X}}_{n}=\frac{1}{n}\sum_{i=1}^{n} \mathcal{X}_i$],
+    $\forall\epsilon>0$,
+    \[P(|\bar{\mathcal{X}}-E(\bar{\mathcal{X}})|\ge\epsilon)\le2
+\exp(-\frac{2n^{2}\epsilon^{2}}{\sum_{i=1}^{n} {(b_i-a_i)}^{2}})\]
+  \[ P(\bar{\mathcal{X}}-E(\bar{\mathcal{X}})\ge\epsilon)\le
+  \exp(-\frac{2n^{2}\epsilon^{2}}{\sum_{i=1}^{n} {(b_i-a_i)}^{2}})\]
+  \item For i.i.d random variables $X_1,X_2,\ldots$, $\forall\epsilon>0$,
+    \[P(|\frac{X_1+\cdots+X_n}{n}-\mu|\ge\epsilon)\to0\text{ as }n\to\infty\]
+  \item For i.i.d $X_1,X_2,\ldots$ where $E(X_i)=\mu, Var(X_i)=\sigma^{2}$,
+    \[\frac{X_1+\cdots+X_n-n\mu}{\sigma\sqrt{n}}\sim N(0,1)\text{ as }n\to\infty\]
+\end{itemize}
+
+\subsection{Univariate Probability Distributions}
+\subsubsection{Bernoulli Distribution}
+${\mathcal{X}}$ is a discrete random variable, with outcomes, $x$, which can take one of two values: 0 or 1, with a probability that $x=1$ being equal to $\theta$
+\[x \sim \text{Bern}(\theta)\]
+\[p_{\mathcal{X}}(x ; \theta) = \theta^x {(1-\theta)}^{1-x}\]
+\[\mathbb{E}_{\mathcal{D}}[\mathcal{X}] = \theta\]
+\[\text{Var}_{\mathcal{D}}[\mathcal{X}] = \theta (1-\theta)\]
+\subsubsection{Binomial Distribution}
+${\mathcal{X}}$ is a discrete random variable, with outcomes, $x$, that denotes
+the number of successes, $k$, that we will achieve in $n$ independent Bernoulli
+trials. ${\mathcal{X}}$ can be written as the sum of $n$ independent Bernoulli trials
+${\left\{\mathcal{X}_i\right\}}_{i=1}^n$, with outcomes ${\{x_i \sim \mbox{Bern}(\theta)\}}_{i=1}^n$:
+\[\mathcal{X} = \mathcal{X}_1 + \mathcal{X}_2 +\cdots + \mathcal{X}_n\]
+This characterises the associated $\mathcal{D}$ as a Binomial Distribution:
+\[x \sim \text{Bin}(n, \theta)\]
+\[p_{\mathcal{X}}(k ; n, \theta) = \binom{n}{k} \theta^k {(1-\theta)}^{n-k}\]
+\[\mathbb{E}_{\mathcal{D}}[\mathcal{X}] = n \theta\]
+\[\text{Var}_{\mathcal{D}}[\mathcal{X}] = n \theta (1-\theta)\]
+\subsubsection{Beta Distribution}
+$\mathcal{X}$ be a continuous random variable, taking values $x \in [0,1]$,
+such that $\mathcal{D}$ follows a Beta distribution:
+\[x \sim \mbox{Beta}(a,b) \qquad \mbox{where:} \qquad a,b >0\]
+This has a characteristic pdf $f_{\mathcal{X}}$:
+\[f_{\mathcal{X}}(x; a, b) = \frac{\Gamma(a+b)}{\Gamma(a) \Gamma(b)} x^{a-1} {(1-x)}^{b-1} \quad \mbox{where:} \quad \Gamma(a) = \int_{0}^{\infty} u^{a-1} e^{-u} du\]
+\[\mathbb{E}_{\mathcal{D}}[\mathcal{X}] = \frac{a}{a+b}\]
+\[\mbox{Var}_{\mathcal{D}}[\mathcal{X}] = \frac{ab}{{(a+b)}^2(a+b+1)}\]
+\subsubsection{Gaussian Distribution}
+$\mathcal{X}$ is a continuous random variable, taking values $x \in
+\mathbb{R}$, such that $\mathcal{D}$ follows a Gaussian distribution:
+\[x \sim \mathcal{N}(\mu,\sigma^2) \qquad \text{where:} \qquad \mu \in \mathbb{R}, \sigma \in (0, \infty)\]
+This has a characteristic pdf $f_{\mathcal{X}}$:
+\[f_{\mathcal{X}}(x ; \mu, \sigma) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( -\frac{{(x-\mu)}^2}{2 {\sigma}^2} \right)\]
+\[\mathbb{E}_{\mathcal{D}}[\mathcal{X}] = \mu\]
+\[\text{Var}_{\mathcal{D}}[\mathcal{X}] = \sigma^2\]
+
+
+\subsection{Multivariate Probability Distribution}
+\subsubsection{Covariance}
+\begin{definition}[Covariance]
+The covariance is a measure of the linear relationship between two random
+variables, defined as:
+\[\mbox{Cov}[\mathcal{X}_1, \mathcal{X}_2] = \mathbb{E}_{\mathcal{D}}\left[
+(\mathcal{X}_1 - \mathbb{E}_{\mathcal{D}_1}[\mathcal{X}_1]) (\mathcal{X}_2 -
+\mathbb{E}_{\mathcal{D}_2}[\mathcal{X}_2]) \right]\]
+\[\mbox{Cov}[\mathcal{X}_1, \mathcal{X}_2] =
+\mathbb{E}_{\mathcal{D}}\left[\mathcal{X}_1 \mathcal{X}_2 \right] -
+\mathbb{E}_{\mathcal{D}_1}\left[\mathcal{X}_1 \right]
+\mathbb{E}_{\mathcal{D}_2}\left[\mathcal{X}_2 \right]\]
+\end{definition}
+The covariance of some random vector, $\boldsymbol{\mathcal{X}} =
+{[\mathcal{X}_1, \mathcal{X}_2,\ldots,\mathcal{X}_m]}^T$, with outcomes,
+$\mathbf{x} \sim \mathcal{D}$, where $\mathbf{x} = {[x_1, x_2,\ldots, x_m]}^T$ and
+${\{ x_i \sim \mathcal{D}_i \}}_{i=1}^m$ is characterised by the covariance
+matrix:
+\begin{align*}
+\boldsymbol{\Sigma} &= \mathbb{E}_{\mathcal{D}} \left[ (\boldsymbol{\mathcal{X}} - \mathbb{E}_{\mathcal{D}}[\boldsymbol{\mathcal{X}}]){(\boldsymbol{\mathcal{X}} - \mathbb{E}_{\mathcal{D}}[\boldsymbol{\mathcal{X}}])}^T \right] \\
+    &=\begin{bmatrix}
+    \mbox{Var}[\mathcal{X}_{1}] & \mbox{Cov}[\mathcal{X}_{1},\mathcal{X}_{2}] & \cdots & \mbox{Cov}[\mathcal{X}_{1},\mathcal{X}_{m}]\\
+    \mbox{Cov}[\mathcal{X}_{2},\mathcal{X}_{1}] & \mbox{Var}[\mathcal{X}_{2}] & \cdots & \mbox{Cov}[\mathcal{X}_{2},\mathcal{X}_{m}]\\
+    \vdots & \vdots & \ddots & \vdots \\
+    \mbox{Cov}[\mathcal{X}_{m},\mathcal{X}_{1}] & \mbox{Cov}[\mathcal{X}_{m},\mathcal{X}_{2}] & \cdots & \mbox{Var}[\mathcal{X}_{m}]\\
+    \end{bmatrix}
+\end{align*}
+\begin{remark}
+ $\boldsymbol{\Sigma}$ is symmetric and positive semidefinite.
+\end{remark}
+\begin{definition}[Correlation]
+The correlation is the normalised covariance and always lies between -1 and 1:
+\[\rho(\mathcal{X}_1, \mathcal{X}_2) = \frac{\mbox{Cov}[\mathcal{X}_1, \mathcal{X}_2]}{\sqrt{\mbox{Var}_{\mathcal{D}_1}[\mathcal{X}_1] \mbox{Var}_{\mathcal{D}_2}[\mathcal{X}_2]}}\]
+We define a correlation matrix, a normalised version of the covariance matrix,
+to encode a set of correlations between $m$ different random variables:
+\begin{equation*}
+    \boldsymbol{\rho} =\begin{bmatrix}
+    1 & \frac{\mbox{Cov}[\mathcal{X}_1, \mathcal{X}_2]}{\sqrt{\mbox{Var}_{\mathcal{D}_1}[\mathcal{X}_1] \mbox{Var}_{\mathcal{D}_2}[\mathcal{X}_2]}} & \cdots & \frac{\mbox{Cov}[\mathcal{X}_1, \mathcal{X}_m]}{\sqrt{\mbox{Var}_{\mathcal{D}_1}[\mathcal{X}_1] \mbox{Var}_{\mathcal{D}_m}[\mathcal{X}_m]}}\\
+    \frac{\mbox{Cov}[\mathcal{X}_2, \mathcal{X}_1]}{\sqrt{\mbox{Var}_{\mathcal{D}_2}[\mathcal{X}_2] \mbox{Var}_{\mathcal{D}_1}[\mathcal{X}_1]}} & 1 & \cdots & \frac{\mbox{Cov}[\mathcal{X}_2, \mathcal{X}_m]}{\sqrt{\mbox{Var}_{\mathcal{D}_2}[\mathcal{X}_2] \mbox{Var}_{\mathcal{D}_m}[\mathcal{X}_m]}}\\
+    \vdots & \vdots & \ddots & \vdots \\
+    \frac{\mbox{Cov}[\mathcal{X}_m, \mathcal{X}_1]}{\sqrt{\mbox{Var}_{\mathcal{D}_m}[\mathcal{X}_m] \mbox{Var}_{\mathcal{D}_1}[\mathcal{X}_1]}} & \frac{\mbox{Cov}[\mathcal{X}_m, \mathcal{X}_2]}{\sqrt{\mbox{Var}_{\mathcal{D}_m}[\mathcal{X}_m] \mbox{Var}_{\mathcal{D}_2}[\mathcal{X}_2]}} & \cdots & 1\\
+    \end{bmatrix}
+\end{equation*}
+\end{definition}
+\subsubsection{Multivariate Gaussian Distribution}
+A random vector $\boldsymbol{\mathcal{X}} =
+{[\mathcal{X}_1,\ldots,\mathcal{X}_n]}^T$, with outcomes $\mathbf{x}$, has a
+multivariate Gaussian distribution if it has the following characterisation:
+\[\mathbf{x} \sim \mathcal{N}(\boldsymbol{\mu},\boldsymbol{\Sigma}) \qquad \text{where:} \qquad \boldsymbol{\mu} \in \mathbb{R}^n\]
+The multivariate Gaussian has the characteristic pdf
+$f_{\boldsymbol{\mathcal{X}}}$:
+\[f_{\boldsymbol{\mathcal{X}}}(\mathbf{x} ; \boldsymbol{\mu},\boldsymbol{\Sigma}) = \frac{1}{{(2 \pi)}^{n/2}} \frac{1}{\vert \boldsymbol{\Sigma} \vert^{1/2}} \exp \left( -\frac{1}{2}{(\mathbf{x}-\boldsymbol{\mu})}^T \boldsymbol{\Sigma}^{-1} (\mathbf{x}-\boldsymbol{\mu}) \right)\]
+\[\mathbb{E}_{\mathcal{D}}[\boldsymbol{\mathcal{X}}] = \boldsymbol{\mu}\]
+\[\text{Cov}_{\mathcal{D}}[\boldsymbol{\mathcal{X}}] = \boldsymbol{\Sigma}\]
+The isocontours of a multivariate Gaussian are characterised by the exponent of the pdf:
+\[{(\mathbf{x}-\boldsymbol{\mu})}^T {\boldsymbol{\Sigma}}^{-1} (\mathbf{x}-\boldsymbol{\mu})\]
+which are ellipsoids:
+\begin{itemize}
+  \item centred at $\boldsymbol{\mu}$
+  \item with axes pointing in the direction of the eignevectors of $\boldsymbol{\Sigma}^{-1}$
+  \item having radii proportional to the square root of the corresponding eigenvalues of $\boldsymbol{\Sigma}$
+\end{itemize}
+
+\subsection{Maximum Likelihood Estimation}
+\subsubsection{Likelihood}
+Suppose some random variable $\mathcal{X}$ the distribution of which
+$\mathcal{D}$ is parameterised by unknown variables  $\mathbf{\theta}\in
+\mathbb{R}^{k}$. Suppose we make a sequence of observations of outcomes
+$\mathcal{S}$ (itself an outcome of a random variable), and each $i$-th member
+$x_i$, is the outcome of the random variable $\mathcal{X}$.
+\begin{definition}[Likelihood Function]
+  We define the likelihood function to be the joint probability function of a
+  set of outcomes:
+\[\mathbf{L}(\boldsymbol{\theta})=p_{\mathcal{x}_1,\ldots,\mathcal{x}_{n}}(x_1,\ldots,x_{n};\boldsymbol{\theta}).\] 
+  This joint density is considered to be a function of $\boldsymbol{\theta}$.
+\end{definition}
+\begin{remark}
+  The characterisation of the parameters $\mathbf{\theta}$ being fixed but
+  unknown is definitive of the \textbf{frequentist paradigm}.
+\end{remark}
+\subsubsection{Likelihood of i.i.d Random Variables}
+If the sequence of $\boldsymbol{\mathcal{X}}$ is i.i.d, we denote
+$\mathcal{S}\sim\mathcal{D}^{n}$, and the likelihood is expressed as:
+\[\mathbf{L}(\boldsymbol{\theta})=\prod_{i=1}^{n} p_{\mathcal{x}_i}(x_i;\boldsymbol{\theta}).\] 
+It is easier to optimise the logarithm of the likelihood function, and we
+define the log-likelihood:
+\[\boldsymbol{\mathcal{L}}(\boldsymbol{\theta})=\sum_{i=1}^{n} \log\left(p_{\mathcal{X}_i}\left(x_i;\boldsymbol{\theta}\right)\right).\] 
+\begin{definition}[Maximum Likelihood Estimate]
+  The MLE $\boldsymbol{\theta_{MLE}}$ is the value of $\boldsymbol{\theta}$
+  that maximises the likelihood function, i.e., the observed data is most
+  probable with this parameterisation.
+\end{definition}
+\begin{notation}[$\boldsymbol{\theta}^{*}$]
+  We define $\boldsymbol{\theta}^{*}$ to be the true unknown value of
+  $\boldsymbol{\theta}$.
+\end{notation}
+
+\subsection{Maximum A Posteriori Estimation}
+The Maximum A Posteriori estimator is defined:
+\[\theta_{MAP}=\argmax_\theta \left\{ p_\Theta\left( \theta|S \right)  \right\}.\] 
+As $n$ becomes large (as we gather more data), the prior distribution becomes less influential and
+the posterior becomes dominated by the likelihood function.\ i.e.\ as $n \to\infty$:
+\[\theta_{MAP}\to\theta_{MLE}\quad\text{and}\quad\mu_{MAP}\to\mu_{MLE}.\] 

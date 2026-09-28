@@ -1,0 +1,200 @@
+\section{Calculus}
+\subsection{Derivatives}
+\begin{definition}[Derivatives]
+  A derivative defines a notion of continuous as follows:
+  \[\frac{df}{dx} = \lim_{\delta \rightarrow 0} \frac{f(x+\delta) - f(x)}{\delta}.\] 
+  It is the infinitessimal gradient at each particular point in the domain of a
+  function.
+\end{definition}
+\begin{definition}[Curvature]
+  The curvature of a function is the second-order derivative, a measure of how
+  the gradient itself changes:
+  \[\frac{d^2f}{dx^2} = f''(x) = \lim_{\delta \rightarrow 0} \frac{f'(x+\delta) - f'(x)}{\delta}.\] 
+\end{definition}
+\begin{definition}[Smoothness]
+  We say that a function is $k$-smooth $\iff$ the $k$-th-order derivative of
+  the function is defined. If all higher order derivatives exist, the function
+  is referred to as ``smooth''.
+\end{definition}
+
+\subsubsection{Taylor Series}
+For small changes $\delta$ about a point $x=\tilde{x}$, any smooth function $f$ can be approximated
+as an infinite polynomial expansion as follows:
+\[f(\tilde{x} + \delta) = f(\tilde{x}) + \delta f'(\tilde{x}) + \frac{\delta^2}{2} f''(\tilde{x})  + \frac{\delta^3}{3!} f^{(3)} (\tilde{x}) + \dots\]
+As the order of the taylor expansion increases, we approach the underlying function.
+\subsubsection{Taylor Expansion Results}
+\[\frac{1}{1-x}=1+x+x^{2}+x^{3}+\cdots=\sum_{n=0}^{\infty} x^{n}, \left| x \right| <1.\] 
+\[e^{x}=1+x+\frac{1}{2}x^{2}+\frac{1}{6}x^{3}+\frac{1}{24}x^{4}+\cdots=\sum_{n=0}^{\infty} \frac{1}{n\mathpunct{!}}x^{n}.\] 
+\[\ln(1+x)=x-\frac{1}{2}x^{2}+\frac{1}{3}x^{3}-\frac{1}{4}x^{4}+\cdots=\sum_{n=0}^{\infty} \frac{{(-1)}^{n+1}}{n}x^{n}, \left| x \right| <1.\] 
+\[\cos(x)=1-\frac{1}{2}x^{2}+\frac{1}{24}x^{24}-\frac{1}{720}x^{6}+\cdots=\sum_{n=0}^{\infty} \frac{{{(-1)}^{n}}}{(2n)\mathpunct{!}}x^{2n}.\] 
+\[\sin(x)=x-\frac{1}{6}x^{3}+\frac{1}{120}x^{5}-\frac{1}{5040}x^{7}+\cdots=\sum_{n=0}^{\infty} \frac{{(-1)}^{n}}{(2n+1)\mathpunct{!}}x^{2n+1}.\] 
+
+\subsection{Multivariate Calculus}
+\subsubsection{Partial Derivatives, Gradients}
+\begin{definition}[Partial Derivatives]
+  For a multivariate function $f:(x_1,x_2,\ldots,x_{n})\mapsto
+  f(x_1,\ldots,x_{n})$ that depends on $n$ variables, the partial derivative
+  with respect to $x_i$ is defined as:
+  \[\frac{\partial f}{\partial x_i} \lim_{\delta \to 0}=
+  \frac{f(x_1,x_2,\ldots,x_i+\delta,\ldots,x_{n})-f(x_1,x_2,\ldots,x_i,\ldots,x_{n})}{\delta}.\] 
+\end{definition}
+\begin{definition}[Gradient Vectors]
+  We also use a vector for the set of partial derivatives for the function, the
+  gradient vector defined as: 
+  \[\nabla_x f =\begin{bmatrix} \frac{\partial f}{\partial x_i}\\\vdots
+  \\\frac{\partial f}{\partial x_{n}}  \end{bmatrix} \]
+\end{definition}
+\begin{remark}
+  The gradient vector is always perpendicular to the contour, and points in the
+  direction of steepest ascent.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.3\textwidth]{gradient}
+  \end{figure}\\
+  In addition, we can find the slope of $f(x)$ in a particular direction $\hat{u}$ for some 
+  $\left\lVert \hat{u} \right\rVert_2 =1$. This is known as the directional derivative in the direction
+  of $\hat{u}$:
+  \[\nabla_x f \cdot \hat{u}=\left\lVert \nabla_x f  \right\rVert_2 \left\lVert
+  \hat{u} \right\rVert_2 \cos\theta.\]
+  This directional derivative is maximal when $\theta=0$, when $\hat{u}$ points
+  in the direction of the gradient vector (used in gradient descent).
+\end{remark}
+
+\subsubsection{Stationary Points}
+\begin{definition}[Extrema]
+  For a function $f:\mathbb{R}^{n}\mapsto \mathbb{R}$ and a feasible set $X\subseteq \mathbb{R}^{n}$ 
+  over which we are optimising:
+  \begin{itemize}
+    \item A point $x$ is a local minimum of $f$ if $f(x)\le f(y) \forall y\in
+      N$ where $N\subseteq X$ is some neighbourhood about $x$.
+    \item A point $x$ is a global minimum of $f$ in $X$ if $f(x)\le f(y)\forall
+      y\in X$
+  \end{itemize}
+\end{definition}
+It is a necessary condition that an extrema is stationary.
+\begin{definition}[Saddle Points]
+  Any points for which $\nabla_x f =\mathbf{0}$ but where there is no local
+  maximum or minimum are known as saddle points.
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{saddle}
+  \end{figure}
+\end{definition}
+
+\subsubsection{Hessian Matrix}
+To check whether particular critical points are maxima, minima or saddle
+points, we require information encoded in the second order derivatives.
+\begin{definition}[Hessian Matrix]
+  We define the Hessian Matrix $\nabla_x^2 f$ or $H(x)$ as:
+  \[\nabla_x^2 f = \begin{bmatrix}
+		\dfrac{\partial^2 f}{\partial {x_1}^2} & \cdots & \dfrac{\partial^2 f}{\partial {x_1} \partial {x_n}} \\
+		\vdots & \ddots & \vdots \\
+		\dfrac{\partial^2 f}{\partial {x_n} \partial {x_1}} & \cdots & \dfrac{\partial^2 f}{\partial {x_n}^2}
+  \end{bmatrix}\]
+\end{definition}
+\subsubsection{Multivariate Taylor Series}
+We can equivalently express a multivariate function using an $n$-dimensional generalisation
+of the Taylor Series.
+For small $\boldsymbol{\delta}$ about a point $\mathbf{x=\tilde{x}}$ in a
+$2$-smooth function $f: \mathbb{F}^{n}\mapsto \mathbb{F}$:
+\[f(\mathbf{\tilde{x}+\delta})\approx f(\mathbf{\tilde{x}})
+\boldsymbol{\delta}^{T}\nabla_x f(\mathbf{\tilde{x}})
++\frac{1}{2}\boldsymbol{\delta}^{T}\nabla_x^2 f(\mathbf{\tilde{x}})\boldsymbol{\delta}.\] 
+
+Thus, at a critical point, we have (for sufficiently small $\boldsymbol{\delta}$):
+\[f(\mathbf{x^{*}+\delta})\approx f(\mathbf{x^{*}})
++\frac{1}{2}\boldsymbol{\delta}^{T}\nabla_x^2
+f(\mathbf{{x}^{*}})\boldsymbol{\delta}.\] 
+We have:
+\begin{itemize}
+  \item $\mathcal{H}(\mathbf{x}^*) \succ 0$ then $f(\mathbf{x}^* +
+    \boldsymbol{\delta}) > f(\mathbf{x}^*)$ for all
+    $\boldsymbol{\delta}\implies\mathbf{x}^*$ is a local minimum.
+  \item $\mathcal{H}(\mathbf{x}^*) \prec 0$ then $f(\mathbf{x}^* +
+    \boldsymbol{\delta}) < f(\mathbf{x}^*)$ for all
+    $\boldsymbol{\delta}\implies\mathbf{x}^*$ is a local maximum.
+  \item $\mathcal{H}(\mathbf{x}^*)$ is indefinite $\implies f(\mathbf{x}^* +
+    \boldsymbol{\delta}) > f(\mathbf{x}^*)$ in certain directions, while
+    $f(\mathbf{x}^* + \boldsymbol{\delta}) < f(\mathbf{x}^*)$ in other
+    directions $\implies\mathbf{x}^*$ is a saddle point. 
+\end{itemize}
+
+\subsection{Convexity}
+In performing optimisation, we are interested in discerning global extrema.
+This is hard in general, but for twice differentiable convex functions, it is
+more straightforward to do so.
+\begin{definition}[Convex Set]
+  A set $\boldsymbol{\Omega}$ is convex if $\forall \mathbf{x,y\in
+  \Omega,\forall\theta\in} [0,1],(\mathbf{\theta
+  x}+(1-\mathbf{\theta})\mathbf{y\in \Omega})$
+\end{definition}
+Intuitively, if we take any two elements in $\boldsymbol{\Omega}$ and draw a
+line segment between the two elements, every point on that line segment belongs
+to $\mathbf{\Omega}$.
+
+\begin{definition}[Convex Function]
+  A function $f: \mathbb{R}^n \to \mathbb{R}$ is convex if its domain is a
+  convex set and if, $\forall\mathbf{x}_A, \mathbf{x}_B$ in its domain, and
+  $\forall\lambda \in [0, 1]$, we have:
+  \[f(\lambda \mathbf{x}_A + (1 - \lambda)\mathbf{x}_B) \leq \lambda
+  f(\mathbf{x}_A) + (1 - \lambda)f(\mathbf{x}_B)\]
+\end{definition}
+\begin{definition}[Strictly Convex Function]
+  A function $f: \mathbb{R}^n \to \mathbb{R}$ is strictly convex if its domain
+  is a convex set and if, $\forall\mathbf{x}_A, \mathbf{x}_B$ in its domain,
+  and $\forall\lambda \in (0, 1)$, we have:
+  \[f(\lambda \mathbf{x}_A + (1 - \lambda)\mathbf{x}_B) < \lambda
+  f(\mathbf{x}_A) + (1 - \lambda)f(\mathbf{x}_B)\]
+\end{definition}
+\begin{theorem}[Sum of Convex Functions]
+   If $f(\cdot)$ is a convex function, $g(\cdot)$ is a convex function,
+   $h(\cdot)$ is a strictly convex function and $\alpha,\beta>0$, then:
+   \begin{itemize}
+     \item $\alpha f(\cdot) + \beta g(\cdot)$ is a convex function.
+     \item $\alpha f(\cdot) + \beta h(\cdot)$ is a strictly convex function.
+   \end{itemize}
+\end{theorem}
+\begin{theorem}[Second Order Differential and Convexity]
+  For 2-smooth $f$ over an open domain:
+  \[\nabla_{\mathbf{x}}^2 f(\mathbf{x}) \succeq 0 \quad \forall \mathbf{x} \in
+  \mbox{dom}(f)  \quad \iff \quad \mbox{Convexity of }f\]
+  \[\nabla_{\mathbf{x}}^2 f(\mathbf{x}) \succ 0 \quad \forall \mathbf{x} \in \mbox{dom}(f)  \quad \implies \quad \mbox{Strict Convexity of }f\]
+\end{theorem}
+\subsubsection{Global Optimality}
+Convexity is important in machine learning as it allows for the possibility to
+discern global extrema for such functions. For convex and differentiable $f$,
+any critical point is a globally optimal solution. Furthermore, for strictly
+convex $f$ on a convex set $\boldsymbol{\Omega}$, the optimal solution is
+unique.
+
+\subsection{Quadratic Functions}
+Consider the following general quadratic function:
+\[f(\mathbf{x})=\mathbf{x^{T}Ax+b\cdot x}+c\]
+for some $\mathbf{A}\in \mathbb{R}^{n\times n},\mathbf{b}\in
+\mathbb{R}^{n},c\in \mathbb{R}$, and variable $x\in \mathbb{R}^{n}$
+WLOG we can re-write this as:
+\[f(\mathbf{x})=\frac{1}{2}\mathbf{x^{T}Bx+b\cdot x}+c\]
+for some symmetric $\mathbf{B}=(\mathbf{A+A^{T}})$.
+\begin{theorem}[Convexity of Quadratic Functions]
+  The convexity of a quadratic function is entirely determined by the
+  definiteness of $\mathbf{B}$.
+  \begin{align*}
+      \mathbf{B} \succeq 0 \quad &\iff \quad \mbox{Convexity of }f \\
+      \mathbf{B} \succ 0 \quad &\iff \quad \mbox{Strict Convexity of }f
+  \end{align*}
+\end{theorem}
+\subsubsection{Optimisation of Quadratic Functions}
+Consider the unconstrained optimisation problem for some real symmetric $\mathbf{B}$:
+\[f(\mathbf{x})=\frac{1}{2}\mathbf{x^{T}Bx+b\cdot x}+c, \quad \min_{\mathbf{x}}f(\mathbf{x})\]
+
+\begin{tabular}{c c c c}
+  \toprule
+  Parameters of $f$& Convexity of $f$ & \# &  \\
+  \midrule
+  $\mathbf{B}\succ 0$ & Strictly Convex & 1 & $\mathbf{(Bx=-b)}$ consistent, exactly determined \\
+  $\mathbf{B}\succeq 0,\mathbf{B}\nsucc 0,\mathbf{b}\in range(\mathbf{B})$ & Convex \& Bounded Below & $\infty$ & $(\mathbf{Bx=-b})$ consistent, underdetermined \\
+  $\mathbf{B}\succeq 0,\mathbf{B}\nsucc 0, \mathbf{b}\notin range(\mathbf{B})$ & Convex \& Unbounded Below & 0 & $(\mathbf{Bx=-b})$ inconsistent \\
+  $\mathbf{B}\nsucceq 0$ & Non-Convex & 0 & $f$ unbounded below \\
+  \bottomrule
+\end{tabular}
+

@@ -1,0 +1,89 @@
+\documentclass[11pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{lipsum}
+\usepackage{booktabs}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0pt} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily ISSU0137 Machine Learning }\\
+\vspace{24pt}
+{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+\vspace{6pt}
+{\fontsize{12}{12} \selectfont \ttfamily donk@donk.sg} \\
+\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt 
+  \subsubsection{UCL Summer School Module Overview}
+  Much of modern machine learning rests upon a range of mathematical methods
+  and many introductory machine learning modules seek to introduce algorithms
+  before ensuring the link with these methods is made. This module aims to
+  offer students an introduction to traditional Machine Learning in a rigorous
+  mathematical fashion. Assuming a familiarity with key results of Linear
+  Algebra, Differential Calculus, Probability and Statistics, the module will
+  introduce the key areas of traditional machine learning and will seek to
+  cover the key tools (and theorems) within these areas, and to illustrate
+  these with practical exemplars. The module will be delivered through a
+  mixture of lectures and classes, and will involve a mix of traditional
+  lecture delivery, interactive notebooks and problem sets.
+  \subsubsection{Suggested Textbooks and Readings}
+  \begin{itemize}
+    \item Deisenroth et al., Mathematics for Machine Learning
+    \item Alpaydin, Introduction to Machine Learning (4th ed.)
+    \item Bishop, Pattern Recognition and Machine Learning
+    \item Lipschutz, Schaum's Outline of Linear Algebra
+    \item Wrede \& Spiegel, Schaum's Outline of Advanced Calculus
+    \item Schiller at al., Schaum's Outline of Probability and Statistics
+    \item Geron, Hands-On Machine Learning with Scikit-Learn, Keras, and Tensorflow (2nd ed.)
+  \end{itemize}
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\input{chapters/0a-linalg.tex}
+\input{chapters/0b-calculus.tex}
+\input{chapters/0c-probability.tex}
+\input{chapters/1-regression.tex}
+\input{chapters/2-classification.tex}
+\input{chapters/3-model-selection.tex}
+\input{chapters/4-clustering.tex}
+\input{chapters/5-dimensionality-reduction.tex}
+\input{chapters/6-neural-network.tex}
+\end{document}

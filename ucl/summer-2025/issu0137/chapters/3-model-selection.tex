@@ -1,0 +1,136 @@
+\section{Model Selection}
+In Model Selection, we seek to choose the best hyperparameter / learning
+algorithm / model for a particular problem. We are primarily concerned with
+ranking a set of models, rather than estimating the performance of a particular
+model.
+\subsubsection{Measures for Performance}
+The measure of performance we are ultimately interested in is \textbf{Generalisation Loss}:
+\[\mathbb{E}_\mathcal{D}\left[ \mathcal{E}\left( f(\mathbf{\mathcal{X}}) ,\mathcal{Y}\right) \right].\] 
+This cannot be directly measured, and empirical test set loss,
+$\mathbb{E}_\mathcal{S_{Test}}\left[ \mathcal{E}\left( f(\mathbf{\mathcal{X}})
+,\mathcal{Y}\right) \right]$ can act as a reasonable estimator (but not for
+model selection). Empirical Training Set Loss cannot be used as well, as it
+will lead to overfitting.\\
+Hence, Empirical Risk Minimisation alone is not adequate to perform model
+selection.
+
+\subsection{Validation Techniques}
+We seek to estimate the generalisation loss through a \textbf{Validation Set
+Loss}. We split the training data into three sets:
+\begin{itemize}
+  \item Training: To train each possible model
+  \item Validation: To select the `best' model
+  \item Test: To assess the performance of that model
+\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{validation}
+\end{figure}
+\subsubsection{Validation Loss Bound}
+Applying the Hoeffding's Inequality to i.i.d. $\mathcal{Z}_i=\mathbb{I}\left[ \mathcal{Y}^{(i)}\neq f\left( \mathcal{\mathbf{X}}^{(i)} \right) \right]$:
+\[P\left( E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \ge \frac{1}{n_v}\sum_{i=1}^{n_v} \mathbb{I}\left[ y^{(i)}\neq f(\mathbf{x}^{(i)}) \right] + \epsilon\right)\le e^{-2n_v\epsilon^{2}}.\] 
+\[P\left( E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \ge E_{S_v} \left[ \mathbb{I}\left[ y^{(i)}\neq f(\mathbf{x}^{(i)}) \right] \right] + \epsilon\right)\le e^{-2n_v\epsilon^{2}}.\] 
+Let $\delta=e^{-2n_v\epsilon^{2}}\implies\epsilon=\sqrt{\frac{\ln\left( \frac{1}{\delta} \right) }{2n_v}}$.
+\[P\left( E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] < E_{S_v} \left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{\mathbf{X}}) \right] \right] + \sqrt{\frac{\ln\left( \frac{1}{\delta} \right) }{2n_v}}\right)> (1-\delta).\] 
+That is, with probability greater than $(1-\delta)$, we state that:
+\[L(\mathcal{E}, \mathcal{D}, f)\le L(\mathcal{E}, \mathcal{S}_v, f)+\sqrt{\frac{\ln\left( \frac{1}{\delta} \right) }{2n_v}}.\] 
+Using the Union Bound, we can show that a bound holds for all members in a finite hypothesis class
+$\mathcal{F}$:
+Let $A,B$ be the events:
+\[A=\left\{ L(\mathcal{E}, \mathcal{D}, f^{A})\le L(\mathcal{E}, \mathcal{S}_v, f^{A})+\sqrt{\frac{\ln\left( \frac{1}{\delta'} \right) }{2n_v}} \right\}.\] 
+\[B=\left\{ L(\mathcal{E}, \mathcal{D}, f^{B})\le L(\mathcal{E}, \mathcal{S}_v, f^{B})+\sqrt{\frac{\ln\left( \frac{1}{\delta'} \right) }{2n_v}} \right\}.\] 
+We have $P(A)=P(B)<\delta'$.
+\begin{remark}
+  \[P(\neg A\wedge\neg B)\ge 1-(P(A) + P(B)).\]
+\end{remark}
+Combining these, $\forall f \in \left\{ f^{A},f^{B} \right\}$:
+\[P\left( L(\mathcal{E}, \mathcal{D}, f)\le L(\mathcal{E}, \mathcal{S}_v, f)+\sqrt{\frac{\ln\left( \frac{1}{\delta'} \right) }{2n_v}} \right)\ge 1-2\delta'.\] 
+Let $\delta=2\delta'$, and we have:
+\[P\left( L(\mathcal{E}, \mathcal{D}, f)\le L(\mathcal{E}, \mathcal{S}_v, f)+\sqrt{\frac{\ln\left( \frac{2}{\delta} \right) }{2n_v}} \right)\ge 1-\delta.\] 
+In general, $\forall f\in\mathcal{F}$:
+\[P\left( L(\mathcal{E}, \mathcal{D}, f)\le L(\mathcal{E}, \mathcal{S}_v, f)+\sqrt{\frac{\ln\left( \frac{\left| {\mathcal{F}} \right|}{\delta} \right) }{2n_v}} \right)\ge 1-\delta.\] 
+The validation is a good estimate provided $\mathcal{F}$ is not too large, and
+$n_v$ is not too small. Otherwise, the validation and generalisation losses
+will vary further as we begin to overfit.
+
+\subsection{Cross Validation}
+To retain most of our data for training, we perform validation while still
+maintaining the training data set, by spliting the training data into $k$
+folds. The learning algorithm is run $k$ times for each model, each time using
+all the folds but one as the training set, and the remaining fold as the
+validation set.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{cross-validation}
+\end{figure}
+The cross validation loss is the performance averaged across all $k$ folds:
+\[L_{{CV}_k}\left( \mathcal{E}, \mathcal{S}, f \right) =\frac{1}{k}\sum_{i=1}^{k} L_{\mathcal{S}\backslash\mathcal{S}_k}\left( \mathcal{E},\mathcal{S}\backslash\mathcal{S}_i ,f \right).\] 
+\subsubsection{$k$ selection}
+$k=n$ is known as the Leave One Out cross validation, maximising the training
+set for each fold, is computation expensive, and fails to give a good estimate
+of the generalisation loss.\\
+Empirical analysis suggests $k=5$ or $10$.
+\subsubsection{Limitations}
+There is not yet a rigorous understanding of why cross validation works well,
+and in certain circumstances should be treated with care.
+\begin{example}[Time Series Data]
+  Requires sequential cross validation, due to similar neighbouring points.
+\end{example}
+
+\subsection{PAC Approach}
+In the PAC (Probably Approximately Correct) approach, we formulate a
+probabilistic `worst-case' bound using the empirical training loss and some
+complexity penalty (taking into account $\left| \mathcal{F} \right| $). We then
+perform based on the model that provides the tightest bound.\\\\
+We obtain these bounds using the Uniform Convergence approach, by first seeking
+a finite sample concentration inequality independent of $\mathcal{D}$ to one
+function $f$, then applying it uniformly across all $f \in \mathcal{F}$ via
+Union Bound or other measure of functional complexity.\\\\
+We consider a probability of success $(1-\delta)$, an approximation loss target
+$\epsilon$, and a data generating process $\mathcal{D}$.
+
+\subsubsection{Consistent Learner}
+For a consistent learning algorithm that only outputs hypotheses consistent
+with the training data ($E_\mathcal{S}\left[
+\mathcal{E}(f(\mathcal{X}),\mathcal{Y}) \right]=0$), for
+$0<\epsilon<1,0<\delta<1$ and a particular $f \in \mathcal{F}\wedge
+E_\mathcal{D}\left[ \mathcal{E}\left( f(\mathcal{\mathbf{X}}),\mathcal{Y}
+\right) \right]>\epsilon$:
+\[P(f\text{ is consistent with 1 training ex.})<(1-\epsilon)<e^{-\epsilon}.\] 
+\[P(f\text{ is consistent with $n$ training ex.})<{(1-\epsilon)}^{n}<e^{-\epsilon n}.\] 
+Applying the Union Bound $\forall f \in \mathcal{F}$, we obtain:
+\[P\left( E_\mathcal{D}\left[ \mathcal{E}\left( f(\mathbf{X}),\mathcal{Y} \right) \right]>\epsilon, \text{ for at least one $f \in \mathcal{F}$}\right)<\left| \mathcal{F} \right|e^{-\epsilon n}.\] 
+\begin{theorem}[PAC Bound: Finite $\mathcal{F}$, Consistent Learner]
+  For all $0<\epsilon<1$, $0<\delta<1$, all data generating distributions $\mathcal{D}$, with
+  probability of at least $(1-\delta)$:
+  \[\forall f \in \mathcal{F}\quad E_\mathcal{D}\left[ \mathcal{E}\left( f(\mathbf{\mathcal{X}}),\mathcal{Y} \right) \right]\le \frac{1}{n}\ln\left( \frac{\left| \mathcal{F} \right|}{\delta}  \right).\] 
+\end{theorem}
+
+\subsubsection{Agnostic Learner}
+For a learning algorithm which is not restricted in the hypotheses:
+Applying the Hoeffding's Inequality to i.i.d. $\mathcal{Z}_i=\mathbb{I}\left[ \mathcal{Y}^{(i)}\neq f\left( \mathcal{\mathbf{X}}^{(i)} \right) \right]$:
+\[P\left( E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \ge \frac{1}{n}\sum_{i=1}^{n} \mathbb{I}\left[ y^{(i)}\neq f(\mathbf{x}^{(i)}) \right] + \epsilon\right)\le e^{-2n\epsilon^{2}}.\] 
+\[P\left( E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \ge E_{S} \left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{\mathbf{X}}) \right] \right] + \epsilon \right)> e^{-2n\epsilon^{2}}.\] 
+Similarly, we applying the Union Bound to obtain:
+\[P\left( E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \ge E_{S} \left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{\mathbf{X}}) \right] \right] + \epsilon\text{, for at least one }f \in \mathcal{F}\right)\le \left| \mathcal{F} \right| e^{-2n\epsilon^{2}}.\] 
+\begin{theorem}[PAC Bound: Finite $\mathcal{F}$, Agnostic Learner]
+  For all $0<\epsilon<1$, $0<\delta<1$, all data generating distributions $\mathcal{D}$, with
+  probability of at least $(1-\delta)$:
+\[\forall f \in \mathcal{F}\quad E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \le E_{S} \left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{\mathbf{X}}) \right] \right] + \sqrt{\frac{1}{2n}\ln\left( \frac{\left| \mathcal{F} \right|}{\delta}  \right) }\] 
+\end{theorem}
+
+\subsubsection{Infinite $\mathcal{F}$}
+\begin{theorem}[PAC Bound: Infinite $\mathcal{F}$, Agnostic Learner]
+  For all $0<\epsilon<1$, $0<\delta<1$, all data generating distributions $\mathcal{D}$, with
+  probability of at least $(1-\delta)$:
+\[\forall f \in \mathcal{F}\quad E_\mathcal{D}\left[ \mathbb{I}\left[ \mathcal{Y}\neq f\left( \mathcal{\mathbf{X}} \right)  \right] \right] \le E_{S} \left[ \mathbb{I}\left[ \mathcal{Y}\neq f(\mathcal{\mathbf{X}}) \right] \right] + 2\mathbb{R}\left( \mathcal{F}\circ\mathcal{S} \right) + 4\sqrt{\frac{2}{n}\ln\left( \frac{4}{\delta}  \right) }\] 
+where $\mathbb{R}\left( \mathcal{F}\circ\mathcal{S} \right)$ denotes the Rademacher complexity of $\mathcal{F}\circ\mathcal{S}={\left\{ f(\mathbf{x}^{(i)})|f \in \mathcal{F} \right\}}_{i=1}^{n}$
+\end{theorem}
+
+\subsubsection{Advantages and Limitations}
+The PAC approach is not limited to misclassification loss, but to a variety of
+other loss functions. It allows comparison with training data alone while
+avoiding overfitting.\\
+
+However, the bounds are often loose, and are poor estimators of generalisation
+loss, and tend to underperform cross validation.

@@ -1,0 +1,78 @@
+\section{Neural Networks}
+\begin{definition}[Artificial Neuron]
+  In neural networks, an artificial neuron is a mapping between some inputs
+  $\mathbf{x}\in \mathbb{R}^{m}\mapsto\mathbb{R}$. It is defined by a weight
+  vector $\mathbf{w}$ and a bias term $b$, and the sum is passed through an
+  activation function:
+  \[f(\mathbf{x})=\hat{\phi}\left( \mathbf{w\cdot x} +\mathbf{b}\right).\] 
+\end{definition}
+Often we take the logistic sigmoid $\hat{\phi}(z)=\frac{1}{1+e^{-z}}$, or the
+heaviside function.  An Artificial Neural Network is a combination of many of
+these units, how they are connected may be complex and is characterised by the
+NN's architecture.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{neural-networks}
+\end{figure}
+
+We have two broad categories:
+\begin{itemize}
+  \item \textbf{Feed Forward Neural Networks}: where units are arranged into a graph without any
+    cycles. This exploits the local structure of data, such as in a CNN.\@
+  \item \textbf{Recurrent Neural Networks}: where the graph can have cycles
+    such that outputs of a unit can loop back to become one of its inputs. This
+    may be well used to perceive time series structures.
+\end{itemize}
+
+\subsection{Multilayer Perceptron}
+A particular form of FFN where each layer contains some identical sigmoid
+units, the Multilayer Perceptron (MLP) is fully connected (every unit in one
+layer is connected to every layer in the next).
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.6\textwidth]{mlp}
+\end{figure}
+We call the first layer the input layer, the last layer the output layer, and
+those in between the hidden layers. The number of layers is the depth of the
+MLP and the number of units in a layer is known as the width of the MLP.\@
+We have in general:
+\[z_i^{[h]}=\hat{\phi}\left( \sum_{j} w_{ij}^{[h]}z_j^{h-1}+b_i^{[h]} \right).\] 
+\subsubsection{Feature Learning}
+A NN is nonlinear mapping between a set of input variables $x$ to a set of
+output variables $\left\{ o_i \right\}$ with functional forms controlled by
+weights $\mathbf{w}$ to learn. Number of weights and basis functions are cosen
+via our architecture, but they are adaptive through the weights. Features can
+be learned implicitly with deeper layers learning more complex features.\\
+Due to the non-linearity of activation functions, even a shallow MLP with just
+one hidden layer can learn any non-linear function of the input. We call
+MLP a \textbf{universal function approximator}, even though it might not be
+compact.
+\subsubsection{Evaluation}
+For a $H$ hidden layer network, we have three canonical cases:
+\begin{itemize}
+  \item \textbf{Regression}: We have one output to be a linear function of
+    units in the last layer 
+    \[o^{(i)}=\sum_{j} w_j^{[H+1]}z_j^{[H](i)}+b^{[H+1]}\]
+    and the evaluation function to be the squared loss
+    \[L=\frac{1}{2}\sum_{i=1}^{n} {(o^{(i)-y^{(i)}})}^{2}\]
+  \item \textbf{Binary Classification}: We have one output to be a logistic sigmoid
+    function of units in the last layer
+    \[o^{(i)}=\frac{1}{1+e^{-(\sum_{j} w_j^{[H+1]}z_j^{[H](i)}+b^{[H+1]})}}\]
+    and the evaluation function to be the cross entropy
+    \[L=-\sum_{i=1}^{n} y^{(i)}\ln(o^{(i)})+(1-y^{(i)})\ln(1-o^{(i)})\] 
+  \item \textbf{Multi-Classification}: We have $K$ `initial' outputs from the
+    last layer
+    \[\tilde{o}_k^{(i)}=\sum_{j} w_j^{[H+1]}z_j^{[H](i)}+b^{[H+1]}\]
+    of which we put through a softmax function to generate the final
+    output units:
+    \[o^{(i)}_k=\frac{\exp(\tilde{o}_k^{(i)})}{\sum_{j=1}^{K} \exp(\tilde{o}_j^{(i)})}\] 
+    and the evaluation function to be the cross entropy
+    \[L=-\sum_{i=1}^{n} \sum_{k=1}^{K} y_k^{(i)}\ln(\tilde{o}_k^{(i)})\] 
+\end{itemize}
+We evaluate $o^{(i)}$ for each of the training examples, as a forward pass
+through the network from th e first hidden layer, second hidden layer and so
+on. This process is known as the \textbf{forward propagation} of information
+through the network.
+\subsubsection{Optimisation}
+For the output units we have $\delta_i^{[H+1]}=o-y$.
+\[\delta_i^{[h]}=\hat{\phi}'\left( a_i^{[h]} \right) \sum_{k} w_{ki}^{[h+1]}\delta_k^{[h+1]}.\]

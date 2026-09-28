@@ -1,0 +1,625 @@
+\section{Linear Algebra}
+\subsection{Linear Spaces \& Linear Mappings}
+\subsubsection{Vector Spaces}
+\begin{definition}[Addition and Scalar Multiplication]
+  To define a vector space, we define the operation on a set:
+  \begin{itemize}
+    \item An \emph{addition} on a set $V$ is a function $+:(u,v)\in V^2 \mapsto u+v\in V$ 
+    \item A \emph{scalar multiplication} on a set $V$ is a function $\times:
+      (\lambda,v)\in \mathbb{F}\times V \mapsto \lambda v\in V$
+  \end{itemize}
+\end{definition}
+\begin{definition}[Vector Space]
+  A set $V$ equipped with addition and scalar multiplication on $V$ satisfying
+  the following properties:
+  \begin{itemize}
+    \item Commutative. $\forall u,v\in V$,\[
+      u+v=v+u\]
+    \item Associative. $\forall u,v,w\in V\text{ and }\forall a,b\in \mathbb{F}$,\[
+        (u+v)+w=u+(v+w)\text{ and }(ab)w=a(bw).\] 
+    \item Additive Identity. $0\in V$. $\forall v\in V$,\[
+        v+0=v\] 
+    \item Additive Inverse. $\forall v\in V, \exists\mathpunct{!}w\in V$,
+      \[v+w=0.\] 
+    \item Multiplicative Identity. $1\in \mathbb{F}$. $\forall v\in V$,\[
+        1v=v\] 
+    \item Distributive Properties.
+      $\forall u,v\in V\text{ and }\forall a,b\in\mathbb{F}$,
+      \[a(u+v)=au+av\text{ and }(a+b)v=av+bv.\] 
+  \end{itemize}
+  Satisfying these properties, we say that $V$ is a vector space over $\mathbb{F}$.
+\end{definition}
+
+In particular, we are interested in the \emph{Euclidean Space} $R^{n}$. Vectors
+are hence n-tuples of real numbers defined as \emph{column vectors}:
+\[x=\begin{pmatrix} x_1\\x_2\\\vdots\\x_n \end{pmatrix}.\] 
+Similarly, a \emph{row vector} is defined as:
+\[y^{T}=\begin{pmatrix} y_1,y_2,\ldots,y_{n} \end{pmatrix}.\] 
+The python library, numpy, can be used to encode a vector using \emph{array}
+objects. We create a 3-dimensional column vector (in numpy a $3\times 1$ array)
+as follows:
+\begin{lstlisting}[language=Python]
+  x = np.array([1, 2, 3]) # [1 2 3]
+  x = x.reshape(-1, 1) # [[1]
+                       #  [2]
+                       #  [3]]
+  print(x.shape) # (3, 1)
+\end{lstlisting}
+To encode a row vector, we create a 2-dimensional $1\times 3$ array as follows:
+\begin{lstlisting}[language=Python]
+y = np.array([[1, 2, 3]]) # [[1 2 3]
+print(y.shape) # (1, 3)
+\end{lstlisting}
+\begin{remark}
+With certain numpy functions we need to treat the vector as a 1-dimensional
+array. For this we use the \verb!np.squeeze(x)! function.
+\end{remark}
+
+\subsubsection{Linear Independence, Span, Basis, Dimension}
+\begin{definition}[Linearly Independent]
+  A set of vectors $v_1,\ldots,v_n\in \mathbb{V}$ is linearly independent $\iff$
+  \[a_1v_1+\cdots+a_{n}v_{n} = 0 \implies a_1=\cdots=a_{n}=0.\]
+\end{definition}
+\begin{definition}[Span]
+  The span of $v_1,\ldots,v_{n}\in \mathbb{V}$ is the set of all linear
+  combinations vectors in $\mathbb{N}$ 
+  \[span(v_1,\ldots,v_{n})=\left\{ \beta v_1+\cdots+\beta v_{n} | \forall\beta_1,\ldots,\beta_{n}\in \mathbb{R} \right\}.\]
+\end{definition}
+\begin{definition}[Basis]
+  A basis for a vector space $\mathbb{V}$ is a set of linearly independent
+  vectors which spans $\mathbb{V}$. The dimension of $\mathbb{V}$,
+  $\dim(\mathbb{V})$ is the number of vectors in its bases.
+\end{definition}
+Note that any vector $x\in \mathbb{V}$ can be expressed as a linear combination
+of a basis of $\mathbb{V}$.
+\begin{example}[Standard Basis]
+  In particular, for any $R^{n}$, the standard basis is defined as:
+  \[e_1=\begin{pmatrix} 1\\0\\\vdots\\0 \end{pmatrix},e_2=\begin{pmatrix} 0\\1\\\vdots\\0 \end{pmatrix} ,\ldots,e_{n}=\begin{pmatrix} 0\\0\\\vdots\\1 \end{pmatrix}.\]
+\end{example}
+
+\subsubsection{Subspaces}
+\begin{definition}[Subspace]
+  A subset $U$ of $V$ that is also a vector space with the same additive identity, addition,
+  and scalar multiplication as on $V$. We call $U$ a \emph{subspace} of $V$.
+\end{definition}
+\begin{prop}[Conditions for Subspace]
+  A subset $U$ of $V$ is a subspace of $V \iff U$ satisfies the following conditions:
+  \begin{itemize}
+    \item Additive Identity: $0\in U$.
+    \item Closure under Addition: $u,w\in U \implies u+w\in U$.
+    \item Closure under Scalar Multiplication: $a\in \mathbb{F}\wedge u\in U \implies au\in U$.
+  \end{itemize}
+\end{prop}
+\begin{proof}
+  If $U$ is a subspace of $V$, $U$ satifies the three conditions, by definition.\\
+  The first condition ensures the additive identity of $V$ is in $U$. The
+  second condition ensures that $+:U\times U \mapsto U^{2}$ is defined. The
+  third condition ensures that $\times: \mathbb{F}\times U \mapsto U$ is
+  defined, and that the additive inverse of each element is in $U$.
+  Associativity, commutativity and distributivity is inherited from $V$.
+  Since $U$ is a subset of $V$ and is a vector space, it is a subspace of $V$,
+  by definition.
+\end{proof}
+
+\begin{definition}[Affine Subspaces]
+  For a vector space $\mathbb{V}$, a vector $x_0\in \mathbb{V}$, a subspace
+  $\mathbb{U}\subseteq \mathbb{V}$, $\mathbb{L}$ is an affine subspace or a
+  linear manifold of $\mathbb{V}$ if:
+  \[\mathbb{L}=x_0+\mathbb{U}=\left\{ x_0+u | u\in \mathbb{U} \right\}.\]
+where
+\begin{itemize}
+  \item $\mathbb{U}$ is the direction space
+  \item $x_0$ is the support point
+\end{itemize}
+\end{definition}
+\begin{example}[Affine Subspaces]
+  For instance, any point, line or plane is an affine subspace of $R^{3}$.
+\end{example}
+Affine subspaces can be described by parameters: For a $k$-dimensional affine
+space $\mathbb{L}$ and a basis of $\mathbb{U}$, $\left\{ x_1,x_2,\ldots,x_k
+\right\}$, every element $x\in \mathbb{L}$ can be described by parameters
+$\lambda_i\in \mathbb{R}$:
+\[x=x_0+\lambda_1x_1+\cdots+\lambda_k x_k.\]
+\begin{example}[Hyperplanes]
+  In particular, hyperplanes are $(n-1)$-dimensional affine subspaces of $R^{n}$ with elements
+  $y\in \mathbb{R}^{n}$:
+  \[y=x_0+\sum_{i=1}^{n-1} \lambda_{i}x_i.\]
+  where $\left\{ \lambda_i \right\} _{i=1}^{n-1}\in \mathbb{R},
+  \mathbb{U}=span(x_1,x_2,\ldots,x_{n-1})\subseteq \mathbb{R}^{n}$.
+\end{example}
+
+\subsubsection{Matrices}
+\begin{definition}[Matrices]
+  A matrix $A\in \mathbb{R}^{n\times m}$ is an $n\times m$ array of numbers with elements
+  $\left\{ A_{ij} \right\} _{i,j=1}^{n,m}$:
+  \[A=
+    \begin{bmatrix} A_{11}&A_{12}&\cdots&A_{1m} \\
+      A_{21}&A_{22}&\cdots&A_{2m}\\
+      \vdots&\vdots&\ddots&\vdots\\
+    A_{n1}&A_{n2}&\cdots&A_{nm}\end{bmatrix}.\] 
+\end{definition}
+\begin{lstlisting}
+  A=np.array([[1, 2],
+              [4, 8],
+              [3, 3]])
+  print(A.shape) # (3, 2)
+\end{lstlisting}
+
+Suppose finite-dimensional vector spaces $\mathbb{V}$ and $\mathbb{W}$ with
+bases $\left\{ v_i \right\} _{i=1}^m$ and $\left\{ w_i \right\} _{i=1}^n$
+respectively. Then matrix $A\in \mathbb{R}^{n\times m}$ induces a linear map
+$f:\mathbb{R}^{m}\mapsto \mathbb{R}^{n}$ defined by:
+\[f(x)=Ax\]
+where $x\in \mathbb{V}, f(x)\in \mathbb{W}$\\
+Some useful matrix operations and functions in numpy:
+\begin{multicols}{2}
+\begin{lstlisting}
+# Matrix Addition
+A = np.array([[1, 2],
+              [4, 8],
+              [3, 3]])
+B = np.array([[4, 3],
+              [6, 8],
+              [8, 10]])
+C = A + B
+
+# Matrix Multiplication
+A = np.array([[1, 2],
+              [4, 8],
+              [3, 3]])
+B = np.array([[4, 3],
+              [8, 10]])
+C = np.matmul(A, B)
+
+# Scalar Multiplication
+A = np.array([[1, 2],
+              [4, 8],
+              [3, 3]])
+a = 3
+C = a*A
+\end{lstlisting}
+\begin{lstlisting}
+# Transpose
+A = np.array([[1, 2],
+              [4, 8],
+              [3, 3]])
+A_t = np.transpose(A)
+
+# Identity Matrix
+A = np.array([[1, 2],
+              [4, 8],
+              [3, 3]])
+I_n = np.eye(3)
+I_m = np.identity(2)
+
+# Inverse
+def matrix_inverter(X):
+    try:
+        output = LA.inv(X)
+    except LA.LinAlgError:
+        output = None
+    return output
+A = np.array([[1, 2],
+              [3, 3]])
+A_inv = matrix_inverter(A)
+\end{lstlisting}
+\end{multicols}
+
+\subsubsection{Nullspace, Range, Columnspace, Rowspace, Rank, Nullity}
+\begin{definition}[Nullspace]
+  The nullspace, or kernel, or a linear map $A: \mathbb{V}\mapsto \mathbb{W}$ is:
+  \[null(A)=\left\{ v\in V | Av=0 \right\}.\] 
+\end{definition}
+\begin{figure}[b!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{null-range}
+\end{figure}
+\begin{definition}[Range]
+  The range, or image, or $A$ is:
+  \[range(A)=\left\{ w\in \mathbb{W} | \exists v\in \mathbb{V}(Av=w) \right\}.\] 
+\end{definition}
+We can find possible bases for the range and nullspace of a matrix using SymPy:
+\begin{lstlisting}
+A = np.array([[1, 2, 3],
+              [4, 8, 12],
+              [2, 8, 10],
+              [3, 3, 6]])
+mat_A = sy.Matrix(A)
+print(str(sy.Matrix(A).columnspace()))
+print(str(sy.Matrix(A).nullspace()))
+\end{lstlisting}
+\begin{definition}[Columnspace]
+  The columnspace of a matrix $A\in \mathbb{R}^{n\times m}$ is the span of the $m$ columns.
+  \[C(A)=range(A).\] 
+\end{definition}
+\begin{definition}[Rowspace]
+  The rowspace of a matrix $A\in \mathbb{R}^{n\times m}$ is the span of the $n$ rows.
+  \[R(A)=range(A^{T}).\] 
+\end{definition}
+\begin{lstlisting}
+A = np.array([[1, 2, 3],
+              [4, 8, -1],
+              [2, 8, 2],
+              [3, 3, 0]])
+mat_A = sy.Matrix(A)
+\end{lstlisting}
+\begin{definition}[Rank]
+ $rank(A)=\dim(C(A))=\dim(R(A))=\dim(range(A))$
+\end{definition}
+\begin{definition}[Nullity]
+  $nullity(A)=\dim(null(A))$
+\end{definition}
+Some results for the rank of a matrix:
+\begin{itemize}
+  \item $rank(A)\le \min(n,m)$
+  \item $rank(AB)\le rank(A)$
+  \item $rank(AB)\le \min(rank(A), rank(B))$
+\end{itemize}
+\begin{theorem}[Rank-Nullity Theorem]
+  $rank(A) + nullity(A)=m$
+\end{theorem}
+\begin{lstlisting}
+A = np.array([[1, 2, 3],
+              [4, 8, -1],
+              [2, 8, 2],
+              [3, 3, 0]])
+print('rank A = ' + str(LA.matrix_rank(A)))
+print('rank A = ' + str(LA.matrix_rank(A)))
+print('nullity A = ' + str(A.shape[1] - LA.matrix_rank(A)))
+\end{lstlisting}
+
+\subsection{Geometrical Structure}
+\subsubsection{Length, Similarity, Angle}
+To equip a vector space with a notion of length, we equip the vector space with
+a \emph{norm}.
+\begin{definition}[Norm]
+  A function on a real vector space $\mathbb{V}$, $\left \lVert \cdot
+  \right\rVert : \mathbb{V}\mapsto \mathbb{R}$ for $\forall x,y\in
+  \mathbb{V}, \forall\alpha\in \mathbb{R}$:
+  \begin{itemize}
+    \item $\left \lVert x \right \rVert \ge 0 $, with equality $\iff x=0$
+    \item $\left \lVert \alpha x \right \rVert =\left| \alpha \right| \left \lVert x \right \rVert$
+    \item $\left \lVert x+y \right \rVert\le \left \lVert x \right \rVert+\left \lVert y \right \rVert$
+  \end{itemize}
+\end{definition}
+\begin{example}[Norms]
+  We commonly define the $l_p$ norm as follows:
+  \[\left \lVert x \right \rVert_p = {(\sum_{i=1}^{n} \left| x_i \right| ^{p})}^{\frac{1}{p}}.\] 
+  In particular, we use the $l_1,l_2$ norms:
+  \[\left \lVert x \right \rVert_1 = \sum_{i=1}^{n} \left| x_i \right|.\] 
+  \[\left \lVert x\right \rVert_2 = \sqrt{\sum_{i=1}^{n} {(x_i)}^{2}}.\] 
+\end{example}
+\begin{lstlisting}
+x_vec = np.array([x_1, x_2]).reshape(-1,1)
+l1_norm = LA.norm(x_vec, 1)
+l2_norm = LA.norm(x_vec, 2)
+\end{lstlisting}
+To equip a vector space with a notion of similarity, we equip the vector space with
+a \emph{inner product}.
+\begin{definition}[Norm]
+  A function on a real vector space $\mathbb{V}$, $\left<\cdot,\cdot \right> :
+  \mathbb{V}\times \mathbb{V}\mapsto \mathbb{R}$ for $\forall x,y,z\in
+  \mathbb{V},\forall\alpha\in \mathbb{R}$:
+  \begin{itemize}
+    \item $\left<x,x \right> \ge 0$ with equality $\iff x=0$ 
+    \item $\left<x+y,z \right> =\left<x,z \right> +\left<y,z \right>$
+    \item $\left<\alpha x,y \right> =\alpha\left< x,y\right> $
+    \item $\left<x,y \right> =\left<y,x \right> $
+  \end{itemize}
+  An inner product on $\mathbb{V}$ induces a norm on $\mathbb{V}$.
+\end{definition}
+\begin{example}[Dot Product]
+  For Euclidean space the standard inner product is the \emph{dot product}:
+  \[\left<x,y \right> =x\cdot y=\sum_{i=1}^{n} x_{i}y_{i}=x^{T}y.\]
+  which induces the $l_2$ norm.
+\end{example}
+In addition, we define the notion of angle $\theta$ between two vectors $x,y\in
+\mathbb{V}$ via the dot product:
+\[x\cdot y=\left \lVert x \right \rVert_2 \left \lVert y \right \rVert_2 \cos{\theta}.\] 
+\begin{lstlisting}
+x_vec = np.array([x_1, x_2]).reshape(-1,1)
+y_vec = np.array([y_1, y_2]).reshape(-1,1)
+l2_norm_x = LA.norm(x_vec, 2)
+l2_norm_y = LA.norm(y_vec, 2)
+dot_product = np.dot(np.squeeze(x_vec), np.squeeze(y_vec))
+cos = dot_product/(l2_norm_x * l2_norm_y)
+theta_deg = 360*np.arccos(cos)/(2 * mt.pi)
+\end{lstlisting}
+\subsubsection{Orthonormality}
+\begin{definition}[Orthonormal]
+  Two vectors $x, y \in \mathbb{V}$ are said to be orthonormal if $\left \lVert
+  x \right \rVert_1 =1,\left \lVert y \right \rVert_1 =1$ and they are
+  orthogonal vectors (ie. $\left<x,y \right> =0$).
+\end{definition}
+\begin{definition}[Orthogonal Matrix]
+  A square matrix $Q\in \mathbb{R}^{n\times n}$ is orthogonal if its columns
+  are orthonormal:
+  \[Q^{T}=Q^{-1}.\] 
+\end{definition}
+Multiplication by an orthogonal matrix can be considered to be a mapping that
+preserves vector length while rotating or reflecting the vector about the
+origin.\\
+\[(Qx)\cdot(Qy)=x\cdot y.\] 
+A rectangular matrix $\tilde{Q}\in \mathbb{R}^{n\times m}$ with orthonormal
+columns has a transpose that is the left inverse of itself:
+\[{\tilde{Q}}^{T}\tilde{Q}=I_m\text{  but  } \tilde{Q}{\tilde{Q}}^{T}\neq I_{n}.\] 
+\subsubsection{Projections}
+\begin{definition}[Projection]
+  A projection $P_\mathbb{U}: \mathbb{V}\mapsto \mathbb{U}$ is a linear mapping
+  from a vector space $\mathbb{V}$ to a subspace of $\mathbb{V}$,
+  $\mathbb{U}\subseteq \mathbb{V}$ such that
+  \[P_\mathbb{U}P_\mathbb{U}=P_\mathbb{U}\implies P_\mathbb{U}P_\mathbb{U}v=P_\mathbb{U}\]
+\end{definition}
+\begin{example}[Orthogonal Projections]
+  In Euclidean space, we consider orthogonal projections which map a vector
+  $x\in \mathbb{R}^{n}$ to a vector $P_\mathbb{U}x\in \mathbb{U}\subseteq
+  \mathbb{R}^{n}$ such that $\left \lVert x-P_\mathbb{U}x \right \rVert_2 $ is
+  minimised (it is closest to $x$). In other words, for a line $\bar{a}+t
+  \bar{b}$, we seek a $P_\mathbb{U}\in \mathbb{R}^{n\times n}$ such that
+  \begin{itemize}
+    \item $P_\mathbb{U}x=\lambda b$ for some $\lambda\in \mathbb{R}$
+    \item ${\left \lVert x-P_\mathbb{U}x \right \rVert_2} ^{2}$ is minimal
+  \end{itemize}
+  Hence:
+  \[P_\mathbb{U}=\frac{b{b}^{T}}{{\left \lVert b \right \rVert_2} ^2}.\]
+\end{example}
+\begin{proof}
+  We seek $\lambda$ that satisfies:
+  \[\argmin_\lambda{{\left \lVert x-\lambda b \right \rVert_2}^{2} }.\] 
+  Differentiating with respect to $\lambda$ for stationary points yields:
+  \[2(x-\lambda b)\cdot b=0 \implies \lambda=\frac{x\cdot b}{{\left \lVert b \right \rVert_2}^{2} }.\] 
+  and that $(x-P_\mathbb{U}x)$ is orthogonal to $b$.
+  Furthermore, we have:
+  \[P_\mathbb{U}x=\lambda b=b\lambda=b\frac{x\cdot b}{{\left \lVert b
+  \right\rVert_2}^2 }=b\frac{b^{T}x}{{\left \lVert b
+\right\rVert_2}^{2}}=\frac{b{b}^{T}}{{\left \lVert b \right \rVert_2 }^{2}}x.\] 
+\end{proof}
+\begin{example}[Generalised Orthogonal Projections]
+  In general, for an $m$-dimensional subspace $\mathbb{U}\subseteq
+  \mathbb{R}^{n}$ passing through the origin of basis vectors $\left\{ b_i
+  \right\} _{i=1}^m$:
+  \begin{itemize}
+    \item $P_\mathbb{U}x=\sum_{i=1}^{m} \lambda_i b^i=B\lambda$, where $B=\left[
+      b_1,\ldots,b_m \right]\in \mathbb{R}^{n\times m}$
+    \item ${\left \lVert x-P_\mathbb{U}x \right \rVert_2 }^{2}$ is minimal
+  \end{itemize}
+  We seek $\lambda$ satisfying:
+  \[\argmin_\lambda{{\left \lVert x-B\lambda \right \rVert_2 }^{2}}.\]
+  Differentiating with respect to $\lambda$, $2B^{T}(x-B\lambda)=0$ implies
+  $(x-P_\mathbb{U}x)$ is orthogonal to $b_i$ for all $i $, and
+  \[\lambda={(B^{T}B)}^{-1}B^{T}x.\] 
+  We have:
+  \[P_\mathbb{U}=B{(B^{T}B)}^{-1}B^{T}.\] 
+\end{example}
+
+\subsection{Linear Equations}
+One of the key uses of linear algebra is in the solution of systems of linear
+equations. For known $A\in \mathbb{R}^{n\times m},b\in \mathbb{R}^{n}$ we would
+like to solve for an unknown $x\in R^{m}$ where
+\[Ax=b.\]
+This is equivalent to a set of $n$ equations:
+\begin{align*}
+    A_{11} x_1 + A_{12} x_2 +\cdots  + A_{1m} x_m &= b_1 \\
+    A_{21} x_1 + A_{22} x_2 +\cdots + A_{2m} x_m &= b_2 \\
+    \vdots\\
+    A_{n1} x_1 + A_{n2} x_2 +\cdots + A_{nm} x_m &= b_n
+\end{align*}
+This system of equations can have a \emph{unique solution}, \emph{no
+solutions}, or \emph{infinitely many solutions}, but it cannot have more than 1
+and less than an infinite number of solutions. 
+
+\subsection{Matrix Decomposition}
+\begin{definition}[Determinants]
+  Determinants are defined for square matrices only. For square matrix $A$, the
+  determinant is denoted $\det(A)$ or $\left| A \right|$.
+\end{definition}
+\begin{example}[For $A\in\mathbb{R}^{2\times2}$]
+  \[\det(A)=\begin{vmatrix} A_{11}&A_{12}\\A_{21}&A_{22} \end{vmatrix}=A_{11}A_{22}-A_{21}A_{12}.\]
+\end{example}
+\begin{example}[For $A\in\mathbb{R}^{3\times3}$]
+  \[\det(A)=\begin{vmatrix}
+    A_{11}&A_{12}&A_{13}\\A_{21}&A_{22}&A_{23}\\A_{31}&A_{32}&A_{33}\end{vmatrix}
+    =A_{11} \begin{vmatrix} A_{22}&A_{23}\\A_{32}&A_{33}\end{vmatrix} -A_{12}
+    \begin{vmatrix} A_{21}&A_{23}\\A_{31}&A_{33} \end{vmatrix}
+    +A_{13}\begin{vmatrix} A_{21}&A_{22}\\A_{31}&A_{32} \end{vmatrix}.\] 
+\end{example}
+\begin{example}[For $A\in\mathbb{R}^{n\times n}$]
+  \[\det(A)=\sum_{j=1}^{n} {(-1)}^{i+j}A_{ij}\begin{vmatrix} M_{ij} \end{vmatrix}.\]
+\end{example}
+Geometrically, the determinant is the signed volume of the $n$-dimensional
+paralleltope that results from the linear transform of $A$ on the unit
+hypercube.
+\begin{remark}
+  Some properties of the determinant:
+  \begin{itemize}
+    \item $\det(I)=1$
+    \item $\det(A^{T})=\det(A)$
+    \item $\det(AB)=\det(A)\det(B)$ 
+    \item $\det(A^{-1})={(\det(A))}^{-1}$ 
+    \item $\det(\alpha A)=\alpha^{n}\det(A)$
+  \end{itemize}
+\end{remark}
+\begin{definition}[Traces]
+  Traces are defined for square matrices only. For square matrix $A\in
+  \mathbb{R}^{n\times n}$, the trace is denoted $\tr(A):\mathbb{R}^{n\times
+  n}\mapsto \mathbb{R}$ and is defined as the sum of the diagonal elements of
+  $A$:
+  \[\tr(A)=\sum_{i=1}^{n} A_{ii}.\] 
+\end{definition}
+\begin{remark}
+  Some properties of the trace:
+  \begin{itemize}
+    \item $\tr(A+B)=\tr(A)+\tr(B)$ 
+    \item $\tr(\alpha A)=\alpha\tr(A)$
+    \item $\tr(I_{n})=n$ 
+    \item $\tr(CD)=\tr(DC)$ for $C\in \mathbb{R}^{n\times k},D\in \mathbb{R}^{k\times n}$
+  \end{itemize}
+\end{remark}
+\subsubsection{Matrix Decomposition}
+\begin{definition}[Singular Value Decomposition]
+  For any matrix $A\in \mathbb{R}^{n\times m}$,
+  \[\mathbf{A}=\mathbf{U\Sigma V^{T}}\]
+  where
+  \begin{itemize}
+    \item $\mathbf{U} = [\mathbf{u}_1, \mathbf{u}_2,\ldots,\mathbf{u}_n]$ is an $n \times n$ orthogonal matrix, and $\mathbf{u}_i \in \mathbb{R}^n$ are known as left-singular vectors;
+    \item $\mathbf{V} = [\mathbf{v}_1, \mathbf{v}_2,\ldots,\mathbf{v}_m]$ is an $m \times m$ orthogonal matrix, and $\mathbf{v}_i \in \mathbb{R}^m$ are known as right-singular vectors;
+    \item $\boldsymbol{\Sigma}$ is an $n \times m$ matrix with $\boldsymbol{\Sigma}_{ii} = \sigma_{i} \geq 0$, known as the singular values, and $\boldsymbol{\Sigma}_{ij} = 0, i \neq j$
+  \end{itemize}
+\end{definition}
+To develop an intuition for the representation of SVD we consider the linear
+transform of the matrix $A$:
+ \[\mathbf{A} \mathbf{x} = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^{T} \mathbf{x}.\] 
+
+There are three elements to this mapping:
+\begin{itemize}
+  \item $\mathbf{x} \rightarrow \mathbf{Q}^T \mathbf{x}$
+     This represents a rotation of $\mathbf{x}$ in $\mathbb{R}^{n}$
+   \item $(\mathbf{V}^T \mathbf{x}) \rightarrow \boldsymbol{\Sigma} (\mathbf{V}^T \mathbf{x})$    
+     This represents a shear of $(\mathbf{V}^T \mathbf{x})$ in the axis-aligned
+     directions and also adds rows of zeroes (if $m>n$) or deletes rows from
+     it (if $n>m$)
+   \item $(\boldsymbol{\Sigma} \mathbf{V}^T \mathbf{x}) \rightarrow \mathbf{U} (\boldsymbol{\Sigma} \mathbf{Q}^T \mathbf{x})$    
+     This represents a rotation of $(\boldsymbol{\Lambda} \mathbf{Q}^T \mathbf{x})$ inverse to the original rotation
+\end{itemize}
+
+\begin{definition}[Eigenvectors, Eigenvalues]
+  For a square matrix, $\mathbf{A} \in \mathbb{R}^{n \times n}$, we say that $x$ is an
+  eigenvector of $A$ corresponding to an eigenvalue, $\lambda$, if:
+  \[Ax=\lambda x.\] 
+  \begin{itemize}
+    \item This implies that: $(\mathbf{A} - \lambda \mathbf{I})\mathbf{x} = \mathbf{0}$
+    \item Therefore if ${(\mathbf{A} - \lambda \mathbf{I})}^{-1}$ exists, then the unique solution is $\mathbf{x} = \mathbf{0}$
+    \item Therefore for non-trivial solutions we must demand that $\nexists \; {(\mathbf{A} - \lambda \mathbf{I})}^{-1}$
+    \item Therefore for non-trivial solutions $\mbox{det}(\mathbf{A} - \lambda \mathbf{I})=0$ [by the Invertible Matrix Theorem]
+    \item $\mbox{det}(\mathbf{A} - \lambda \mathbf{I})=0$ is known as the characteristic polynomial of $\mathbf{A}$ and
+    its (possibly non-unique) roots determine the possible eigenvalues of our problem
+  \end{itemize}
+\end{definition}
+\begin{definition}[Eigendecomposition]
+  The eigendecomposition of a square matrix, $\mathbf{A} \in \mathbb{R}^{n \times
+  n}$, with $n$ linearly independent eigenvectors, ${\left\{ \mathbf{p}_i \right\}}_{i=1}^n$ states that:
+  \[\mathbf{A} = \mathbf{P} \boldsymbol{\Lambda} \mathbf{P}^{-1}\]
+  where:
+  \begin{itemize}
+    \item $\mathbf{P} = [\mathbf{p}_1, \mathbf{p}_2,\ldots,\mathbf{p}_n]$;
+    \item $\boldsymbol{\Lambda} = \mbox{diag}(\lambda_1, \lambda_2,\ldots,\lambda_n)$ 
+    \item $\lambda_{i}$ is the eigenvalue associated with the eigenvector $\mathbf{q}_i$	
+  \end{itemize}
+  It follows that:
+  \[\mbox{det}(\mathbf{A}) = \prod_{i=1}^n \lambda_i\]
+  Note that such a decomposition does not exist for all matrices.
+\end{definition}
+\subsubsection{Symmetrical Matrix Decomposition}
+\begin{definition}[Spectral Decomposition]
+For $\mathbf{A} \in \mathbb{R}^{n \times n}$ is (real and) symmetric, then
+there exists an orthonormal basis for $\mathbb{R}^n$ consisting of
+eigenvectors of $\mathbf{A}$, ${\left\{ \mathbf{q}_i \vert \mathbf{q}_i \cdot
+\mathbf{q}_j = \delta_{ij}, \quad \forall \; j \right\}}_{i=1}^n$, and the
+associated eigenvalues are real. We call this particular eigendecomposition the
+spectral decomposition.
+
+From this it follows that the eigendecomposition of a real symmetric matrix, $\mathbf{A}$, is given by:
+\[\mathbf{A} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^{T}\]
+
+where:
+\begin{itemize}
+  \item $\mathbf{Q} = [\mathbf{q}_1, \mathbf{q}_2,\ldots,\mathbf{q}_n]$; $\qquad{\left\{ \mathbf{q}_i \vert \mathbf{q}_i \cdot \mathbf{q}_j = \delta_{ij},\quad \forall \; j \right\}}_{i=1}^n$
+  \item $\boldsymbol{\Lambda} = \mbox{diag}(\lambda_1, \lambda_2,\ldots,\lambda_n)$
+  \item $\lambda_{i}$ is the eigenvalue associated with the eigenvector $\mathbf{q}_i$
+\end{itemize}
+\end{definition}
+To develop an intuition for the representation of the eigendecomposition we consider the
+linear transform of the matrix $A$:
+ \[\mathbf{A} \mathbf{x} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^{T} \mathbf{x}.\] 
+
+There are three elements to this mapping:
+\begin{itemize}
+  \item $\mathbf{x} \rightarrow \mathbf{Q}^T \mathbf{x}$
+     This represents a rotation of $\mathbf{x}$
+   \item $(\mathbf{Q}^T \mathbf{x}) \rightarrow \boldsymbol{\Lambda} (\mathbf{Q}^T \mathbf{x})$    
+     This represents a shear of $(\mathbf{Q}^T \mathbf{x})$ in axis-aligned directions
+   \item $(\boldsymbol{\Lambda} \mathbf{Q}^T \mathbf{x}) \rightarrow \mathbf{Q} (\boldsymbol{\Lambda} \mathbf{Q}^T \mathbf{x})$    
+     This represents a rotation of $(\boldsymbol{\Lambda} \mathbf{Q}^T \mathbf{x})$ inverse to the original rotation
+\end{itemize}
+
+\subsection{Quadratic Forms}
+The quadratic form of a square matrix $\mathbf{M}\in \mathbb{R}^{n\times n}$ is defined:
+\[\mathbf{x^{T}Mx}.\] 
+\begin{remark}
+  It is always possile to express the quadratic form of a square matrix $\mathbf{M}$ as the
+  quadratic form of an associated symmetric matrix $\mathbf{A}=\frac{1}{2}(\mathbf{M+M^{T}})$:
+  \[\mathbf{x^{T}Mx=x^{T}Ax}.\]
+  And since quadratic forms are scalars, $\mathbf{x^{T}Mx=x^{T}M^{T}x}$
+\end{remark}
+\subsubsection{Definiteness}
+
+A real symmetric matrix, $\mathbf{A}$, is said to be:
+\begin{itemize}
+  \item Positive Semidefinite (psd), denoted $\mathbf{A} \succeq 0 \iff
+    \mathbf{x}^{T} \mathbf{A} \mathbf{x} \geq 0, \forall \mathbf{x} \; \neq
+    \mathbf{0}$
+  \item Positive Definite (pd), denoted $\mathbf{A} \succ 0 \iff \mathbf{x}^{T}
+    \mathbf{A} \mathbf{x} > 0, \forall \mathbf{x} \; \neq \mathbf{0}$
+  \item Negative Semidefinite (nsd), denoted $\mathbf{A} \preceq 0 \iff
+    \mathbf{x}^{T} \mathbf{A} \mathbf{x} \leq 0, \forall \mathbf{x} \; \neq
+    \mathbf{0}$
+  \item Negative Definite (nd), denoted $\mathbf{A} \prec 0 \iff \mathbf{x}^{T}
+    \mathbf{A} \mathbf{x} < 0, \forall \mathbf{x} \; \neq \mathbf{0}$
+  \item Indefinite otherwise
+\end{itemize}
+\subsubsection{Geometric Intepretation of PD Quadratic Forms}
+A function which occurs frequently in machine learning is:
+\[f(\mathbf{x}) = \mathbf{x}^T \mathbf{A} \mathbf{x}\]
+for some real, symmetric, positive definite $\mathbf{A}$. We are interested in
+the form of solutions to the following equation:
+\[c = \mathbf{x}^T \mathbf{A} \mathbf{x}\]
+for some constant $c$. We have the solution:
+\[\mathbf{x} = \sqrt{c} \mathbf{Q} \boldsymbol{\Lambda}^{-\frac{1}{2}}\mathbf{z} \qquad \mbox{s.t. } \Vert\mathbf{z}\Vert_2 =1\]
+where:
+\begin{itemize}
+  \item $\mathbf{A} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^T$
+  \item $\mathbf{Q}$ is the matrix comprised of ordered orthonormal eigenvectors of $\mathbf{A}$
+  \item $\boldsymbol{\Lambda}$ is the diagonal matrix of the ordered eigenvalues of $\mathbf{A}$
+  \item $\boldsymbol{\Lambda}^{-\frac{1}{2}}$ is the diagonal matrix of the ordered inverse of the square root of the eigenvalues of $\mathbf{A}$
+\end{itemize}
+[N.B. The eigenvalues of $\mathbf{A}$ are all positive thus
+$\boldsymbol{\Lambda}^{-\frac{1}{2}}$ exists.]
+
+The solution represents a mapping of three steps:
+\begin{itemize}
+  \item Plot a circle of radius $\sqrt{c}$
+  \item Apply a scaling mapping, $\boldsymbol{\Lambda}^{-\frac{1}{2}}$ to the
+    circle, stretching by a factor equal to the inverse square root of the
+    eigenvalues of $\mathbf{A}$ in each of the axis directions to form an
+    axis-aligned ellipse
+  \item Apply a rotation mapping, $\mathbf{Q}$ to the axis aligned ellipse, so
+    that it is rotated such that the axes now line up with the eigenvectors of
+    $\mathbf{A}$ to form an eigenvector-aligned ellipse
+\end{itemize}
+Our solution is hence an ellipsoid for which:
+\begin{itemize}
+  \item The axes point in the direction of the eigenvectors of $\mathbf{A}$
+  \item The radii are proportional to the inverse square root of the corresponding eigenvalues of $\mathbf{A}$
+\end{itemize}
+\subsection{Important Results}
+\begin{theorem}[Invertible Matrix Theorem]
+  For $A\in \mathbb{R}^{n\times n}$, the following statements are equivalent:
+  \begin{multicols}{2}
+    \begin{itemize}
+      \item $A$ is invertible
+      \item $rank(A)=n$ 
+      \item $\det(A)\neq 0$
+      \item The columns of $A$ are linearly dependent
+      \item The rows of $A$ are linearly independent
+      \item $\nexists x (Ax=0)$
+    \end{itemize}
+  \end{multicols}
+\end{theorem}
+Other useful results:
+\begin{itemize}
+  \item $\mathbf{X^{T}X}$ is symmetric
+  \item $\mathbf{X^{T}X}\succeq0$
+  \item $rank(\mathbf{X^{T}X})=rank(\mathbf{X})\le \min(n,m)$ 
+  \item $\exists{(\mathbf{X^{T}X})}^{-1}\iff(rank(\mathbf{X^{T}X})=m)\iff\mathbf{X^{T}X}\succ 0$
+  \item $rank(\mathbf{X^{T}X})=rank(\mathbf{X^{T}X}|\mathbf{X^{T}y}), \forall \mathbf{y}$
+\end{itemize}
