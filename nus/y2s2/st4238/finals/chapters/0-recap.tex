@@ -1,0 +1,104 @@
+\section{Recap: Poisson Processes \& CTMCs}
+\subsection{Poisson process}
+A \textcolor{Blue}{\textbf{Poisson process}} $\{N(t),t\ge 0\}$ with rate
+$\lambda>0$ satisfies (i) $N(0)=0$; (ii) \textcolor{Bittersweet}{independent
+increments}; (iii) $N(t+s)-N(s)\sim\mathrm{Poisson}(\lambda t)$.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Interarrivals} $T_i\stackrel{\mathrm{iid}}{\sim}\mathrm{Exp}(\lambda)$
+    (\textcolor{Bittersweet}{memoryless}); arrival times
+    $S_n=\sum_{i=1}^n T_i\sim\mathrm{Gamma}(n,\lambda)$.
+  \item \textcolor{Bittersweet}{Order-statistic property}: given $N(t)=n$,
+    $(S_1,\ldots,S_n)\stackrel{d}{=}$ order statistics of $n$ iid
+    $\mathrm{Uniform}(0,t)$.
+  \item \textcolor{Bittersweet}{Superposition}: independent rates
+    $\lambda_1,\lambda_2$ merge to rate $\lambda_1+\lambda_2$.
+  \item \textcolor{Bittersweet}{Thinning}: label arrivals iid with prob $p$
+    $\Rightarrow$ Poisson rate $\lambda p$.
+  \item \textcolor{Bittersweet}{Competing Poissons}: indep.\ rates $\lambda_1,\lambda_2$,
+    $p=\lambda_1/(\lambda_1+\lambda_2)$,
+    \[\mathbb{P}(W^1_n<W^2_m)=\sum_{k=n}^{n+m-1}\binom{n+m-1}{k}p^k(1-p)^{n+m-1-k}.\]
+\end{itemize}
+
+\subsection{Non-homogeneous \& compound Poisson}
+A \textcolor{Blue}{\textbf{non-homogeneous Poisson process}} (NHPP) with
+intensity $\lambda(t)$ has independent increments and
+$\mathbb{P}(N(t+h)-N(t)=1)=\lambda(t)h+o(h)$, $\mathbb{P}(\ge 2)=o(h)$. Its
+\textcolor{Bittersweet}{mean function} is
+\[m(t)=\int_0^t \lambda(s)\,ds,\qquad N(t)\sim\mathrm{Poisson}(m(t)).\]
+Thinning by $p(t)$ yields NHPP intensity $\lambda(t)p(t)$.
+\textcolor{Bittersweet}{Time-rescale}: $\tilde N(s)=N(\Lambda^{-1}(s))$ is homogeneous PP
+rate $1$, where $\Lambda(t)=\int_0^t\lambda(u)\,du$.
+
+A \textcolor{Blue}{\textbf{compound Poisson process}}
+$X(t)=\sum_{i=1}^{N(t)} Y_i$ ($Y_i$ iid, independent of $N$) satisfies
+\[\mathbb{E}[X(t)]=\lambda t\,\mathbb{E}[Y_1],\quad
+\mathrm{Var}(X(t))=\lambda t\,\mathbb{E}[Y_1^2].\]
+\textcolor{Bittersweet}{Merge compound}: indep.\ rates $\lambda_1,\lambda_2$ merge to
+rate $\lambda_1+\lambda_2$ with mixture jump law
+$F=(\lambda_1 F_1+\lambda_2 F_2)/(\lambda_1+\lambda_2)$.\\
+\textcolor{Bittersweet}{Mixed Poisson}: $L\sim g$, $\{N(t)\mid L=\lambda\}\sim\mathrm{PP}(\lambda)$.
+Then $\mathbb{E}[N(t)]=t\,\mathbb{E}[L]$,
+$\mathrm{Var}(N(t))=t\,\mathbb{E}[L]+t^2\,\mathrm{Var}(L)$.
+
+\subsection{Continuous-time Markov chains}
+A \textcolor{Blue}{\textbf{continuous-time Markov chain}} (CTMC) satisfies the
+\textcolor{Bittersweet}{Markov property}
+$\mathbb{P}(X(t+s)=j\mid X(s)=i,\{X(u),u<s\})=P_{ij}(t)$, depending only on lag
+$t$. \textcolor{Bittersweet}{Chapman-Kolmogorov}:
+\[P_{ij}(t+s)=\sum_k P_{ik}(t)P_{kj}(s),\qquad P(t+s)=P(t)P(s).\]
+\textcolor{Bittersweet}{Sojourn time} in state $i$ is
+$\mathrm{Exp}(\nu_i)$; jump to $j\ne i$ with prob $q_{ij}/\nu_i$.
+
+\paragraph{Infinitesimal generator}
+The \textcolor{Blue}{\textbf{infinitesimal generator}} $G=P'(0)$ has
+\[G_{ii}=-\nu_i,\quad G_{ij}=q_{ij}\;(i\ne j),\quad \textstyle\sum_j G_{ij}=0.\]
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Kolmogorov forward}: $P'(t)=P(t)G$.
+  \item \textcolor{Bittersweet}{Kolmogorov backward}: $P'(t)=GP(t)$.
+  \item Matrix solution: $P(t)=e^{Gt}=\sum_{n\ge 0}(Gt)^n/n!$.
+\end{itemize}
+
+\subsection{Birth-death \& stationary}
+A \textcolor{Blue}{\textbf{birth-death process}} on $\{0,1,2,\ldots\}$ has
+$q_{n,n+1}=\lambda_n$, $q_{n,n-1}=\mu_n$, $\nu_n=\lambda_n+\mu_n$.
+\textcolor{Bittersweet}{Stationary recurrence}:
+\[\frac{\pi_n}{\pi_0}=\prod_{k=0}^{n-1}\frac{\lambda_k}{\mu_{k+1}},\qquad
+\textstyle\sum_n\pi_n<\infty.\]
+\textcolor{ForestGreen}{M/M/1 queue} ($\lambda_n=\lambda$, $\mu_n=\mu$,
+$\rho=\lambda/\mu<1$): $\pi_n=(1-\rho)\rho^n$.
+
+\paragraph{Stationary \& reversibility}
+$\pi$ is \textcolor{Bittersweet}{stationary} iff $\pi G=0$, equivalently the
+\textcolor{Bittersweet}{global balance}
+$\pi_i\nu_i=\sum_{j\ne i}\pi_j q_{ji}$. \textcolor{Bittersweet}{Ergodic
+theorem}: irreducible positive-recurrent $\Rightarrow
+\lim_{t\to\infty}P_{ij}(t)=\pi_j$, independent of $i$.\\
+\textcolor{Bittersweet}{Detailed balance}
+$\pi_i q_{ij}=\pi_j q_{ji}$ $\;\Leftrightarrow\;$
+\textcolor{Bittersweet}{time reversibility}; implies stationarity.\\
+\textcolor{Bittersweet}{Embedded chain}: if $\psi$ stationary for embedded jump chain
+(probs $q_{ij}/\nu_i$), then CTMC stationary $\pi_i\propto\psi_i/\nu_i$, equivalently
+$\psi_i\propto\pi_i\nu_i$.
+
+\paragraph{ODE toolkit (linear systems for CTMC/PP)}
+\textcolor{Bittersweet}{Linear 1st-order}: $y'=ay+b\Rightarrow y=-b/a+Ce^{at}$
+($a\ne 0$); integrating factor $e^{-at}$.\\
+\textcolor{Bittersweet}{2-state CTMC}: for
+$G=\begin{pmatrix}-\lambda & \lambda\\ \mu & -\mu\end{pmatrix}$,
+\[P_{00}(t)=\frac{\mu+\lambda e^{-(\lambda+\mu)t}}{\lambda+\mu},\quad
+P_{01}(t)=\frac{\lambda(1-e^{-(\lambda+\mu)t})}{\lambda+\mu}.\]
+\textcolor{Bittersweet}{Diagonalisation}: $G=UDU^{-1}\Rightarrow
+P(t)=Ue^{Dt}U^{-1}$; one eigenvalue is $0$ with left
+eigenvector $=\pi$.\\
+\textcolor{Bittersweet}{Forward equation for PP} ($P_n(t)=\mathbb{P}(N(t)=n)$):
+$P_n'=\lambda P_{n-1}-\lambda P_n$, $P_0'=-\lambda P_0$ recovers
+\textcolor{ForestGreen}{$P_n(t)=(\lambda t)^n e^{-\lambda t}/n!$}.\\
+\textcolor{Blue}{\textbf{Yule process}} (pure birth, rate $n\lambda$ in state $n$,
+start at $1$):
+\textcolor{ForestGreen}{$P_n(t)=e^{-\lambda t}(1-e^{-\lambda t})^{n-1}$}
+(geometric on $\{1,2,\ldots\}$).\\
+\textcolor{Bittersweet}{First-passage mean}: $m_i=\mathbb{E}_i[T_A]$ solves
+$(Gm)_i=-1$ for $i\notin A$, $m_i=0$ on $A$.\\
+\textcolor{Bittersweet}{PGF method}: for birth-death,
+$G(z,t)=\mathbb{E}[z^{X(t)}]$ reduces $\partial_t G$ to a 1st-order linear PDE in
+$(z,t)$; solve via characteristics.

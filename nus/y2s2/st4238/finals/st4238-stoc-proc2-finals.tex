@@ -1,0 +1,69 @@
+\documentclass[11pt,landscape,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{PTSansNarrow}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage[top=0mm,bottom=1mm,left=0mm,right=1mm]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,graphs,shapes.misc,decorations.pathreplacing}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{cool}
+\usepackage{graphicx}
+\graphicspath{{./src/}}
+
+\setlist[itemize]{noitemsep, topsep=0pt}
+
+\setlength{\jot}{0pt}
+\appto{\footnotesize}{%
+    \setlength{\abovedisplayskip}{0pt}
+    \setlength{\belowdisplayskip}{0pt}
+    \setlength{\abovedisplayshortskip}{0pt}
+    \setlength{\belowdisplayshortskip}{0pt}
+}
+
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\pagestyle{empty}
+\renewcommand{\baselinestretch}{0.9}
+
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%
+                                {\sffamily\small\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%
+                                {\sffamily\small\bfseries}}
+\renewcommand{\paragraph}{\@startsection{paragraph}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%
+                                {\sffamily\bfseries}*}
+\makeatother
+
+\setlist[itemize]{noitemsep,nolistsep,leftmargin=*}
+\setlist[enumerate]{noitemsep,nolistsep,leftmargin=*}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\footnotesize
+\begin{multicols*}{4}
+    \input{misc-math.tex}
+    \input{chapters/0-recap.tex}
+    \input{chapters/1-martingale.tex}
+    \input{chapters/2-renewal.tex}
+    \input{chapters/3-brownian.tex}
+    \input{chapters/4-gaussian.tex}
+\end{multicols*}
+\end{document}

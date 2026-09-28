@@ -1,0 +1,11 @@
+\paragraph{Multivariate normal}
+$\mathbf{X}\sim \mathcal{N}(\boldsymbol\mu,\Sigma)$ has density
+\[f(\mathbf x)=(2\pi)^{-k/2}|\Sigma|^{-1/2}\exp\!\left(-\tfrac{1}{2}(\mathbf x-\boldsymbol\mu)^\top\Sigma^{-1}(\mathbf x-\boldsymbol\mu)\right).\]
+\textcolor{Bittersweet}{Conditional}: partition $\mathbf X=(\mathbf X_1,\mathbf X_2)$,
+\[\mathbf X_1\mid\mathbf X_2\sim \mathcal{N}\!\left(\boldsymbol\mu_1+\Sigma_{12}\Sigma_{22}^{-1}(\mathbf X_2-\boldsymbol\mu_2),\ \Sigma_{11}-\Sigma_{12}\Sigma_{22}^{-1}\Sigma_{21}\right).\]
+
+\paragraph{Conditional moments}
+\textcolor{Bittersweet}{Total variance}:
+$\mathrm{Var}(X)=\mathbb{E}[\mathrm{Var}(X\mid Y)]+\mathrm{Var}(\mathbb{E}[X\mid Y])$.\\
+\textcolor{Bittersweet}{Random sum}: if $N\perp(X_i)$ iid,
+$\mathbb{E}\!\left[\sum_{i=1}^N X_i\right]=\mathbb{E}[N]\,\mathbb{E}[X_1]$.

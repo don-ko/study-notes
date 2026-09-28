@@ -1,0 +1,66 @@
+\section{Gaussian Processes}
+A \textcolor{Blue}{\textbf{Gaussian process}} is a stochastic process
+$\{X(t), t\ge 0\}$ such that for every finite $t_1,\ldots,t_n$, the vector
+$(X(t_1),\ldots,X(t_n))$ is multivariate Gaussian. It is fully characterised
+by the \textcolor{Bittersweet}{mean function} $m(t)=\mathbb{E}[X(t)]$ and the
+\textcolor{Bittersweet}{covariance kernel}
+\[k(s,t)=\mathrm{Cov}(X(s),X(t)).\]
+
+\subsection{Brownian bridge}
+The \textcolor{Blue}{\textbf{Brownian bridge}} on $[0,1]$ is
+$X(t)=B(t)-tB(1)$ for standard BM $B$ (equivalently the law of $B$
+conditioned on $B(1)=0$).
+\textcolor{Bittersweet}{Mean and covariance} (for $s\le t$):
+\[\mathbb{E}[X(t)]=0,\qquad
+\mathrm{Cov}(X(s),X(t))=s(1-t).\]
+Equivalently, $\mathrm{Cov}(X(s),X(t))=\min(s,t)-st$.\\
+\textcolor{Bittersweet}{Marginal}: at fixed $t\in(0,1)$,
+\[X(t)\sim\mathcal{N}\left(0,\ t(1-t)\right).\]
+\textcolor{Bittersweet}{Joint}: for $s\le t$,
+\[(X(s),X(t))\sim\mathcal{N}\!\left(\mathbf{0},\
+\begin{pmatrix} s(1-s) & s(1-t)\\ s(1-t) & t(1-t)\end{pmatrix}\right).\]
+\textcolor{Bittersweet}{Endpoints (pinning)}: $X(0)=X(1)=0$ a.s.\\
+\textcolor{Bittersweet}{Increments NOT independent} (the constraint $X(1)=0$
+couples them). The marginal increment law for $s<t<1$ is
+\[X(t)-X(s)\sim\mathcal{N}\!\left(0,\ (t-s)-(t-s)^2\right).\]
+
+\subsection{Integrated Brownian motion}
+For standard BM $B(t)$, define
+\[\textcolor{Blue}{\textbf{integrated Brownian motion}}\quad
+Y(t)=\int_0^t B(s)\,ds.\]
+$Y(t)$ is a Gaussian process (intuition: limit of Gaussian Riemann sums).
+\textcolor{Bittersweet}{Mean and covariance} (for $s\le t$):
+\[\mathbb{E}[Y(t)]=0,\qquad
+\mathrm{Cov}(Y(s),Y(t))=\dfrac{s^2(3t-s)}{6}.\]
+\textcolor{Bittersweet}{Variance}:
+$\mathrm{Var}(Y(t))=t^3/3$, so $Y(t)\sim\mathcal{N}(0,\,t^3/3)$.
+
+\subsection{Ornstein--Uhlenbeck process}
+The \textcolor{Blue}{\textbf{Ornstein--Uhlenbeck process}} is the mean-reverting
+Gaussian Markov process
+\[dX_t=-\theta(X_t-\mu)\,dt+\sigma\,dB_t,\qquad \theta,\sigma>0.\]
+Solution: $X_t=\mu+(x_0-\mu)e^{-\theta t}+\sigma\!\int_0^t e^{-\theta(t-s)}\,dB_s$.\\
+\textcolor{Bittersweet}{Mean and variance}:
+\[\mathbb{E}[X_t]=\mu+(x_0-\mu)e^{-\theta t},\quad
+\mathrm{Var}(X_t)=\tfrac{\sigma^2}{2\theta}(1-e^{-2\theta t}).\]
+\textcolor{Bittersweet}{Stationary distribution}:
+$\mathcal{N}(\mu,\sigma^2/(2\theta))$.\\
+\textcolor{Bittersweet}{Stationary covariance}: $\mathrm{Cov}(X_s,X_t)=
+\tfrac{\sigma^2}{2\theta}e^{-\theta|s-t|}$ (depends on $|s-t|$ only).
+
+\subsection{Bridge \& integrated-BM extras}
+\textcolor{Bittersweet}{Time-reversal} (standard bridge):
+$X(1-t)\stackrel{d}{=}X(t)$.\\
+\textcolor{Bittersweet}{It\^o construction}: $X(t)=(1-t)\!\int_0^t\!\frac{dB(s)}{1-s}$
+(standard bridge on $[0,1]$).\\
+\textcolor{Bittersweet}{Joint $(B(t),Y(t))$} for $Y(t)=\int_0^t B(s)\,ds$
+(standard BM):
+\[\begin{pmatrix}B(t)\\ Y(t)\end{pmatrix}\sim\mathcal{N}\!\left(\mathbf 0,
+\begin{pmatrix}t & t^2/2\\ t^2/2 & t^3/3\end{pmatrix}\right).\]
+\textcolor{Bittersweet}{White-noise heuristic} (It\^o isometry, lite): $\dot B$
+as ``derivative'' of BM; for deterministic $f$,
+\[\int_0^t f(s)\,dB(s)\sim\mathcal{N}\!\left(0,\,\int_0^t f(s)^2\,ds\right).\]
+\textcolor{Bittersweet}{Karhunen--Lo\`eve (BM on $[0,1]$)}:
+$B(t)=\sum_{n\ge 1}\xi_n\phi_n(t)$, with
+$\xi_n\stackrel{\mathrm{iid}}{\sim}\mathcal{N}(0,1)$ and
+$\phi_n(t)=\sqrt{2}\sin((n-\tfrac12)\pi t)/((n-\tfrac12)\pi)$.

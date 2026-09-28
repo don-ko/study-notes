@@ -1,0 +1,103 @@
+\section{Martingales}
+\subsection{Definitions}
+A \textcolor{Blue}{\textbf{filtration}} is an increasing sequence of
+$\sigma$-fields $\mathcal{F}_1 \subseteq \mathcal{F}_2 \subseteq \cdots$ on
+$\Omega$. A process $\{X_n\}$ is \textcolor{Bittersweet}{adapted} to
+$\{\mathcal{F}_n\}$ if $\sigma(X_n) \subseteq \mathcal{F}_n$. The
+\textcolor{Bittersweet}{canonical filtration} is
+$\mathcal{F}_n = \sigma(X_1, \ldots, X_n)$ — the smallest filtration to
+which $\{X_n\}$ is adapted.
+
+A process $\{M_n\}$ is a \textcolor{Blue}{\textbf{martingale}} w.r.t.
+$\{\mathcal{F}_n\}$ if:
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Integrable}: $\mathbb{E}|M_n| < \infty$ for all $n$.
+  \item \textcolor{Bittersweet}{Adapted}: $M_n$ is $\mathcal{F}_n$-measurable.
+  \item \textcolor{Bittersweet}{Fair}: $\mathbb{E}[M_{n+1} \mid \mathcal{F}_n] = M_n$.
+\end{itemize}
+Replace $=$ with $\ge$ for a \textcolor{Bittersweet}{submartingale} (drifts up)
+and $\le$ for a \textcolor{Bittersweet}{supermartingale} (drifts down).
+\textcolor{Bittersweet}{Iterated property}: for $k \ge 1$,
+\[\mathbb{E}[M_{n+k} \mid \mathcal{F}_n] = M_n,\]
+so given the past, the expected future increment is $0$. A martingale need
+\emph{not} be a Markov chain; if it is one,
+$\mathbb{E}[M_{n+1} \mid M_n] = M_n$ suffices.
+
+\paragraph{Standard examples}
+Let $\xi_i$ iid, $S_n = \sum_{i=1}^n \xi_i$, $S_0 = 0$. The following are
+martingales w.r.t.\ $\mathcal{F}_n = \sigma(\xi_1, \ldots, \xi_n)$:
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Mean-zero sum}: $M_n = S_n$, when
+    $\mathbb{E}[\xi_i] = 0$.
+  \item \textcolor{Bittersweet}{Compensated square}: $M_n = S_n^2 - n\sigma^2$,
+    when $\mathrm{Var}(\xi_i) = \sigma^2$.
+  \item \textcolor{Bittersweet}{Compensated cube}: $M_n = S_n^3 - 3 n S_n$,
+    for symmetric $\pm 1$ random walk.
+  \item \textcolor{Bittersweet}{Asymmetric exponential}: $M_n = (q/p)^{S_n}$
+    for $\xi_i = \pm 1$ with $\mathbb{P}(\xi = 1) = p$, $q = 1-p$. This is
+    \emph{the} martingale for asymmetric gambler's ruin.
+  \item \textcolor{Bittersweet}{Compensated Poisson} (continuous time):
+    $M(t) = N(t) - \lambda t$ for $N$ a PP rate $\lambda$.
+\end{itemize}
+Note $e^{\lambda S_n}$ alone is \textcolor{Bittersweet}{not} a martingale; one
+must normalise to the \textcolor{Bittersweet}{Wald martingale}
+$M_n = e^{\lambda S_n} / M_\xi(\lambda)^n$, where $M_\xi(\lambda)$ is the MGF
+of $\xi_i$.
+
+\subsection{Stopping times \& OST}
+A \textcolor{Blue}{\textbf{stopping time}} is $T : \Omega \to \mathbb{N} \cup
+\{\infty\}$ with $\{T = n\} \in \mathcal{F}_n$, i.e.\ deciding whether to stop
+at time $n$ uses only $X_0, \ldots, X_n$. Canonical examples: first hitting
+time $T = \inf\{n : X_n = s\}$ and first exit time
+$T = \inf\{n : X_n \notin A\}$.
+
+\textcolor{Blue}{\textbf{Optional Stopping Theorem}}: if $\{M_n\}$ is a
+martingale and $T$ a stopping time with
+\begin{itemize}
+  \item[(i)] \textcolor{Bittersweet}{$\mathbb{P}(T < \infty) = 1$}, and
+  \item[(ii)] $\{M_{n \wedge T}\}$ is \textcolor{Bittersweet}{uniformly integrable},
+\end{itemize}
+then $\mathbb{E}[M_T] = \mathbb{E}[M_0]$. \textcolor{Bittersweet}{Sufficient
+condition} for (ii):
+\[\mathbb{E}[|M_T|] < \infty \quad \text{and} \quad
+  \mathbb{E}[|M_n| \mathbf{1}_{T > n}] \to 0 \text{ as } n \to \infty.\]
+Boundedness of $M_{n \wedge T}$ (e.g.\ between absorbing barriers) makes both
+trivial. Interpretation: no stopping rule turns a fair game into a profit.
+
+\paragraph{Wald's identities}
+For $X_i$ iid with mean $\mu$, variance $\sigma^2$, $S_n = \sum_{i=1}^n X_i$,
+and stopping time $T$ with $\mathbb{E}[T] < \infty$:
+\[\textcolor{Blue}{\textbf{Wald I}}:\quad \mathbb{E}[S_T] = \mu \, \mathbb{E}[T],\]
+\[\textcolor{Blue}{\textbf{Wald II}}:\quad \mathbb{E}\bigl[(S_T - T\mu)^2\bigr] = \sigma^2 \, \mathbb{E}[T].\]
+Wald I is OST applied to $S_n - n\mu$; Wald II to $(S_n - n\mu)^2 - n\sigma^2$.
+
+\subsection{Gambler's ruin}
+\textcolor{Blue}{\textbf{Gambler's ruin}}: $X_0 = a$,
+$X_{n+1} = X_n + \xi_{n+1}$ with $\xi = \pm 1$, $\mathbb{P}(\xi = 1) = p$,
+absorbing barriers at $0$ and $N$. Let
+$T = \inf\{n : X_n \in \{0, N\}\}$ and apply OST.
+
+\textcolor{ForestGreen}{Symmetric ($p = 1/2$)}: $X_n$ itself is a martingale,
+so $a = \mathbb{E}[X_T] = N \, \mathbb{P}(\text{win})$, giving
+\[\mathbb{P}(\text{win}) = \tfrac{a}{N}, \quad
+  \mathbb{P}(\text{ruin}) = 1 - \tfrac{a}{N}.\]
+Via OST on $X_n^2 - n$: $\mathbb{E}[T] = a(N - a)$.
+
+\textcolor{ForestGreen}{Asymmetric ($p \ne 1/2$)}: apply OST to $(q/p)^{X_n}$:
+$(q/p)^a = \mathbb{P}(\text{ruin}) + (q/p)^N \, \mathbb{P}(\text{win})$, hence
+\[\mathbb{P}(\text{ruin}) = \frac{(q/p)^N - (q/p)^a}{(q/p)^N - 1}.\]
+
+\subsection{Inequalities \& convergence}
+\textcolor{Bittersweet}{Doob's maximal inequality} (non-negative submartingale
+$M_n$, $a>0$):
+\[\mathbb{P}\!\left(\max_{k\le n}M_k\ge a\right)\le\frac{\mathbb{E}[M_n]}{a}.\]
+\textcolor{Bittersweet}{Doob's $L^p$ inequality} ($p>1$):
+$\|\max_{k\le n}M_k\|_p\le\dfrac{p}{p-1}\|M_n\|_p$.\\
+\textcolor{Bittersweet}{Martingale convergence theorem}: bounded in $L^1$
+(i.e.\ $\sup_n\mathbb{E}|M_n|<\infty$) $\Rightarrow M_n\to M_\infty$ a.s.\ with
+$\mathbb{E}|M_\infty|<\infty$.\\
+\textcolor{Bittersweet}{Branching martingale} (Galton--Watson with offspring mean
+$m$): $Z_n/m^n$ is a martingale (and $\to W$ a.s.).\\
+\textcolor{Bittersweet}{Likelihood-ratio martingale}: for
+$X_i\stackrel{\mathrm{iid}}{\sim}f$, $L_n=\prod_{i=1}^n g(X_i)/f(X_i)$
+is a martingale under $f$.

@@ -1,0 +1,92 @@
+\section{Brownian Motion}
+\subsection{Definition \& finite-dim}
+A \textcolor{Blue}{\textbf{Brownian motion}} (BM) $\{B(t),\ t\ge 0\}$ satisfies:
+\begin{itemize}
+  \item $B(0)=0$.
+  \item \textcolor{Bittersweet}{Stationary, independent increments}: for
+    $0\le t_0<\cdots<t_n$, the increments $B(t_i)-B(t_{i-1})$ are independent,
+    and $B(t)-B(s)\stackrel{d}{=}B(t-s)$.
+  \item For $t>0$, $B(t)\sim\mathcal{N}(0,\sigma^2 t)$.
+\end{itemize}
+\textcolor{ForestGreen}{Standard BM}: $\sigma=1$, so $B(t)\sim\mathcal{N}(0,t)$.
+
+\paragraph{Finite-dimensional distribution}
+For $0<t_1<\cdots<t_n$,
+\[(B(t_1),\ldots,B(t_n))\sim\mathcal{N}(\mathbf 0,\Sigma),
+\quad \Sigma_{ij}=\sigma^2\min(t_i,t_j).\]
+\textcolor{Bittersweet}{Covariance kernel}:
+$\mathrm{Cov}(B(s),B(t))=\sigma^2\min(s,t)$.
+
+\paragraph{Properties}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Self-similarity}: $\frac{1}{\sqrt c}B(ct)
+    \stackrel{d}{=}B(t)$ for $c>0$.
+  \item \textcolor{Bittersweet}{Markov property}: for $s<t$,
+    \[B(t)\mid B(s)\sim\mathcal{N}(B(s),\ \sigma^2(t-s)).\]
+  \item \textcolor{Bittersweet}{Reverse conditioning}: for $s<t$,
+    \[B(s)\mid B(t)=c\sim\mathcal{N}\!\left(\tfrac{cs}{t},\ \tfrac{\sigma^2 s(t-s)}{t}\right).\]
+  \item Linear combinations are Gaussian:
+    $\mathbf a^\top(B(t_1),\ldots,B(t_n))\sim\mathcal{N}(0,\mathbf a^\top\Sigma\mathbf a)$.
+\end{itemize}
+
+\subsection{Reflection principle \& hitting times}
+The \textcolor{Blue}{\textbf{hitting time}} of level $a$ is
+\[T_a=\inf\{t>0:B(t)=a\},\]
+and the running maximum is $M(t)=\max_{s\le t}B(s)$.
+\textcolor{Bittersweet}{\textbf{Reflection principle}}: paths reaching $a$ then
+continuing are in bijection (via reflection about $y=a$ after $T_a$) with paths
+ending above $a$. For \textcolor{ForestGreen}{standard} BM and $a>0$:
+\[\mathbb{P}(M(t)\ge a)=2\,\mathbb{P}(B(t)\ge a)
+=\textcolor{ForestGreen}{2\!\left(1-\Phi(a/\sqrt t)\right)}.\]
+\textcolor{Bittersweet}{Joint event}: for $b\le a$ (with $a>0$),
+\[\mathbb{P}(M(t)\ge a,\ B(t)\le b)=\mathbb{P}(B(t)\ge 2a-b).\]
+\textcolor{Bittersweet}{Hitting time density} (standard BM):
+\[f_{T_a}(t)=\frac{|a|}{\sqrt{2\pi t^3}}\exp\!\left(-\frac{a^2}{2t}\right),
+\quad t>0.\]
+The level is hit a.s.\ but the wait has infinite mean:
+\[\mathbb{P}(T_a<\infty)=1,\qquad \mathbb{E}[T_a]=\infty.\]
+
+\subsection{BM with drift, geometric BM}
+\textcolor{Blue}{\textbf{Brownian motion with drift}}, drift $\mu$,
+volatility $\sigma>0$:
+\[X(t)=\mu t+\sigma B(t),\qquad X(t)\sim\mathcal{N}(\mu t,\ \sigma^2 t).\]
+Increments remain Gaussian and independent:
+\[X(t)-X(s)\sim\mathcal{N}(\mu(t-s),\ \sigma^2(t-s)),\quad s<t.\]
+Conditional law: $X(t)\mid X(s)\sim\mathcal{N}(X(s)+\mu(t-s),\ \sigma^2(t-s))$.\\
+\textcolor{Bittersweet}{Reverse}: for $s<t$,
+$X(s)\mid X(t)\sim\mathcal{N}\!\left(\mu s+\tfrac{s}{t}(X(t)-\mu t),\ \tfrac{\sigma^2 s(t-s)}{t}\right)$.
+
+\paragraph{Geometric BM}
+\textcolor{Blue}{\textbf{Geometric Brownian motion}} models positive processes
+(e.g.\ asset prices):
+\[S(t)=S(0)\exp\!\left(\mu t+\sigma B(t)\right).\]
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Log-normal}:
+    $\log S(t)\sim\mathcal{N}(\log S(0)+\mu t,\ \sigma^2 t)$.
+  \item \textcolor{ForestGreen}{GBM mean}:
+    $\mathbb{E}[S(t)]=S(0)\exp\!\left((\mu+\tfrac{\sigma^2}{2})t\right)$.
+  \item \textcolor{ForestGreen}{GBM variance}:
+    $\mathrm{Var}(S(t))=S(0)^2 e^{2\mu t+\sigma^2 t}\!\left(e^{\sigma^2 t}-1\right)$.
+\end{itemize}
+
+\subsection{Conditional BM}
+For $s<t$ and standard BM, conditioning on the endpoint gives
+\[B(s)\mid B(t)=c\sim\mathcal{N}\!\left(\tfrac{cs}{t},\ \tfrac{s(t-s)}{t}\right).\]
+\textcolor{Bittersweet}{Bridge connection}: setting $c=0$ recovers the
+marginal of the \textbf{Brownian bridge} on $[0,t]$ (variance $s(t-s)/t$;
+on $[0,1]$ this is $s(1-s)$). On $[0,1]$ with $B(1)=c$ given,
+$B(s)\mid B(1)=c\sim\mathcal{N}(cs,\ s(1-s))$.
+
+\subsection{Quadratic variation \& It\^o (lite)}
+\textcolor{Bittersweet}{Quadratic variation}: for partitions $\Pi$ of $[0,t]$ with
+mesh $\|\Pi\|\to 0$,
+\[\sum_i(B(t_{i+1})-B(t_i))^2\xrightarrow{P}t,\qquad [B,B]_t=t.\]
+\textcolor{Bittersweet}{It\^o's formula} (lite, $f\in C^2$):
+\[df(B_t)=f'(B_t)\,dB_t+\tfrac{1}{2}f''(B_t)\,dt.\]
+\textcolor{Bittersweet}{Two-sided exit (BM with drift)}: for $X_t=\mu t+\sigma B_t$,
+$X_0\in(-a,b)$, apply OST to the exponential martingale at $\theta=-2\mu/\sigma^2$
+to get ruin/escape probabilities (mirrors gambler's ruin).\\
+\textcolor{Bittersweet}{Arcsine law}: fraction of $[0,1]$ that standard BM is
+positive has density $\dfrac{1}{\pi\sqrt{x(1-x)}}$, $x\in(0,1)$.\\
+\textcolor{Bittersweet}{Donsker (functional CLT)}: rescaled random walk
+$S_{\lfloor nt\rfloor}/\sqrt n\Rightarrow B(t)$ in $C[0,1]$.
