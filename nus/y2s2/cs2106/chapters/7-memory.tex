@@ -1,0 +1,77 @@
+\section{Memory Management}
+
+\subsection{Address binding}
+\textcolor{Bittersweet}{Execution-time binding}: MMU translates each access; enables paging/swapping (vs.\ compile/load-time which fix addresses earlier).
+\textcolor{Bittersweet}{Logical} (a.k.a.\ virtual) address is what the CPU emits; \textcolor{Bittersweet}{physical} is the actual RAM location. MMU performs the translation.
+
+\subsection{Base + limit registers}
+For contiguous schemes: \texttt{base} = start in physical memory, \texttt{limit} = size.
+\[\text{phys}=\texttt{base}+\text{logical}\quad\text{if logical}<\texttt{limit}\text{ else trap.}\]
+Hardware-enforced isolation between processes.
+
+\subsection{Contiguous allocation}
+\paragraph{Fixed partitions} Pre-divided regions; \textcolor{Bittersweet}{internal fragmentation} (allocated $>$ used).
+\paragraph{Variable partitions} Holes shrink as processes come and go; \textcolor{Bittersweet}{external fragmentation} — total free $\ge$ request, yet no single hole large enough.
+\paragraph{Placement} \textcolor{Bittersweet}{First-fit} (first hole that fits; fast), \textcolor{Bittersweet}{best-fit} (smallest hole; slowest scan, leaves slivers), \textcolor{Bittersweet}{worst-fit} (largest hole; empirically poorest). First-fit is usually best in practice. \textcolor{Bittersweet}{Next-fit}: like first-fit but resume scan from the position after the last allocation (roving pointer; not updated on \texttt{free}); avoids tiny-hole pile-up near the start.
+\paragraph{Compaction} Slide allocated regions together; needs runtime relocation; expensive — temporary fix.
+\paragraph{Buddy allocation}
+Power-of-two block sizes. Round request to next $2^k$. Recursively split the smallest free $2^j$ (with $j>k$) into halves until size $2^k$ is reached.
+\textcolor{Bittersweet}{Buddy rule}: blocks $A,B$ of size $2^n$ are buddies iff $A \oplus B = 2^n$ (only bit $n$ differs).
+On free, coalesce with buddy iff buddy is free and same size.
+\textcolor{Bittersweet}{Internal frag} $= 2^k - $ request. Allocation can fail when free fragments are not buddies (e.g., $32+64$ free $\not\Rightarrow 96$ available).
+
+\subsection{Paging}
+Logical and physical memory both partitioned into fixed-size blocks.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Page} = unit of logical memory, size $2^k$ bytes; \textcolor{Bittersweet}{frame} = same-sized unit of physical.
+  \item Logical address $=(p, d)$: $p$ = page number, $d$ = offset ($k$ bits).
+  \item Per-process \textcolor{Blue}{page table} maps $p \to f$. Physical address $= f\cdot 2^k + d$.
+  \item \textcolor{ForestGreen}{No external fragmentation}; only internal frag in last page (at most $2^k-1$ bytes).
+  \item \textcolor{Bittersweet}{PTE bits}: valid, protection (R/W/X), dirty, reference.
+  \item \textcolor{Bittersweet}{Sharing}: multiple processes' PTEs can point to one frame (shared text, libc).
+\end{itemize}
+\textcolor{Bittersweet}{Page-table size pressure}: 32-bit/4 KB $\Rightarrow 2^{20}$ entries per process; with 4 B per PTE that is 4 MB \emph{per process}. 64-bit makes a flat table impossible — motivates multi-level / inverted (§Virtual Memory).
+
+\paragraph{Address translation (paging)}
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}, scale=1.0]
+  \draw (0,0.45) rectangle (2.6,0.85); \draw (1.6,0.45)--(1.6,0.85);
+  \node at (0.8,0.65) {$p$}; \node at (2.1,0.65) {$d$};
+  \node[font=\tiny] at (1.3,0.25) {logical};
+  \draw[->,>=Stealth] (0.8,0.45) -- (0.8,-0.15);
+  \draw (0.4,-0.55) rectangle (1.2,-0.15); \node at (0.8,-0.35) {PT};
+  \draw[->,>=Stealth] (1.2,-0.35) -- (3.2,-0.35) -- (3.2,0.45);
+  \draw (3.2,0.45) rectangle (5.8,0.85); \draw (4.8,0.45)--(4.8,0.85);
+  \node at (4.0,0.65) {$f$}; \node at (5.3,0.65) {$d$};
+  \node[font=\tiny] at (4.5,0.25) {physical};
+  \draw[->,>=Stealth] (2.1,0.45) -- (2.1,0.05) -- (5.3,0.05) -- (5.3,0.45);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Segmentation}
+Logical address space is a set of \textcolor{Blue}{segments} (code, data, heap, stack, libraries) of \emph{variable} size. Logical address $=(s, d)$.
+Per-process \textcolor{Bittersweet}{segment table}: each entry holds (\texttt{base}, \texttt{limit}, protection).
+\[\text{phys}=\text{base}_s + d\quad\text{if } d<\text{limit}_s.\]
+\begin{itemize}
+  \item \textcolor{ForestGreen}{Per-segment protection}: code R+X, data R+W, stack R+W non-executable.
+  \item Segments grow independently (e.g., heap up, stack down).
+  \item \textcolor{Bittersweet}{External fragmentation} returns; no internal frag.
+\end{itemize}
+
+\subsection{Paged segmentation}
+Combine: each segment is itself paged. The segment table entry points to a per-segment page table.
+Two-level translation: $(s, d) \to$ segment table $\to$ page table $\to$ frame, $d \!\!\mod 2^k$ stays as offset.
+Eliminates external fragmentation \emph{and} keeps logical separation/protection.
+
+\textcolor{Bittersweet}{Dynamic linking}: shared library resolved at runtime via a stub; one frame shared across processes.
+
+\paragraph{Swapping}
+Whole processes may be swapped to disk and back to free RAM (older systems). Modern OSes swap pages on demand (paging) instead.
+
+\paragraph{Address translation worked}
+Small drill: 8-bit offset, 4-bit page number; logical \texttt{0x2BC} $\Rightarrow p=\texttt{0x2}$, $d=\texttt{0xBC}$. PT[\texttt{0x2}]$=$ frame \texttt{0x7}; physical $=\texttt{0x7BC}$.
+Canonical 32-bit / 4 KB form: $d=12$ bits (offset within page), $p=20$ bits (1\,M PTEs). VA $= 0\text{x}12345678 \Rightarrow p = 0\text{x}12345$, $d = 0\text{x}678$.
+
+\paragraph{Internal vs external fragmentation}
+\textcolor{Bittersweet}{Internal}: wasted space \emph{inside} an allocated unit (last page in paging; partition larger than process in fixed allocation).
+\textcolor{Bittersweet}{External}: enough \emph{total} free memory but no contiguous run satisfies the request (variable partitions, segmentation).

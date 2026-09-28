@@ -1,0 +1,76 @@
+\section{Processes}
+A \textcolor{Blue}{\textbf{process}} is a running instance of a \textcolor{Bittersweet}{program} (static, on disk). It bundles three contexts:
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Memory}: \textcolor{Bittersweet}{text} (code, RO), \textcolor{Bittersweet}{data} (globals/statics), \textcolor{Bittersweet}{heap} (grows up), \textcolor{Bittersweet}{stack} (grows down).
+  \item \textcolor{Bittersweet}{Hardware}: GPRs, \textcolor{Bittersweet}{PC}, \textcolor{Bittersweet}{SP}, status flags.
+  \item \textcolor{Bittersweet}{OS} (\textcolor{Blue}{PCB}): PID, PPID, state, saved regs+PC, MMU info, FD table, scheduling info, signal handlers, accounting.
+\end{itemize}
+
+\subsection{Process states}
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}, scale=0.9, ->,>=Stealth,
+  state/.style={draw, rounded corners, inner sep=2pt, font=\scriptsize}]
+  \node[state] (N) at (0,1.2) {New};
+  \node[state] (R) at (2.0,1.2) {Ready};
+  \node[state] (Run) at (4.4,1.2) {Running};
+  \node[state] (B) at (4.4,-0.2) {Blocked};
+  \node[state] (T) at (6.6,1.2) {Terminated};
+  \draw (N) -- node[above,font=\tiny] {admit} (R);
+  \draw ([yshift=2pt]R.east) -- node[above,font=\tiny] {dispatch} ([yshift=2pt]Run.west);
+  \draw ([yshift=-2pt]Run.west) -- node[below,font=\tiny] {preempt} ([yshift=-2pt]R.east);
+  \draw (Run) -- node[right,font=\tiny] {wait} (B);
+  \draw (B) -- node[below,font=\tiny] {event} (R);
+  \draw (Run) -- node[above,font=\tiny] {exit} (T);
+\end{tikzpicture}
+\end{center}
+\textcolor{ForestGreen}{Unix variant} adds \textcolor{ForestGreen}{Stopped} (suspended via \texttt{SIGSTOP}; resumed via \texttt{SIGCONT}).
+\textcolor{Bittersweet}{Zombie}: exited, awaiting reap (PCB held for exit status); leaks PIDs if unreaped. \textcolor{Bittersweet}{Orphan}: parent died first; reparented to \texttt{init} (PID 1).
+
+\subsection{Context switch}
+Save running process's CPU registers + PC + MMU state into its PCB; restore next process's. Triggered by \textcolor{Bittersweet}{timer interrupt}, blocking I/O, preemption, or voluntary yield. \textcolor{Bittersweet}{Overhead}: register save/restore, TLB flush, cache pollution.
+
+\subsection{Unix process API}
+\begin{itemize}
+  \item \texttt{pid\_t \textcolor{Bittersweet}{fork}(void)}: clone caller. Returns child PID to parent, $0$ to child, $-1$ on error.
+  \item \texttt{int \textcolor{Bittersweet}{exec*}(path, argv[, envp])}: replace image with new program. Same PID; FDs inherited (unless \texttt{FD\_CLOEXEC}); signal handlers reset. Returns only on failure.
+  \item \texttt{pid\_t \textcolor{Bittersweet}{wait}(\&status)}: block until \emph{any} child terminates; reap zombie; return its PID.
+  \item \texttt{pid\_t \textcolor{Bittersweet}{waitpid}(pid,\&status,opts)}: wait for specific child; \texttt{WNOHANG} for non-blocking.
+  \item \texttt{void \textcolor{Bittersweet}{exit}(status)}: terminate; flush buffers; signal parent. Lower 8 bits of \texttt{status} returned.
+  \item \texttt{pid\_t \textcolor{Bittersweet}{getpid}()/\textcolor{Bittersweet}{getppid}()}: own / parent PID.
+\end{itemize}
+
+\paragraph{Status macros} (interpret \texttt{status} from \texttt{wait}):
+\begin{itemize}
+  \item \texttt{\textcolor{Bittersweet}{WIFEXITED}(s)}: true if child exited normally.
+  \item \texttt{\textcolor{Bittersweet}{WEXITSTATUS}(s)}: exit code (use only if \texttt{WIFEXITED}).
+  \item \texttt{\textcolor{Bittersweet}{WIFSIGNALED}(s)}: terminated by signal.
+  \item \texttt{\textcolor{Bittersweet}{WTERMSIG}(s)}: terminating signal number.
+\end{itemize}
+
+\paragraph{Copy-on-write (COW) and FD inheritance}
+\textcolor{ForestGreen}{Copy-on-write}: \texttt{fork} initially shares parent's pages read-only; on first write, kernel page-faults and copies. Avoids full memory copy.
+\textcolor{ForestGreen}{FD inheritance}: child inherits parent's open FDs, sharing the same file-offset entry; both see seeks and writes.
+
+\paragraph{fork() process tree}
+$n$ \texttt{fork()}s $\Rightarrow 2^n$ procs; \texttt{printf} runs $2^k$ times after $k$ forks. \texttt{fork() \&\& fork()} $\Rightarrow$ 3 (child short-circuits on 0).
+
+\paragraph{Canonical fork-exec-wait}
+\begin{verbatim}
+pid_t pid = fork();
+if (pid == -1)     { /* error */ }
+else if (pid == 0) {        /* child */
+    execv("/bin/prog", argv);
+    _exit(1);  /* exec failed */
+} else {                   /* parent */
+    int s; waitpid(pid, &s, 0);
+    if (WIFEXITED(s))
+        /* WEXITSTATUS(s) */;
+}
+\end{verbatim}
+
+\paragraph{exec* family}
+\begin{itemize}
+  \item \texttt{l} = list args (variadic, NULL-terminated); \texttt{v} = vector \texttt{argv[]}.
+  \item \texttt{p} = search \texttt{PATH} on bare names; \texttt{e} = pass custom \texttt{envp[]}.
+  \item Combinations: \texttt{execl}, \texttt{execv}, \texttt{execlp}, \texttt{execvp}, \texttt{execle}, \texttt{execve}. Only \texttt{execve} is the actual syscall; others are libc wrappers.
+\end{itemize}

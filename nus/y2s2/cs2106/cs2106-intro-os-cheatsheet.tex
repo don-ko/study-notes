@@ -1,8 +1,7 @@
 \documentclass[11pt,landscape,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[ngerman]{babel}
-\usepackage{PTSansNarrow} 
-\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+\usepackage{PTSansNarrow}
+\renewcommand*\familydefault{\sfdefault}
 \usepackage[T1]{fontenc}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{colortbl}
@@ -13,22 +12,21 @@
 \usepackage{enumitem}
 \usepackage{booktabs}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,graphs,shapes.misc}
+\usetikzlibrary{arrows.meta,graphs,shapes.misc,positioning,calc}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{cool}
 \usepackage{graphicx}
-
 \graphicspath{{./src/}}
 
 \setlist[itemize]{noitemsep, topsep=0pt}
 
 \setlength{\jot}{0pt}
 \appto{\footnotesize}{%
-	\setlength{\abovedisplayskip}{0pt}
-	\setlength{\belowdisplayskip}{0pt}
-	\setlength{\abovedisplayshortskip}{0pt}
-	\setlength{\belowdisplayshortskip}{0pt}
+    \setlength{\abovedisplayskip}{0pt}
+    \setlength{\belowdisplayskip}{0pt}
+    \setlength{\abovedisplayshortskip}{0pt}
+    \setlength{\belowdisplayshortskip}{0pt}
 }
 
 \newenvironment{Figure}
@@ -41,38 +39,16 @@
 \makeatletter
 \renewcommand{\section}{\@startsection{section}{1}{0mm}%
                                 {.2ex}%
-                                {.2ex}%x
-								{\sffamily\small\bfseries}}
+                                {.2ex}%
+                                {\sffamily\small\bfseries}}
 \renewcommand{\subsection}{\@startsection{subsection}{1}{0mm}%
                                 {.2ex}%
-                                {.2ex}%x
-								{\sffamily\small\bfseries}}
+                                {.2ex}%
+                                {\sffamily\small\bfseries}}
 \renewcommand{\paragraph}{\@startsection{paragraph}{1}{0mm}%
                                 {.2ex}%
-                                {.2ex}%x
-								{\sffamily\bfseries}*}
-\newcommand*{\rsimdots}{%
-  \mathrel{%
-    \mathpalette\@rsimdots{}% Adopt to math style size via \mathpalette
-  }%
-}
-\newcommand*{\@rsimdots}[2]{%
-  % #1: math style
-  % #2: unused
-  \sbox0{$#1\sim\m@th$}%
-  \sbox2{$#1\vcenter{}$}% \ht2 is height of the math axis
-  \dimen@=.75\ht2\relax % distance dot to math axis
-  \sbox2{$#1\cdot\m@th$}% single vertically centered dot
-  \sbox2{% two dots above and below the math axis
-    \rlap{\raisebox{\dimen@}{\copy2}}%
-    \raisebox{-\dimen@}{\copy2}%
-  }%
-  % Rotate the two dots.
-  \sbox2{$#1\rotatebox[origin=c]{-45}{\copy2}$}%
-  % Combine symbol
-  \rlap{\hbox\ to \wd0{\hss\copy2\hss}}%
-  \copy0 %
-}
+                                {.2ex}%
+                                {\sffamily\bfseries}*}
 \makeatother
 
 \setlist[itemize]{noitemsep,nolistsep,leftmargin=*}
@@ -82,6 +58,15 @@
 \begin{document}
 \footnotesize
 \begin{multicols*}{4}
-	\input{chapters/7-memory-abstraction.tex}
+  \input{misc-ref.tex}
+  \input{chapters/1-intro.tex}
+  \input{chapters/2-processes.tex}
+  \input{chapters/3-scheduling.tex}
+  \input{chapters/4-ipc.tex}
+  \input{chapters/5-threads.tex}
+  \input{chapters/6-synchronization.tex}
+  \input{chapters/7-memory.tex}
+  \input{chapters/8-virtualmem.tex}
+  \input{chapters/9-filesystems.tex}
 \end{multicols*}
 \end{document}

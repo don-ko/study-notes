@@ -1,0 +1,123 @@
+\section{Synchronization}
+A \textcolor{Blue}{\textbf{race condition}} occurs when concurrent accesses to a shared resource yield non-deterministic outcomes due to interleaving (e.g., two threads doing \texttt{count++}).
+A \textcolor{Blue}{\textbf{critical section}} is code that accesses such shared state.
+
+\paragraph{Critical-section requirements}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Mutual exclusion}: at most one process inside at a time.
+  \item \textcolor{Bittersweet}{Progress}: if no one is inside, an entrant must eventually be selected.
+  \item \textcolor{Bittersweet}{Bounded waiting}: a finite bound on entries by others while a requester waits.
+\end{itemize}
+
+\subsection{Software solution: Peterson (2-process)}
+\begin{verbatim}
+flag[i] = true; turn = j;
+while (flag[j] && turn == j) ; /* spin */
+/* critical section */
+flag[i] = false;
+\end{verbatim}
+Satisfies all three requirements; assumes atomic single-word writes and no compiler reordering.
+
+\subsection{Hardware atomics}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Test-and-set} \texttt{TAS(\&lock)}: atomically reads old value, sets to \texttt{true}, returns old. Spinlock: \texttt{while (TAS(\&lock)) ;}.
+  \item \textcolor{Bittersweet}{Compare-and-swap} \texttt{CAS(\&m, exp, new)}: if \texttt{*m==exp}, set to \texttt{new}, return true; else return false. Enables lock-free algorithms.
+\end{itemize}
+\textcolor{Bittersweet}{Spinlock vs blocking}: spin is fine for very short critical sections; blocking (semaphore) is better when contention is long because spinning wastes CPU.
+
+\subsection{Semaphores}
+A \textcolor{Blue}{semaphore} is an integer with two atomic operations:
+\begin{itemize}
+  \item \texttt{\textcolor{Bittersweet}{wait}(s)} (P/down): if $s>0$ then $s\!-\!-$, else block until \texttt{signal}.
+  \item \texttt{\textcolor{Bittersweet}{signal}(s)} (V/up): $s\!+\!+$ and wake one waiter.
+\end{itemize}
+\textcolor{Bittersweet}{Binary} (saturates at 1; subsequent \texttt{signal} is a no-op) — equivalent to a mutex any thread can release. \textcolor{Bittersweet}{Counting} (unbounded; general resources). \texttt{sem\_init}, \texttt{sem\_wait}, \texttt{sem\_post}.
+
+\subsection{Monitors}
+A \textcolor{Blue}{monitor} is a high-level construct: only one process executes inside at a time. \textcolor{Bittersweet}{Condition variables} \texttt{cv} support \texttt{\textcolor{Bittersweet}{wait}(cv)} (release lock, sleep, re-acquire), \texttt{\textcolor{Bittersweet}{signal}(cv)}, \texttt{\textcolor{Bittersweet}{broadcast}(cv)}.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Hoare semantics}: signaled thread runs immediately; signaler resumes after.
+  \item \textcolor{Bittersweet}{Mesa semantics}: signaled thread becomes Ready; signaler keeps the lock. Predicate may have changed by wake-up — \emph{must} re-check with \texttt{while}, not \texttt{if}. Reason: between signal and wakeup, another consumer can drain the buffer; on wakeup, with \texttt{if} the woken thread proceeds on a now-false predicate.
+\end{itemize}
+
+\subsection{Classic problems}
+
+\paragraph{Bounded buffer (size $N$)}
+Semaphores \texttt{mutex}=1, \texttt{empty}=$N$, \texttt{full}=0.
+\begin{tabular}{@{}lll@{}}
+\toprule
+\# & producer & consumer \\
+\midrule
+init & \multicolumn{2}{l}{\texttt{mutex=1, empty=N, full=0}} \\
+1 & \texttt{wait(empty)} & \texttt{wait(full)} \\
+2 & \texttt{wait(mutex)} & \texttt{wait(mutex)} \\
+3 & \texttt{insert} & \texttt{remove} \\
+4 & \texttt{signal(mutex)} & \texttt{signal(mutex)} \\
+5 & \texttt{signal(full)} & \texttt{signal(empty)} \\
+\bottomrule
+\end{tabular}
+\textcolor{ForestGreen}{pthread / monitor form (Mesa)}:
+\begin{verbatim}
+pthread_mutex_lock(&m);
+while (count == N)
+    pthread_cond_wait(&notFull, &m);
+buf[in] = x; in = (in+1)%N; count++;
+pthread_cond_signal(&notEmpty);
+pthread_mutex_unlock(&m);
+\end{verbatim}
+
+\paragraph{Readers-writers}
+Multiple readers may hold simultaneously; writers exclusive.
+\begin{itemize}
+  \item \textcolor{ForestGreen}{Reader-preference}: readers count protected by \texttt{mutex}; first reader \texttt{wait}s on \texttt{rw}, last \texttt{signal}s. Writers may starve.
+  \item \textcolor{ForestGreen}{Writer-preference}: pending writer blocks new readers.
+\end{itemize}
+\textcolor{ForestGreen}{Reader-preference (semaphore form)}:
+\begin{verbatim}
+reader: wait(mutex); rc++; if(rc==1) wait(rw); signal(mutex);
+        /*read*/; wait(mutex); rc--; if(rc==0) signal(rw); signal(mutex);
+writer: wait(rw); /*write*/; signal(rw);
+\end{verbatim}
+
+\paragraph{Dining philosophers}
+$n$ philosophers, $n$ forks; each needs both adjacent forks. Naive symmetric solution \textcolor{Bittersweet}{deadlocks}. Fixes: pick up both atomically; allow at most $n-1$ to try; impose fork ordering (resource hierarchy); asymmetric (odd take left first, even take right first).
+
+\paragraph{Priority inversion}
+A high-priority task is blocked on a lock held by a low-priority task; an unrelated medium-priority task preempts the low-priority holder, indirectly delaying the high-priority task.
+\textcolor{Bittersweet}{Priority inheritance}: temporarily raise the holder's priority to the highest waiter's priority until it releases.
+\textcolor{Bittersweet}{Priority ceiling}: every lock has a ceiling = max priority of any task that may use it; holder runs at the ceiling.
+
+\subsection{Deadlock}
+Four necessary conditions: \textcolor{Bittersweet}{mutual exclusion}, \textcolor{Bittersweet}{hold-and-wait}, \textcolor{Bittersweet}{no preemption}, \textcolor{Bittersweet}{circular wait}.
+Strategies:
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Prevention}: negate one condition (e.g., total resource ordering breaks circular wait).
+  \item \textcolor{Bittersweet}{Avoidance}: Banker's algorithm — see below.
+  \item \textcolor{Bittersweet}{Detection \& recovery}: cycle search in resource-allocation graph; abort or rollback.
+  \item \textcolor{Bittersweet}{Ostrich}: ignore (common when deadlock is rare).
+\end{itemize}
+\paragraph{Banker's algorithm}
+Maintain Available, Max, Allocation, Need=Max$-$Allocation. Loop: find $i$ with $\text{Need}_i \le \text{Work}$; $\text{Work} \mathrel{+}= \text{Allocation}_i$; mark $i$ done; repeat. Safe iff every process gets marked.
+Example: Available $=(3,3,2)$;
+\begin{tabular}{@{}llll@{}}
+\toprule
+Proc & Max & Alloc & Need \\
+\midrule
+P0 & (7,5,3) & (0,1,0) & (7,4,3) \\
+P1 & (3,2,2) & (2,0,0) & (1,2,2) \\
+P2 & (9,0,2) & (3,0,2) & (6,0,0) \\
+P3 & (2,2,2) & (2,1,1) & (0,1,1) \\
+P4 & (4,3,3) & (0,0,2) & (4,3,1) \\
+\bottomrule
+\end{tabular}
+Safe sequence: P1 $\to$ P3 $\to$ P4 $\to$ P0 $\to$ P2 (verify Need $\le$ Work each step).
+\paragraph{Resource-allocation graph}
+Bipartite directed graph: \textcolor{Bittersweet}{request edge} $P\to R$, \textcolor{Bittersweet}{assignment edge} $R\to P$. With single-instance resources, a \emph{cycle} $\Leftrightarrow$ deadlock; with multi-instance resources, a cycle is necessary but not sufficient.
+
+\paragraph{POSIX semaphore reference}
+\texttt{sem\_t s; sem\_init(\&s, 0, 1);} (last arg = initial count).
+\texttt{sem\_wait(\&s)} (decrement; block on 0); \texttt{sem\_post(\&s)} (increment; wake one).
+Named: \texttt{sem\_open("/n", O\_CREAT, 0644, 1)} — share between unrelated processes.
+
+\paragraph{Lock-free vs wait-free}
+\textcolor{Bittersweet}{Lock-free}: at least one thread always makes progress (no global stall) — usually a CAS retry loop. \textcolor{Bittersweet}{Wait-free}: \emph{every} thread completes in a bounded number of steps. Avoids deadlock and priority inversion at the cost of complex algorithms; needs strong memory barriers.

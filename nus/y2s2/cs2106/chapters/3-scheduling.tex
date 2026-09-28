@@ -1,0 +1,85 @@
+\section{Scheduling}
+The \textcolor{Blue}{\textbf{scheduler}} chooses which Ready process runs next.
+
+\paragraph{Criteria}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Turnaround} $TAT=$ finish $-$ arrival.
+  \item \textcolor{Bittersweet}{Waiting} $WT=$ time in Ready queue.
+  \item \textcolor{Bittersweet}{Response}: time to first response.
+  \item \textcolor{Bittersweet}{Throughput}: tasks per unit time.
+  \item \textcolor{Bittersweet}{CPU utilisation}: useful CPU time / total time.
+  \item \textcolor{Bittersweet}{Fairness}: every process eventually runs (no starvation).
+\end{itemize}
+Averages: $\overline{WT}=\frac{1}{n}\sum WT_i$, $\overline{TAT}=\frac{1}{n}\sum TAT_i$.
+
+\paragraph{Preemptive vs non-preemptive}
+\textcolor{Bittersweet}{Non-preemptive}: process holds CPU until it blocks or yields.
+\textcolor{Bittersweet}{Preemptive}: timer interrupt forcibly suspends after a quantum.
+
+\subsection{Algorithms}
+
+\paragraph{FCFS} Non-preemptive FIFO by arrival.
+\begin{itemize}
+  \item Simple; no starvation.
+  \item \textcolor{Bittersweet}{Convoy effect}: short I/O-bound jobs queue behind a long CPU-bound job; CPU runs long job $\to$ I/O idle, then short jobs do quick I/O $\to$ CPU idle.
+\end{itemize}
+
+\paragraph{SJF} Non-preemptive; pick smallest expected total CPU burst.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Optimal} mean waiting time when all jobs are available at $t=0$ (otherwise SRTF wins).
+  \item Needs burst prediction; \textcolor{Bittersweet}{starvation} of long jobs.
+\end{itemize}
+
+\paragraph{SRTF} Preemptive SJF: a newly arrived job with shorter remaining time preempts the running one.
+
+\paragraph{Burst prediction (exponential average)}
+\[\tau_{n+1}=\alpha\, t_n+(1-\alpha)\,\tau_n,\quad 0\le\alpha\le 1.\]
+Larger $\alpha$ weights recent bursts; smaller weights history.
+
+\paragraph{Round Robin (RR)} Preemptive FIFO with quantum $q$.
+\begin{itemize}
+  \item Fair; no starvation.
+  \item \textcolor{Bittersweet}{Response bound}: $\le (n-1)q$ for $n$ ready tasks.
+  \item \textcolor{Bittersweet}{Quantum trade-off}: small $q$ $\to$ context-switch overhead; large $q$ $\to$ FCFS-like.
+\end{itemize}
+
+\paragraph{Priority} Pick highest priority; preemptive or non-preemptive variant.
+\begin{itemize}
+  \item Risk: \textcolor{Bittersweet}{starvation} of low-priority tasks.
+  \item Mitigation: \textcolor{ForestGreen}{aging} — gradually raise priority of waiting tasks.
+\end{itemize}
+
+\paragraph{MLFQ} Multiple priority queues; learn behaviour adaptively.
+\begin{enumerate}
+  \item Higher-priority queue runs first.
+  \item RR within a level.
+  \item New jobs enter at top; \textcolor{Bittersweet}{demote} a job that uses its full quantum.
+  \item A job that yields (I/O) before quantum end keeps its priority.
+  \item Periodic \textcolor{Bittersweet}{boost} — push all jobs to top — prevents starvation.
+\end{enumerate}
+\textcolor{ForestGreen}{Effect}: I/O-bound stays high (good response); CPU-bound sinks low with longer quanta (good throughput).
+
+\paragraph{I/O-bound vs CPU-bound}
+\textcolor{Bittersweet}{CPU-bound}: long bursts of computation, rare I/O; favours longer quanta, optimise turnaround.
+\textcolor{Bittersweet}{I/O-bound}: short CPU bursts between I/O waits; favours short quanta and high priority, optimise response.
+
+\paragraph{Environments}
+\textcolor{Bittersweet}{Batch}: no user; favour throughput, non-preemptive ok.
+\textcolor{Bittersweet}{Interactive}: human in loop; preemptive, optimise response time and predictability.
+\textcolor{Bittersweet}{Real-time}: \emph{hard} (deadline must hold; aircraft, control) vs \emph{soft} (best-effort; multimedia); deadline-aware schedulers.
+
+\paragraph{Worked example} Three jobs arriving at $t=0$ with bursts $P_1=24$, $P_2=3$, $P_3=3$.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{FCFS} order $P_1\!\to\!P_2\!\to\!P_3$: waits $0,24,27$; $\overline{WT}=17$.
+  \item \textcolor{Bittersweet}{SJF} order $P_2\!\to\!P_3\!\to\!P_1$: waits $0,3,6$; $\overline{WT}=3$.
+  \item \textcolor{Bittersweet}{RR}, $q=4$: waits $6,4,7$; $\overline{WT}=5.\overline{6}$.
+\end{itemize}
+
+\paragraph{Burst-prediction example}
+$\alpha=\tfrac{1}{2}$, $\tau_0=10$, observed $t_0=6$: $\tau_1=\tfrac{1}{2}(6)+\tfrac{1}{2}(10)=8$. With $t_1=4$: $\tau_2=\tfrac{1}{2}(4)+\tfrac{1}{2}(8)=6$.
+
+\paragraph{Scheduler classes (Linux)}
+\textcolor{Bittersweet}{SCHED\_OTHER}: default time-sharing (CFS).
+\textcolor{Bittersweet}{SCHED\_FIFO}: real-time, no quantum — runs until block or yield.
+\textcolor{Bittersweet}{SCHED\_RR}: real-time round-robin within a priority.
+\textcolor{Bittersweet}{SCHED\_IDLE}: lowest priority, runs only when idle.

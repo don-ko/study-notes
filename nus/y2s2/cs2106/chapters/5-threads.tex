@@ -1,0 +1,38 @@
+\section{Threads}
+A \textcolor{Blue}{\textbf{thread}} is a lightweight execution context within a process: a separate flow of control sharing the process's address space.
+
+\paragraph{Shared vs per-thread}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Shared}: text, data, heap, FDs, signal handlers.
+  \item \textcolor{Bittersweet}{Per-thread}: TID, registers, PC, stack, \texttt{errno}, thread-local storage.
+\end{itemize}
+Thread context switch saves only registers + SP (no MMU/page-table change) — much cheaper than process switch.
+
+\subsection{Threading models}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{User-level (M:1)}: managed by user library; kernel sees one thread. Cheap; \textcolor{Bittersweet}{any} blocking syscall blocks the whole process; cannot exploit multicore.
+  \item \textcolor{Bittersweet}{Kernel-level (1:1)}: each user thread maps to a kernel thread. True parallelism; non-blocking I/O; thread ops are syscalls (slower). \textcolor{ForestGreen}{Linux NPTL}.
+  \item \textcolor{Bittersweet}{Hybrid (M:N)}: many user threads multiplexed over fewer kernel threads. Flexible scheduling and multicore use; complex.
+\end{itemize}
+
+\subsection{pthreads core API}
+\begin{itemize}
+  \item \texttt{int \textcolor{Bittersweet}{pthread\_create}(\&tid, attr, start, arg)}: spawn thread running \texttt{start(arg)}; \texttt{attr}=NULL for defaults.
+  \item \texttt{int \textcolor{Bittersweet}{pthread\_join}(tid, \&status)}: block until \texttt{tid} exits; receive return value.
+  \item \texttt{void \textcolor{Bittersweet}{pthread\_exit}(retval)}: terminate calling thread; implicit on \texttt{return}.
+  \item \texttt{pthread\_t \textcolor{Bittersweet}{pthread\_self}()}: own TID.
+\end{itemize}
+
+\textcolor{ForestGreen}{Advantages}: cheap creation/switch; direct memory sharing (no IPC); responsive; multicore parallelism.\\
+\textcolor{Bittersweet}{Disadvantages}: shared data needs synchronisation; one-thread crash kills the whole process; \texttt{fork}/\texttt{exec} interactions are subtle.
+
+\paragraph{Cancellation}
+\textcolor{Bittersweet}{Asynchronous}: cancelled at any instruction; unsafe (may leak locks/resources).
+\textcolor{Bittersweet}{Deferred} (default): cancellation only at designated cancellation points (e.g., \texttt{pthread\_cond\_wait}).
+
+\paragraph{Thread-safe vs reentrant}
+\textcolor{Bittersweet}{Thread-safe}: works correctly when called concurrently (often via internal locks).
+\textcolor{Bittersweet}{Reentrant}: works correctly when interrupted and re-entered by the same thread (e.g., from a signal handler) — requires no static state and no locks. Reentrant $\Rightarrow$ thread-safe; not vice versa.
+
+\paragraph{fork/exec/exit semantics}
+\textcolor{Bittersweet}{fork} duplicates only the calling thread (POSIX); other threads' state in the child may be inconsistent if they held locks. \textcolor{Bittersweet}{exec} replaces the entire process image — all other threads cease to exist. \textcolor{Bittersweet}{exit} terminates all threads in the process; \texttt{pthread\_exit} terminates only the calling thread.

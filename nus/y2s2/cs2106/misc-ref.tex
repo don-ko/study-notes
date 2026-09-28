@@ -1,0 +1,5 @@
+\textcolor{Bittersweet}{Dual-mode}: hardware \textcolor{Bittersweet}{mode bit} distinguishes \textcolor{Bittersweet}{kernel mode} (full access; runs OS) from \textcolor{Bittersweet}{user mode} (restricted; runs user programs). \textcolor{Bittersweet}{Privileged instructions} (I/O, halt, set timer, modify page table) trap if executed in user mode.\\
+\textcolor{Bittersweet}{Trap}: synchronous, software-initiated transfer to kernel (\texttt{syscall}, breakpoint).
+\textcolor{Bittersweet}{Interrupt}: asynchronous, hardware-initiated (timer, I/O device).
+\textcolor{Bittersweet}{Exception}: synchronous fault (divide-by-zero, page fault, invalid opcode).\\
+\textcolor{Blue}{System call}: user loads syscall number + args into registers, executes trap; CPU switches to kernel mode, dispatches via syscall table, runs handler, returns to user mode with result.

@@ -1,0 +1,99 @@
+\section{Virtual Memory}
+\textcolor{Blue}{\textbf{Virtual memory}} extends paging: a process's logical pages may live in RAM \emph{or} on a backing store (disk). Per-PTE \textcolor{Bittersweet}{valid bit} marks residency. Justified by \textcolor{Bittersweet}{locality} (temporal + spatial): the cost of a fault is amortised over many subsequent local accesses.
+
+\subsection{Demand paging \& page-fault flow}
+A page is brought in only on first reference. On access to page $X$:
+\begin{enumerate}
+  \item HW checks PTE; if valid, access RAM. Done.
+  \item If invalid, trap to OS (\textcolor{Bittersweet}{page fault}).
+  \item OS locates $X$ on disk; finds a free frame (or victimises one).
+  \item Load $X$, update PTE valid+frame, restart faulted instruction.
+\end{enumerate}
+\textcolor{Bittersweet}{Effective access time}:
+\[T_{\mathrm{access}}=(1-p)T_{\mathrm{mem}}+p\,T_{\mathrm{fault}}.\]
+$T_{\mathrm{fault}}\!\gg\!T_{\mathrm{mem}}$, so $p$ must be tiny. Goal of any replacement policy is to minimise $p$.
+
+\subsection{Page replacement}
+Evict a page when no free frame is available. \textcolor{Bittersweet}{Dirty} pages must be written back; clean ones overwritten.
+
+\begin{tabular}{@{}llcc@{}}
+\toprule
+policy & eviction rule & Belady? & HW \\
+\midrule
+FIFO & oldest in & yes & queue \\
+OPT  & farthest future use & no & oracle \\
+LRU  & longest unused past & no & timestamps/stack \\
+Clock & ref-bit scan + 2nd chance & no & 1 ref bit/PTE \\
+\bottomrule
+\end{tabular}
+
+\paragraph{LRU approximations}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Reference bit}: HW sets on access, OS clears periodically. Coarse "recently used" indicator.
+  \item \textcolor{Bittersweet}{Second-chance / clock}: circular FIFO with a hand. If victim's ref bit is 0, evict; if 1, clear bit, advance, reconsider. Degenerates to FIFO when all bits are 1.
+  \item \textcolor{Bittersweet}{Enhanced second-chance}: order victims by (\texttt{ref}, \texttt{dirty}) class — prefer $(0,0) \to (0,1) \to (1,0) \to (1,1)$ to avoid extra disk write-backs.
+\end{itemize}
+
+\subsection{Frame allocation}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Equal}: $N/M$ frames each.
+  \item \textcolor{Bittersweet}{Proportional}: by process size (or priority): proc $i$ gets $\frac{s_i}{\sum s_j}\cdot N$.
+  \item \textcolor{Bittersweet}{Minimum frames}: arch-dependent lower bound to satisfy any single instruction.
+\end{itemize}
+\textcolor{Bittersweet}{Local} replacement (only own frames): stable, but a starved process stalls itself. \textcolor{Bittersweet}{Global} (any frame): self-adjusts but a hog penalises others.
+
+\subsection{Thrashing \& working set}
+\textcolor{Blue}{\textbf{Thrashing}}: page-fault rate so high CPU is mostly idle servicing faults; cascades under global replacement.
+\textcolor{Bittersweet}{Working set} $W(t,\Delta)$ = set of distinct pages referenced in the last $\Delta$ memory references; $WSS_i=|W_i|$.
+\textcolor{Bittersweet}{No-thrashing condition}: $\sum_i \text{WSS}_i \le m$ (total frames) $\Rightarrow$ no thrashing.
+$\Delta$ too small under-counts the locality; too large mixes two localities.
+
+\subsection{Page-table structures}
+\paragraph{Multi-level (hierarchical)} Split a flat $2^p$-entry table into a top-level \textcolor{Bittersweet}{page directory} and per-region inner tables. Address: \texttt{[dir|page|offset]}. Empty directory entries omit their inner tables — huge savings for sparse address spaces. Cost: extra memory access per level.
+
+\paragraph{Inverted page table} One system-wide table with one entry per \emph{physical} frame storing $\langle\text{pid}, p\rangle$. Size scales with RAM, not with virtual space. Lookup linear $\Rightarrow$ accelerated by hash on (pid, $p$).
+
+\subsection{TLB}
+A small associative hardware cache of recent PTEs. Hit ratio $h$.
+Generalised: $EAT = h(T_{\mathrm{TLB}}+T_{\mathrm{mem}}) + (1-h)(T_{\mathrm{TLB}}+(L+1)T_{\mathrm{mem}})$ for $L$-level paging.
+When code/data have different miss rates, compute $ATT$ per stream and weight by access counts.
+\textcolor{Bittersweet}{TLB vs faults}: TLB size affects translation cost (hit-rate), \emph{not} page-fault rate; the latter depends on \#frames + replacement policy.
+
+\textcolor{ForestGreen}{COW after \texttt{fork}}: see ch.2.
+\textcolor{ForestGreen}{Memory-mapped files}: \texttt{mmap} attaches a file region into VA; reads/writes become memory accesses; pages demand-paged; dirty pages flushed by \texttt{msync} or process exit.
+
+\paragraph{Aging (LRU approx)}
+Each page has an $n$-bit counter. On each clock tick: shift the counter right by 1, OR the reference bit into the high bit, clear the reference bit. Page with the smallest counter is the victim. Bounded state, no per-reference HW counter.
+
+\paragraph{NRU (not-recently-used)}
+Class by (\texttt{ref}, \texttt{dirty}): 0=$(0,0)$, 1=$(0,1)$, 2=$(1,0)$, 3=$(1,1)$. OS clears \texttt{ref} bits periodically; on fault, evict any page from the lowest non-empty class.
+
+\paragraph{TLB EAT (worked)}
+Let $T_{\text{TLB}}=20$ ns, $T_{\text{mem}}=100$ ns, $h=0.95$, no faults. Two-level page table:
+\[EAT = h(T_{\text{TLB}}+T_{\text{mem}}) + (1-h)(T_{\text{TLB}}+3T_{\text{mem}})\]
+$= 0.95\cdot 120 + 0.05\cdot 320 = 114 + 16 = 130$ ns.
+
+\paragraph{Belady's anomaly (FIFO, ref string \texttt{1 2 3 4 1 2 5 1 2 3 4 5})}
+With 3 frames: 9 faults. With 4 frames: 10 faults. More frames $\to$ more faults — counter-intuitive; LRU and OPT do not exhibit this.
+
+\paragraph{Multi-level PT footprint}
+For an $L$-level PT with PTE size $s$ and inner table fitting one page (table entries determined by the per-level address split), let $n_\ell$ = populated tables at level $\ell$ ($n_L$ = \#pages used; $n_{\ell-1} = \lceil n_\ell/(P/s) \rceil$). Footprint $= \sum_\ell n_\ell \cdot P$.
+\textcolor{ForestGreen}{Worked} (3-level 10/8/6 split, 4 KB pages, 4 B PTE; level-3 has $2^6{=}64$ entries $\times$ 4 B = 256 B/table; level-2 has $2^8{=}256$ $\times$ 4 B = 1 KB/table; level-1 directory has $2^{10}{=}1024$ $\times$ 4 B = 4 KB; 256 KB process = 64 pages in one contiguous region):
+$n_3=1$, $n_2=1$, $n_1=1$. Footprint $= 256 + 1024 + 4096 \approx 5.3$ KB.
+
+\paragraph{Frame allocation worked}
+$N=120$ frames, two procs $s_A=200$ KB, $s_B=400$ KB. Proportional: $A$ gets $\frac{200}{600}\cdot 120=40$, $B$ gets 80. Equal: 60 each.
+
+\paragraph{Replacement worked} Reference string \texttt{7 0 1 2 0 3 0 4 2 3 0 3 2 1 2 0 1 7 0 1} with 3 frames. Fault counts (full 20-ref string): FIFO 15, OPT 9, LRU 12.
+FIFO frame trace (first 10 refs; \texttt{*} marks faults):
+\begin{tabular}{@{}c|cccccccccc@{}}
+ref    & 7 & 0 & 1 & 2 & 0 & 3 & 0 & 4 & 2 & 3 \\\midrule
+frames & 7 & 70 & 701 & 012 & 012 & 123 & 230 & 304 & 042 & 423 \\\midrule
+F?     & * & * & * & * &   & * & * & * & * & *
+\end{tabular}
+
+\paragraph{Page-fault EAT (slowdown)}
+Without page faults, $T=T_{\mathrm{mem}}$. With fault rate $p$, $T_{\mathrm{fault}}=10$ ms, $T_{\mathrm{mem}}=100$ ns: $T=(1-p)\!\cdot\!100+p\!\cdot\!10^7$ ns. To keep slowdown under 10\%: need $p<10^{-6}$.
+
+\paragraph{ASIDs (address space IDs)}
+Tag each TLB entry with a process ID; on context switch, no flush is needed — entries simply mismatch the new ASID and are bypassed. Avoids the cold-cache penalty after every switch.

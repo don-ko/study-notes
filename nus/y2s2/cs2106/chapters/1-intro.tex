@@ -1,0 +1,15 @@
+\section{Introduction}
+\textcolor{Blue}{\textbf{Abstraction}}: hide hardware variation behind a uniform interface (process, file, virtual memory) for portability and programmability.
+\textcolor{Blue}{\textbf{Mechanism}}: \emph{how} a capability is provided (e.g., context-switch routine, syscall dispatcher).
+\textcolor{Blue}{\textbf{Policy}}: \emph{which} decision a mechanism makes (e.g., which page to evict, which process to run).
+Separating mechanism from policy keeps the mechanism \textcolor{Bittersweet}{policy-agnostic}, enabling policy change without rewriting mechanism.
+
+\paragraph{Kernel architectures}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Monolithic}: all OS services share one kernel address space. Fast (no IPC), well-understood, but tightly coupled. \textcolor{ForestGreen}{Linux, Windows NT, most Unix}.
+  \item \textcolor{Bittersweet}{Microkernel}: tiny kernel exposes only IPC, scheduling, address-space mgmt; other services run as user-mode servers. Modular and robust, but slower from IPC overhead.
+  \item \textcolor{Bittersweet}{Hybrid / modular}: monolithic core with loadable kernel modules at runtime (\textcolor{ForestGreen}{Linux LKM}, \textcolor{ForestGreen}{macOS XNU} = Mach + BSD).
+\end{itemize}
+
+\paragraph{Virtualisation}
+\textcolor{Bittersweet}{Type 1 hypervisor} runs on bare metal (\textcolor{ForestGreen}{ESXi}); \textcolor{Bittersweet}{Type 2} runs as an app in a host OS (\textcolor{ForestGreen}{VirtualBox, QEMU}).

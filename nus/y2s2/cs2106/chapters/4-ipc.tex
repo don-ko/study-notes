@@ -1,0 +1,107 @@
+\section{Inter-Process Communication}
+Independent address spaces require explicit \textcolor{Blue}{\textbf{IPC}} for cooperation.
+
+\paragraph{Shared memory vs message passing}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Shared memory}: fast (direct memory access after setup); caller must synchronise; not distributed-friendly.
+  \item \textcolor{Bittersweet}{Message passing}: slower (one syscall per send/receive); synchronisation implicit if blocking; portable to distributed systems.
+\end{itemize}
+
+\subsection{Pipes}
+\texttt{int \textcolor{Bittersweet}{pipe}(int fd[2])} creates a half-duplex byte stream: \texttt{fd[0]} read end, \texttt{fd[1]} write end; circular kernel buffer with implicit producer/consumer sync.
+\begin{center}
+\begin{tikzpicture}[every node/.style={font=\scriptsize}, scale=0.85]
+  \node[draw, rounded corners, minimum width=15mm, minimum height=10mm] (P) at (0,0) {parent};
+  \node[draw, rounded corners, minimum width=15mm, minimum height=10mm] (K) at (3,0) {kernel buf};
+  \node[draw, rounded corners, minimum width=15mm, minimum height=10mm] (C) at (6,0) {child};
+  \node[below=0.5mm of P] {\texttt{fd[1]} \textcolor{ForestGreen}{w}, \texttt{fd[0]} \textcolor{Red}{$\times$}};
+  \node[below=0.5mm of C] {\texttt{fd[1]} \textcolor{Red}{$\times$}, \texttt{fd[0]} \textcolor{ForestGreen}{r}};
+  \draw[->, thick] (P) -- (K);
+  \draw[->, thick] (K) -- (C);
+\end{tikzpicture}
+\end{center}
+\begin{itemize}
+  \item Pipe \emph{before} \texttt{fork}; close unused ends in each process (needed for EOF).
+  \item \texttt{\textcolor{Bittersweet}{dup2}(fd, STDIN/OUT\_FILENO)} redirects standard streams to/from pipe.
+  \item Writing to pipe with closed read end raises \texttt{SIGPIPE}; reader sees EOF when all write ends close.
+\end{itemize}
+\textcolor{ForestGreen}{Pipe+fork skeleton}:
+\begin{verbatim}
+int fd[2]; pipe(fd);
+if (fork() == 0) {       /* child reads */
+    close(fd[1]);
+    read(fd[0], buf, n);
+    close(fd[0]);
+} else {                 /* parent writes */
+    close(fd[0]);
+    write(fd[1], msg, len);
+    close(fd[1]);
+    wait(NULL);
+}
+\end{verbatim}
+
+\subsection{Named pipes (FIFO)}
+\texttt{int \textcolor{Bittersweet}{mkfifo}(path, mode)} creates a persistent filesystem entry. Unrelated processes can \texttt{open} it; otherwise behaves like a pipe.
+
+\begin{tabular}{lll}
+\toprule
+ & \textbf{Pipe} & \textbf{FIFO} \\
+\midrule
+related procs only & yes & no \\
+persistent & no & yes (in FS) \\
+duplex & half & half \\
+\bottomrule
+\end{tabular}
+
+\subsection{Shared memory (POSIX)}
+\begin{itemize}
+  \item \texttt{\textcolor{Bittersweet}{shm\_open}(name, oflag, mode)} creates/opens an SHM object.
+  \item \texttt{\textcolor{Bittersweet}{ftruncate}(fd, size)} sets size.
+  \item \texttt{\textcolor{Bittersweet}{mmap}(addr, len, prot, flags, fd, off)} maps it into the process address space.
+  \item \texttt{\textcolor{Bittersweet}{munmap}}, \texttt{\textcolor{Bittersweet}{shm\_unlink}} to release.
+\end{itemize}
+\textcolor{ForestGreen}{Skeleton}:
+\begin{verbatim}
+int fd = shm_open("/buf",
+                  O_CREAT|O_RDWR, 0600);
+ftruncate(fd, N);
+void *p = mmap(NULL, N,
+    PROT_READ|PROT_WRITE,
+    MAP_SHARED, fd, 0);
+/* use *p; sync via sem/mutex */
+munmap(p, N);
+shm_unlink("/buf");
+\end{verbatim}
+
+\subsection{Message passing}
+Primitives \texttt{send(dest, msg)}, \texttt{receive(src, msg)} via syscalls.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Direct} naming vs \textcolor{Bittersweet}{indirect} via \textcolor{ForestGreen}{mailbox/port} (multiple peers).
+  \item \textcolor{Bittersweet}{Synchronous} (blocking, \textcolor{ForestGreen}{rendezvous}) vs \textcolor{Bittersweet}{asynchronous} (non-blocking; needs buffer).
+  \item \textcolor{Bittersweet}{Capacity}: zero (rendezvous), bounded (sender blocks on full), unbounded (never blocks).
+\end{itemize}
+
+\subsection{Signals}
+Asynchronous notification to a process.
+\begin{itemize}
+  \item \texttt{\textcolor{Bittersweet}{kill}(pid, sig)}: send signal.
+  \item \texttt{\textcolor{Bittersweet}{signal}(sig, handler)} or \texttt{\textcolor{Bittersweet}{sigaction}(...)}: register handler. Special handlers: \texttt{SIG\_DFL}, \texttt{SIG\_IGN}.
+  \item \textcolor{Bittersweet}{Common signals}: SIGINT (2, \^{}C, terminate); SIGTERM (15, polite kill, catchable); SIGKILL (9, force kill, uncatchable); SIGSTOP/SIGCONT (pause/resume; SIGSTOP uncatchable); SIGCHLD (child state change); SIGSEGV (invalid mem access; default core dump); SIGPIPE (write to pipe with closed read end).
+  \item \textcolor{Bittersweet}{Default actions}: terminate, terminate+core, ignore, stop, continue.
+  \item \textcolor{Bittersweet}{Signal-safety}: only async-signal-safe calls (e.g., \texttt{write}, \texttt{\_exit}) inside handlers; not \texttt{printf}/\texttt{malloc}. Idiom: set \texttt{volatile sig\_atomic\_t} flag in handler, handle in main loop.
+  \item \texttt{sigaction} extends \texttt{signal}: a \texttt{sigset\_t} mask blocks chosen signals during the handler; \texttt{SA\_RESTART} auto-restarts interrupted slow syscalls; portable across Unix.
+\end{itemize}
+
+\paragraph{Reaping children with SIGCHLD}
+Avoid zombies asynchronously by handling \texttt{SIGCHLD}:
+\begin{verbatim}
+void reap(int s) {
+    while (waitpid(-1, NULL, WNOHANG) > 0);
+}
+sigaction(SIGCHLD, &(struct sigaction){
+    .sa_handler = reap,
+    .sa_flags   = SA_RESTART|SA_NOCLDSTOP
+}, NULL);
+\end{verbatim}
+Loop with \texttt{WNOHANG} because SIGCHLD is not queued — multiple simultaneous child exits coalesce into one signal.
+
