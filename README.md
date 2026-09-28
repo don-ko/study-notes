@@ -80,16 +80,17 @@ more LaTeX documents gives each its own subdirectory, named by kind —
   LaTeX aux files are not.
 - **House style.** The `custom.sty` in `nus/y2s1/cs2100`, `nus/y2s1/cs3231` and
   the five telecom modules is byte-identical to the house style's reference copy,
-  `~/Documents/area/tex-templates/notes/custom.sty`. The cs3230 notes and the UCL
-  notes carry earlier variants of it.
-- **Self-study.** Self-study lives in [`don-ko/math`](https://github.com/don-ko/math).
+  `~/Documents/area/tex-templates/notes/custom.sty`. The cs3230 notes carry a later
+  fork of it that adds numbered theorems, an index, `cleveref` and algorithms, which
+  those notes depend on; the UCL notes carry an earlier variant.
+- **Self-study.** Self-study lives in [`don-ko/math`](https://github.com/don-ko/math) (private).
   A subject comes here, to `self-study/<topic>/`, once it is completed — brought
   in self-contained like every other document.
 
 ## Provenance
 
-The NUS cheatsheets that were in this repo before the restructure started here,
-under an earlier name. Everything else was imported on the restructure. An
+The NUS cheatsheets that were in this repo before the restructure were collected
+into it, under an earlier name, in March 2026. Everything else was imported on the restructure. An
 import from a git repository names that repository and commit in its commit
 message, and that repository keeps its own history. The PDF-only sheets
 imported for CS1101S, CS2030S and CS2040S, and the UCL notes, came from folders
