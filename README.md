@@ -87,7 +87,9 @@ more LaTeX documents gives each its own subdirectory, named by kind —
 
 ## Provenance
 
-The NUS y1s1–y2s2 cheatsheets started in this repo, under an earlier name. The
-rest were imported on the restructure: each import commit names its source
-repository and commit, and the archived source repositories keep their own
-history.
+The NUS cheatsheets that were in this repo before the restructure started here,
+under an earlier name. Everything else was imported on the restructure. An
+import from a git repository names that repository and commit in its commit
+message, and that repository keeps its own history. The PDF-only sheets
+imported for CS1101S, CS2030S and CS2040S, and the UCL notes, came from folders
+with no git history.
