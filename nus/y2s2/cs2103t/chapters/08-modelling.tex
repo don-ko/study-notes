@@ -1,0 +1,40 @@
+\section{Modelling}
+% Frame semantics + activation-bar nesting + underline rule below come from
+% the standard UML reading conventions, which the SE-book chapter does not
+% spell out (it covers diagram syntax via the official reference sheet only).
+
+% ── Model fundamentals ─────────────────────────────────────────────────────────
+\subsection{Model purpose}
+\textcolor{Blue}{\textbf{Model}}: simpler view of a complex entity; captures only a selected aspect (omission = abstraction). Multiple models of the same entity may be needed to capture it fully.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Analyze}: understand problem domain or plan solution (e.g.\ architecture diagram).
+  \item \textcolor{Bittersweet}{Communicate}: share design among stakeholders (class diagram reverse-engineered from code; use case diagram to customer).
+  \item \textcolor{Bittersweet}{Blueprint}: guide construction of software.
+\end{itemize}
+
+% ── CCD vs Class Diagram ──────────────────────────────────────────────────────
+\subsection{CCD vs.\ Class Diagram}
+\textcolor{Blue}{\textbf{Conceptual Class Diagram (OODM)}}: models the problem domain, not the solution.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Omits}: methods and navigability (both legal in a class diagram).
+  \item \textcolor{Bittersweet}{Excludes}: solution-specific classes (e.g.\ \texttt{DatabaseConnection}, \texttt{Logger}).
+  \item \textcolor{Bittersweet}{Captures}: class \emph{structure} of the domain, not behavior.
+\end{itemize}
+\textcolor{ForestGreen}{MCQ trap}: a CCD with methods or navigability arrows is notation-incorrect. A class diagram of domain classes is not automatically a CCD.
+
+% ── Sequence diagram reading traps ────────────────────────────────────────────
+\subsection{Sequence diagram reading traps}
+\textcolor{Blue}{\textbf{Frame semantics}} (official sheet shows syntax only):
+\begin{itemize}
+  \item \textcolor{Bittersweet}{\texttt{alt}}: exactly one branch executes — the first whose guard is true; \texttt{[else]} runs if no other guard matches.
+  \item \textcolor{Bittersweet}{\texttt{opt}}: the enclosed fragment executes only if the guard is true; nothing executes otherwise (= \texttt{alt} with one branch).
+  \item \textcolor{Bittersweet}{\texttt{loop}}: repeats while guard holds; guard checked before each iteration.
+  \item \textcolor{Bittersweet}{\texttt{par}}: all fragments execute concurrently (interleaved); order within a fragment is preserved.
+  \item \textcolor{Bittersweet}{\texttt{ref}}: replaced by the named interaction; all messages inside the referenced diagram execute at that point.
+\end{itemize}
+
+\paragraph{Self-call activation-bar nesting}
+A self-call creates a \emph{new, nested} activation bar on the same lifeline — the outer bar must still be visible behind it. \textcolor{ForestGreen}{MCQ trap}: drawing only one bar for a recursive/self-call = wrong; each call level = one bar.
+
+\paragraph{Object-diagram underline rule}
+Instance names must be underlined in object diagrams (\texttt{\underline{obj : ClassName}}). Without the underline the box is ambiguous with a class box. Attribute compartment shows \texttt{attribute = value}, not type declarations.

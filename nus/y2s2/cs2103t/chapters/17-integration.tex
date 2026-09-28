@@ -1,0 +1,20 @@
+\section{Integration}
+
+% ── Three orthogonal axes ────────────────────────────────────────────────────
+\subsection{Three orthogonal axes}
+\textit{(Names on ref sheet; the why and the test-double mapping are not.)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Frequency}: \emph{late + one-time} (wait till end) vs.\ \emph{early + frequent} ($\checkmark$ — surfaces incompatibilities one at a time).
+  \item \textcolor{Bittersweet}{Granularity}: \emph{big-bang} (all at once) vs.\ \emph{incremental} ($\checkmark$ — manageable failure isolation).
+  \item \textcolor{Bittersweet}{Direction}: \emph{top-down} / \emph{bottom-up} / \emph{sandwich}.
+\end{itemize}
+
+\paragraph{Direction $\to$ test-double needed}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Top-down}: needs \textbf{stubs} (lower-level not yet ready). Surfaces high-level problems early.
+  \item \textcolor{Bittersweet}{Bottom-up}: needs \textbf{drivers} (UI/top-level not ready) to invoke the lower components.
+  \item \textcolor{Bittersweet}{Sandwich}: do both, meet in the middle.
+\end{itemize}
+
+% ── CI/CD ────────────────────────────────────────────────────────────────────
+\paragraph{CI vs.\ CD} \textcolor{Bittersweet}{CI}: build + test on every change. \textcolor{Bittersweet}{CD}: \emph{also} deploys to users automatically. \textcolor{ForestGreen}{CI is a prerequisite for CD}, not a synonym.

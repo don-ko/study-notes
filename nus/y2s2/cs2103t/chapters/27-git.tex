@@ -1,0 +1,41 @@
+\section{Git mechanics}
+% Mechanics below come from standard Git convention; the SE-book "Git
+% Trail" is a trail index, not a reference. The official Examplify
+% reference sheet has the vocabulary but not the conditions / outcomes.
+
+% ── Fast-forward conditions ──────────────────────────────────────────────────
+\subsection{Fast-forward: when?}
+\textcolor{Blue}{\textbf{FF merge}} happens iff the destination has \emph{not diverged} from the source — i.e.\ destination's HEAD is an ancestor of source's HEAD.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Diverged $\Rightarrow$ no FF}: a real merge commit is created (or merge is rejected with \texttt{--ff-only}).
+  \item \textcolor{Bittersweet}{No FF wanted? Use \texttt{--no-ff}}: forces a merge commit to preserve branch shape in history.
+\end{itemize}
+
+% ── Pull vs pull --rebase ────────────────────────────────────────────────────
+\subsection{\texttt{pull} vs.\ \texttt{pull --rebase}}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{\texttt{git pull}} = \texttt{fetch} + \texttt{merge}: creates a merge commit when local and remote have diverged.
+  \item \textcolor{Bittersweet}{\texttt{git pull --rebase}} = \texttt{fetch} + \texttt{rebase}: replays your local commits on top of the fetched remote $\to$ \emph{linear} history, no merge commit.
+\end{itemize}
+\textcolor{ForestGreen}{Rebase rewrites history}: commit SHAs change. \textbf{Never rebase commits already pushed to a shared branch.}
+
+% ── Merge / rebase / squash outcomes ─────────────────────────────────────────
+\subsection{Merge / rebase / squash compared}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Merge}: both histories preserved; merge commit ties them.
+  \item \textcolor{Bittersweet}{Rebase}: source commits replayed on dest; SHAs change; linear history.
+  \item \textcolor{Bittersweet}{Squash merge}: \emph{one} new commit on dest combining all source commits; individual source commits not on dest. Source branch unchanged.
+  \item \textcolor{Bittersweet}{Cherry-pick}: copy a single commit from one branch to another (new SHA).
+\end{itemize}
+
+% ── Stash + detached HEAD ────────────────────────────────────────────────────
+\paragraph{Stash}
+\textcolor{Bittersweet}{\texttt{stash apply}}: copy stash to working tree, \emph{keep} stash entry. \textcolor{Bittersweet}{\texttt{stash pop}}: apply, then \emph{drop} the entry.
+
+\paragraph{Detached HEAD}
+HEAD points directly to a commit (not a branch). New commits are \textcolor{Bittersweet}{not reachable} from any branch — checking out anything else strands them. Use \texttt{git switch -c <name>} to anchor.
+
+% ── Tag types ────────────────────────────────────────────────────────────────
+\paragraph{Tag types}
+\textcolor{Bittersweet}{Lightweight}: a name pointing to a commit (no metadata).
+\textcolor{Bittersweet}{Annotated}: full Git object — has tagger, date, message, can be GPG-signed; required for releases.

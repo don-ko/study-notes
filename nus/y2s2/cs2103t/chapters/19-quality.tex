@@ -1,0 +1,47 @@
+\section{Quality Assurance}
+
+% ── EP: derivation procedure ─────────────────────────────────────────────────
+\subsection{EP derivation procedure}
+\textcolor{Blue}{\textbf{EPs}} derived from the SUT's specification. Steps:
+\begin{enumerate}
+  \item Identify all \textcolor{Bittersweet}{data participants}: input parameters, target object state, any global data accessed.
+  \item For each participant, group inputs that the SUT processes \emph{the same way} into one partition.
+  \item If a parameter has only a few discrete values with distinct behavior, make \textbf{each value its own partition} (e.g.\ enums, flags \texttt{"F"/"T"/"D"}).
+  \item If adjacency is meaningless (e.g.\ prime vs.\ non-prime), note that EPs need not be contiguous.
+  \item Pick \textbf{one representative} from each partition per test case.
+\end{enumerate}
+\textcolor{ForestGreen}{Example}: \texttt{isValidMonth(m)}: partitions \texttt{[MIN\_INT..0]}, \texttt{[1..12]}, \texttt{[13..MAX\_INT]}.
+
+% ── BVA: why and which values ─────────────────────────────────────────────────
+\subsection{BVA: which boundary values?}
+\textcolor{Blue}{\textbf{BVA}} rationale: bugs cluster at boundaries because off-by-one errors are common (\texttt{<} vs.\ \texttt{<=}, \texttt{>} vs.\ \texttt{>=}).
+For each EP boundary, test \textbf{just below}, \textbf{on}, and \textbf{just above}; prioritise these over interior values.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Numeric range \texttt{[1,12]}}: test \texttt{0}, \textbf{1}, \texttt{2} … \texttt{11}, \textbf{12}, \texttt{13}.
+  \item \textcolor{Bittersweet}{String length}: empty string, string of max allowable length.
+  \item \textcolor{Bittersweet}{Collection size}: empty, one element, one-from-full, full.
+\end{itemize}
+
+% ── Combining inputs: decision ─────────────────────────────────────────────────
+\subsection{Combining inputs: which strategy?}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{All combinations}: use only if $N_{partitions}$ is tiny; guarantees full coverage but explodes fast.
+  \item \textcolor{Bittersweet}{All pairs}: default for multi-input methods; catches most interaction bugs with far fewer cases than all-combinations.
+  \item \textcolor{Bittersweet}{At least once}: minimum viable — use when time is extremely tight or inputs are truly independent.
+  \item \textcolor{Bittersweet}{Random subset}: use on top of another strategy to probe untested combinations cheaply.
+\end{itemize}
+
+\paragraph{Heuristic rationales}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Each valid input at least once in a positive test}: if a valid input only appears in negative (error) test cases, its correct behavior is never verified.
+  \item \textcolor{Bittersweet}{Test invalid inputs individually}: combining two invalid inputs masks which one triggered the error — you cannot tell which is responsible.
+\end{itemize}
+
+\paragraph{Typical workflow}
+Apply \textit{at-least-once} first $\to$ enforce valid-input heuristic $\to$ isolate invalid inputs $\to$ add hidden-interaction cases.
+
+% ── Worked example ────────────────────────────────────────────────────────────
+\paragraph{Worked: \texttt{duplicate(String s, int n)}}
+EPs: \textcolor{ForestGreen}{\texttt{s}: \{zero-length\}, \{contains whitespace\}, \{normal\}} and \textcolor{ForestGreen}{\texttt{n}: \{negative\}, \{0\}, \{positive\}}.
+BVA adds: \texttt{n = 0} (boundary between negative/zero), \texttt{n = 1} (zero/positive), \texttt{n = MAX\_INT}.
+One negative test: \texttt{n = -1} alone (do not pair with invalid \texttt{s} simultaneously).

@@ -1,0 +1,56 @@
+\section{OOP}
+
+% ── Type signature mechanics ──────────────────────────────────────────────────
+\subsection{Type signature mechanics}
+\textcolor{Blue}{\textbf{Type signature}}: ordered type sequence of parameters.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{NOT} part of the signature: return type, parameter names.
+  \item \textcolor{Bittersweet}{IS} part of the signature: parameter types and their order.
+\end{itemize}
+\textcolor{ForestGreen}{Trap}: \texttt{int add(int X, int Y)} and \texttt{void add(int A, int B)} have the \emph{same} signature \texttt{(int, int)} — return-type/name differences alone don't make them overloads. \texttt{m(int, double)} vs \texttt{m(double, int)} \emph{do} differ.
+
+% ── Override vs overload ──────────────────────────────────────────────────────
+\subsection{Override vs.\ overload}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Override}: same name, \textbf{same signature}, return type same or covariant; subclass re-implements parent method.
+  \item \textcolor{Bittersweet}{Overload}: same name, \textbf{different signatures}; multiple methods coexist (same class or across class hierarchy).
+\end{itemize}
+\textcolor{ForestGreen}{Trap}: \texttt{read():String} vs \texttt{read(int):String} = \emph{overload}, not override (different signatures).
+\paragraph{Binding}
+\textcolor{Bittersweet}{Override} resolved by \textbf{dynamic binding} (actual object's runtime type).
+\textcolor{Bittersweet}{Overload} resolved by \textbf{static binding} (declared compile-time types of arguments).
+
+% ── Polymorphism = 3 concepts ─────────────────────────────────────────────────
+\subsection{Polymorphism: 3-concept combo}
+Polymorphism only fires when \emph{all three} hold:
+\begin{enumerate}
+  \item \textcolor{Bittersweet}{Substitutability}: caller code uses the parent type.
+  \item \textcolor{Bittersweet}{Override}: subclass re-implements the operation.
+  \item \textcolor{Bittersweet}{Dynamic binding}: language resolves the call at runtime.
+\end{enumerate}
+\textcolor{ForestGreen}{No polymorphism if}: the operation is overloaded (static binding), or the parent reference holds the parent type and no override exists, or the language resolves statically.
+
+\paragraph{Substitutability direction}
+\texttt{Staff s = new AcademicStaff();} \textcolor{ForestGreen}{OK} (subtype $\to$ supertype).\\
+\texttt{AcademicStaff a = s;} \textcolor{ForestGreen}{compile error} when \texttt{s} is declared \texttt{Staff} — needs explicit downcast.
+
+% ── Class vs abstract class vs interface ──────────────────────────────────────
+\subsection{Class / Abstract class / Interface}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Class}: behavior spec + full implementation.
+  \item \textcolor{Bittersweet}{Abstract class}: behavior spec + \emph{possibly incomplete} implementation; cannot be instantiated.
+  \item \textcolor{Bittersweet}{Interface}: behavior spec, \emph{no} implementation.
+\end{itemize}
+\textcolor{ForestGreen}{Has $\ge 1$ abstract method $\Rightarrow$ class must be abstract.}
+
+% ── Multiplicity implementation ──────────────────────────────────────────────
+\paragraph{Multiplicity in code}
+\begin{itemize}
+  \item \texttt{0..1} — plain instance variable (may be \texttt{null}).
+  \item \texttt{1} — instance variable, must be initialised (compulsory association).
+  \item \texttt{*} or \texttt{0..*} — collection (Array, List, Set, Map).
+\end{itemize}
+
+% ── Composition vs aggregation reading ───────────────────────────────────────
+\paragraph{Composition vs.\ aggregation}
+\textcolor{Bittersweet}{Composition} (filled diamond) implies: whole destroyed $\Rightarrow$ parts destroyed; \emph{no} cyclical whole-part links. \textcolor{Bittersweet}{Cascading delete alone is not sufficient} — also need contextual whole-part identity. \textcolor{Bittersweet}{Aggregation} (open diamond) is weaker: contained survives container.

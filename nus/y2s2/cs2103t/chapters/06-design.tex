@@ -1,0 +1,71 @@
+\section{Design}
+
+% ── Coupling sub-types ──────────────────────────────────────────────────────
+\subsection{Coupling sub-types}
+\textit{(Generic def.\ on ref sheet; sub-types are not.)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Content}: one module modifies/reads another's internals directly.
+  \item \textcolor{Bittersweet}{Common/Global}: modules share global data.
+  \item \textcolor{Bittersweet}{Control}: one module passes a flag controlling another's flow.
+  \item \textcolor{Bittersweet}{External}: modules depend on externally-imposed convention (format, protocol).
+  \item \textcolor{Bittersweet}{Subclass}: child coupled to parent via inheritance.
+  \item \textcolor{Bittersweet}{Temporal}: actions grouped only because they happen at the same time.
+  \item \textcolor{Bittersweet}{Data}: modules share data through parameters only.
+\end{itemize}
+
+% ── Cohesion ────────────────────────────────────────────────────────────────
+\subsection{Cohesion forms}
+\textit{(Generic def.\ on ref sheet; higher = better.)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Single concept}: all code addresses one concept (e.g.\ \texttt{Student} handles only student data).
+  \item \textcolor{Bittersweet}{Same data}: code that manipulates the same data structure stays together.
+  \item \textcolor{Bittersweet}{Temporal}: code invoked close together in time (e.g.\ init routines).
+  \item \textcolor{Bittersweet}{NOTE}: mixing DB writes + UI dialogs in one class = low cohesion violation.
+\end{itemize}
+
+% ── SOLID smell-triggers ────────────────────────────────────────────────────
+\subsection{SOLID: smell-triggers}
+\textit{(What tells you the principle is broken)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{SRP}: class changes for $>$1 distinct reason (e.g.\ \texttt{TextUi} parses \textit{and} renders).
+  \item \textcolor{Bittersweet}{OCP}: adding a new type forces edits inside existing classes (not just new subclasses).
+  \item \textcolor{Bittersweet}{LSP}: subclass method is more restrictive than superclass spec (narrows valid inputs or widens exceptions).
+  \item \textcolor{Bittersweet}{ISP}: a client is forced to depend on an interface it only partially uses (fat interface — split it).
+  \item \textcolor{Bittersweet}{DIP}: high-level module \texttt{import}s a concrete low-level class (should depend on an abstraction/interface).
+\end{itemize}
+
+% ── Law of Demeter ───────────────────────────────────────────────────────────
+\paragraph{Law of Demeter (LoD)} \textcolor{Bittersweet}{``Don't talk to strangers.''} Method \texttt{m} of object \texttt{O} may call methods only on:
+\begin{itemize}
+  \item \texttt{O} itself; parameters of \texttt{m}; objects created inside \texttt{m}; direct attributes of \texttt{O}.
+\end{itemize}
+\textcolor{ForestGreen}{Violation}: \texttt{b.getGoo().doSomething()} — \texttt{getGoo()} returns a stranger.
+
+% ── Other principles ────────────────────────────────────────────────────────
+\subsection{Other principles}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{YAGNI}: do not add code for potential future needs.
+  \item \textcolor{Bittersweet}{DRY}: every piece of knowledge has one authoritative representation (two different implementations of the same logic = DRY violation).
+  \item \textcolor{Bittersweet}{Brooks' law}: adding people to a late project makes it later (communication overhead $>$ added output).
+\end{itemize}
+
+% ── Design pattern intent ────────────────────────────────────────────────────
+\subsection{Design pattern intent}
+\textit{(Official sheet has structures; this is \emph{why} you reach for each)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Singleton}: guarantee at most one instance; avoid accidental duplicates with real consequences.
+  \item \textcolor{Bittersweet}{Facade}: expose a component's services without leaking its internals.
+  \item \textcolor{Bittersweet}{Command}: represent a request as an object so it can be queued/stored/executed without knowing its type.
+  \item \textcolor{Bittersweet}{MVC}: decouple data (Model), display (View), and input handling (Controller) to reduce coupling from their interlinked nature.
+  \item \textcolor{Bittersweet}{Observer}: let $\ge$1 objects react to changes in another without the observed object depending on the observers.
+  \item \textcolor{Bittersweet}{Abstraction Occurrence}: split common info (\texttt{<<Abstraction>>}) from unique info (\texttt{<<Occurrence>>}) to avoid data duplication across similar entities.
+\end{itemize}
+\textcolor{ForestGreen}{Singleton cons}: acts as global variable (raises coupling); hard to stub in tests (static method, not overridable).
+
+% ── Design approaches ────────────────────────────────────────────────────────
+\subsection{Design approaches}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Top-down}: high-level first; use for large/novel systems where architecture must stabilise early.
+  \item \textcolor{Bittersweet}{Bottom-up}: components first; use only for variations of existing systems or when reusing components.
+  \item \textcolor{Bittersweet}{Agile/emergent}: minimal upfront architecture; design evolves with requirements.
+\end{itemize}

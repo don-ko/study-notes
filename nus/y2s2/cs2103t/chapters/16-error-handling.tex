@@ -1,0 +1,28 @@
+\section{Error handling}
+
+% ── Exception vs assertion ──────────────────────────────────────────────────
+\subsection{Exception vs.\ assertion}
+\textit{(Defs on ref sheet; the \emph{decision} is not.)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Exception}: unusual condition from user/environment (file missing, network drop) — caller can plausibly recover.
+  \item \textcolor{Bittersweet}{Assertion failure}: programmer mistake — should terminate; assertions verify that the code itself is correct.
+\end{itemize}
+\textcolor{Bittersweet}{Use both, complementarily.} Use \texttt{return} (not exceptions) for \emph{normal} conditions; reserve exceptions for the unusual.
+
+\paragraph{Assertion gotchas}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Disabled by default} (Java) — must enable at runtime; production code that requires the side effect will silently break.
+  \item \textcolor{Bittersweet}{Never put work inside}: \texttt{assert writeFile()} skips the call when assertions are off.
+  \item Suitable for: invariants (internal/control-flow/class), pre- and postconditions.
+\end{itemize}
+
+% ── Defensive vs DbC ──────────────────────────────────────────────────────────
+\subsection{Defensive vs.\ Design-by-Contract}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Defensive}: callee \emph{checks} preconditions and throws/handles violations. Slower, more code, safer at boundaries.
+  \item \textcolor{Bittersweet}{DbC}: caller \emph{guarantees} preconditions; callee assumes them. Faster, brittler if caller misbehaves. Use assertions to verify (debug-mode safety net).
+\end{itemize}
+\textcolor{Bittersweet}{Tune defensiveness} by: system criticality, who calls the code (you vs.\ others), language support, overhead budget.
+
+% ── Logging ───────────────────────────────────────────────────────────────────
+\paragraph{Logging} Deliberate recording for later forensic use — does \emph{not} prevent failures; helps diagnose them. Most systems support log levels (e.g.\ \texttt{INFO}, \texttt{WARNING}, \texttt{SEVERE}) so noise can be filtered.

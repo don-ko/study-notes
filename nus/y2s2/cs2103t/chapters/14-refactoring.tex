@@ -1,0 +1,40 @@
+\section{Refactoring}
+
+% ── Definition guard rails ────────────────────────────────────────────────────
+\subsection{What it is \emph{not}}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Not rewriting}: discard-and-rewrite is not refactoring (must be small steps).
+  \item \textcolor{Bittersweet}{Not bug-fixing}: changes external behavior $\Rightarrow$ no longer a refactoring.
+  \item \textcolor{Bittersweet}{Not free}: each small step needs regression testing — IDE-assisted refactors can still regress.
+\end{itemize}
+
+% ── Catalogue triggers ────────────────────────────────────────────────────────
+\subsection{Catalogue: trigger $\to$ refactoring}
+(Names on ref sheet; trigger column is what's missing.)
+\begin{itemize}
+  \item Same fragment in all branches $\to$ \textcolor{Bittersweet}{Consolidate Conditional Expression}.
+  \item One \texttt{if} doing two distinct things $\to$ \textcolor{Bittersweet}{Decompose Conditional}.
+  \item Method body is just as clear as the call $\to$ \textcolor{Bittersweet}{Inline Method}.
+  \item \texttt{!isNotEmpty()} or similar $\to$ \textcolor{Bittersweet}{Remove Double Negative}.
+  \item Numeric/string literal with implicit meaning $\to$ \textcolor{Bittersweet}{Replace Magic Literal} (with named constant).
+  \item Deep nesting where early-exit suffices $\to$ \textcolor{Bittersweet}{Replace Nested Conditional with Guard Clauses}.
+  \item Boolean/enum parameter dispatching different behaviors $\to$ \textcolor{Bittersweet}{Replace Parameter with Explicit Methods}.
+  \item \texttt{if (\textasciitilde{}cond)} where \texttt{if (cond)} is clearer $\to$ \textcolor{Bittersweet}{Reverse Conditional}.
+  \item One loop computing two unrelated things $\to$ \textcolor{Bittersweet}{Split Loop}.
+  \item One temp variable reused for two purposes $\to$ \textcolor{Bittersweet}{Split Temporary Variable}.
+  \item Code fragment groupable + nameable $\to$ \textcolor{Bittersweet}{Extract Method}.
+\end{itemize}
+\textcolor{ForestGreen}{NOTE}: some refactorings are opposites (\texttt{Extract} $\leftrightarrow$ \texttt{Inline}).
+
+% ── Code smells ───────────────────────────────────────────────────────────────
+\subsection{Code smells (refactoring triggers)}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Long Method}, \textcolor{Bittersweet}{Large Class}: do too much.
+  \item \textcolor{Bittersweet}{Primitive Obsession}: ints/strings where a small type would carry meaning.
+  \item \textcolor{Bittersweet}{Temporary Field}: instance var only used in some flows.
+  \item \textcolor{Bittersweet}{Shotgun Surgery}: one logical change forces edits in many classes.
+  \item \textcolor{Bittersweet}{Data class}: only fields + getters, no behavior.
+\end{itemize}
+
+% ── When to stop ─────────────────────────────────────────────────────────────
+\paragraph{When to stop} Refactor while it pays down \textcolor{Bittersweet}{technical debt}; stop when benefits stop exceeding cost.

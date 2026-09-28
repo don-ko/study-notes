@@ -1,0 +1,36 @@
+\section{Requirements}
+
+% ── Use case extension grammar ────────────────────────────────────────────────
+\subsection{Use case extension numbering}
+(Worked example on ref sheet; the \emph{rules} are not.)
+\begin{itemize}
+  \item \textcolor{Bittersweet}{\texttt{3a.}}, \texttt{3b.}: alternative flow that branches \emph{after} MSS step 3.
+  \item \textcolor{Bittersweet}{\texttt{*a.}}: can occur at \emph{any} step (e.g.\ user cancels).
+  \item \textcolor{Bittersweet}{Sub-steps} (\texttt{3a1.}, \texttt{3a2.}): expand the extension.
+  \item \textcolor{Bittersweet}{Resume}: extension ends with ``Use case resumes from step \emph{N}'' or ``Use case ends.''
+\end{itemize}
+
+\paragraph{Step content rule}
+A step gives the actor's \textcolor{Bittersweet}{intention}, not the UI mechanics. \textcolor{ForestGreen}{Bad}: ``User right-clicks the text box and chooses \emph{clear}.'' \textcolor{ForestGreen}{Good}: ``User clears the input.''
+
+% ── Use case structure terms ────────────────────────────────────────────────
+\paragraph{MSS / extensions / preconditions / guarantees}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{MSS}: nothing-goes-wrong path; must be self-contained.
+  \item \textcolor{Bittersweet}{Extensions}: alternative/exceptional flows added on top.
+  \item \textcolor{Bittersweet}{Preconditions}: required system state \emph{before} the use case starts.
+  \item \textcolor{Bittersweet}{Guarantees}: what the use case promises \emph{after}.
+\end{itemize}
+
+% ── Actors ────────────────────────────────────────────────────────────────────
+\paragraph{Actor flexibility}
+One actor $\to$ many use cases; one use case $\to$ many actors. One person can play many roles; many people can fill one role. Actors are \emph{outside} the system.
+
+% ── User stories ──────────────────────────────────────────────────────────────
+\subsection{User stories vs.\ use cases}
+\textcolor{Bittersweet}{User stories} are lighter, planning-oriented; \textcolor{Bittersweet}{use cases} are detailed enough to drive interaction design. \textcolor{ForestGreen}{\texttt{\{benefit\}} is droppable} when obvious.
+\paragraph{Hierarchy} \textcolor{Bittersweet}{Epic / theme} = high-level user story that decomposes into smaller ones.
+
+% ── Prioritisation ───────────────────────────────────────────────────────────
+\paragraph{Priority tiers}
+\textcolor{Bittersweet}{Essential} (fail without) / \textcolor{Bittersweet}{Typical} (peer products have) / \textcolor{Bittersweet}{Novel} (differentiator).
