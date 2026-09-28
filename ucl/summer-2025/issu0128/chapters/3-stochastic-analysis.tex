@@ -1,0 +1,45 @@
+\section{Stochastic Analysis}
+Consider stock prices modeled using continuous time stochastic processes
+defined $\forall t\in \left[0,T\right]$ by
+\[S_t=S_0\exp{\left\{ \left( \mu-\frac{\sigma^{2}}{2} \right) t+\sigma W_t
+\right\}},\qquad \text{where}\quad W_t\sim\mathcal{N}\left( 0,t \right).\]
+Hence $S$ is a geometric Brownian motion while $W$ is a Brownian motion.
+\subsection{Setup}
+Let $\mathcal{F}\subseteq \Omega$ denote the set of all observable events for a
+single trial. Since the certain event $\Omega$, the impossible set $\emptyset$,
+for every event $A$ the complement $A^{c}$, for every pair of events $A,B$ the
+union $A\cup B$ and intersection $A\cap B$ all belong to $\mathcal{F}$,
+$\mathcal{F}$ is known as an \textit{algebra of events}.
+\begin{definition}[Sigma-Algebra]
+  Suppose a family $\mathcal{F}$ containing all subsets of $\Sigma$ that are observable having the
+  following properties:
+  \begin{enumerate}
+    \item $\emptyset \in \mathcal{F}$
+    \item $\forall A\in \mathcal{F}\left( A^{C}\in \mathcal{F}\right)$
+    \item $\forall i\ge 1, A_i\in \mathcal{F}\left( \bigcup_{i=1} ^{\infty}A_i\in \mathcal{F}\right)$
+  \end{enumerate}
+  $\mathcal{F}$ is known as a \textbf{sigma-algebra}, a special case of an
+  algebra of events.
+\end{definition}
+\begin{definition}[Probability Space]
+  The triple $\left(\Omega,\mathcal{F}, \mathbb{P}\right)$ is called a
+  \textbf{probability space}, of which in financial terms, $\Omega$ is the
+  space of elementary events/``market situations'' $\omega$, $\mathcal{F}$ is a
+  sigma-algebra of subsets of $\Omega$/the set of ``observable market events'',
+  and $\mathbb{P}$ a probability measure on $\mathcal{F}$.
+\end{definition}
+There also exists a non-decreasing family $\left\{ \mathcal{F}_t;t\ge 0 \right\}$ of sub-sigma-fields
+of $\mathcal{F}$, where $\forall 0\le t<s<\infty, \mathcal{F}_t\subseteq
+\mathcal{F}_s\subseteq \mathcal{F}\infty$, known as a \textbf{filtration}. We define
+$\mathcal{F}_\infty=\sigma\left( \bigcup_{t\ge 0} \mathcal{F}_t \right) $.
+\begin{definition}[Brownian Motion]
+  A stochastic process ${\left( W_t \right)}_{t\ge 0} $. THe process $W$ is
+  called a Brownian motion if it satisfies:
+  \begin{itemize}
+    \item $W_0=0$ with probability 1.
+    \item For any $r<s\le t<u$, $W_u-W_t$ and $W_s-W_r$ are independent random variables.
+    \item It is a Gaussian Process. For any $0\le t<s$ the random variable $W_s-W_t\sim N(0,s-t)$
+    \item The sample paths of the process, the functions $t\mapsto W_t\left(
+      \omega \right) $ are almost surely continuous.
+  \end{itemize}
+\end{definition}

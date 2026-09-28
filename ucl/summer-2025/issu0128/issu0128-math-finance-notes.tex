@@ -1,0 +1,90 @@
+\documentclass[11pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{lipsum}
+\usepackage{booktabs}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0pt} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily ISSU0128 Mathematical Finance }\\
+\vspace{24pt}
+{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+\vspace{6pt}
+{\fontsize{12}{12} \selectfont \ttfamily donk@donk.sg} \\
+\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt 
+  \subsubsection{UCL Summer School Module Overview}
+  This module provides a fundamental overview of mathematical finance. It
+  begins with an overview of financial contracts, interest rates, and the value
+  of money. Specifically, it discusses what constitutes a fair price for a
+  contract and explains why fair prices are rarely used in everyday
+  transactions. After that, we will investigate financial markets in a
+  discrete-time setting, with the help of some revision on basic probability
+  theory. The concept of risk-neutral asset pricing will be discussed with
+  reference to pricing stocks and options in the exchange. The last part of the
+  module introduces the fundamental concepts of stochastic calculus and
+  concentrates on continuous time finance with the widely used Black-Scholes
+  model. The goal of this course is to provide students with a broad
+  understanding of the application to finance theory, while setting a solid
+  theorical foundation to the field. This module is also useful for those who
+  want to understand more about the field and related industries before fully
+  committed to a Mathematical Finance pathway or a Mathematical Finance MSc, or
+  simply a solid preparation to other undergraduate mathematical finance
+  modules in general.
+  \subsubsection{Suggested Textbooks and Readings}
+  \begin{itemize}
+    \item Baxter, Martin and Rennie, Andrew. Financial Calculus: An
+      Introduction to Derivative Pricing. Cambridge University Press 1998
+    \item Björk, Tomas. Arbitrage theory in continuous time. 3rd Edition, Oxford University Press 2009
+    \item Garrett, S. J. An introduction to the mathematics of finance. Pearson Education India, 2006
+    \item Hull, John C. Options, Futures and Other Derivatives. Elsevier/Butterworth Heinemann, 2013
+    \item Ross, Sheldon. A First Course in Probability. Pearson, 8th Edition, 2008
+    \item Shreve, Steven E. Stochastic calculus for finance. I. Springer-Verlags 2004
+    \item Shreve, Steven E. Stochastic calculus for finance. II.\ Springer-Verlag 2004
+  \end{itemize}
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\input{chapters/1-value.tex}
+\input{chapters/2-risk-neutral-pricing.tex}
+\input{chapters/3-stochastic-analysis.tex}
+\end{document}

@@ -1,0 +1,363 @@
+\section{The Market, Value of Money, Securities and Strategies}
+\subsection{Introduction}
+\subsubsection{Terminologies}
+\begin{definition}[Equity]
+  The most basic of financial instruments is the \textbf{equity}, or known as the stock
+  or the share.
+\end{definition}
+The \textbf{stockholder} (or \textbf{shareholder}) holds the right of
+participating in the control of the company and receives \textbf{dividends}.
+\begin{definition}[Dividend]
+  \textbf{Dividends} are lump sum payments that are paid out every quarter or
+  every six months to the stockholder, amount depending on the profitability of
+  the company.
+\end{definition}
+\begin{definition}[Commodities]
+  \textbf{Commodities} are raw products such as precious metals, oil and food products.
+  Prices of commodities are unpredictable but tend to show seasonal effects,
+  and are typically traded by people with no need for the material themselves.
+\end{definition}
+
+\subsection{Time Value of Money}
+Depending on the market (in a deflating or inflating economy), but in general,
+money today is has greater value than the same amount in a years time. This is
+because money can be invested to ``produce'' more money, for instance through
+interest payments.
+\begin{remark}
+  We consider investing money in a bank a \textbf{risk-free} investment and
+  other financial instruments relative to this ``standard''.
+\end{remark}
+\begin{definition}[Effective Interest Rate]
+  The interest rate associated with the basic time unit (typically defined $1$
+  year) is the \textbf{effective interest rate} $r$.
+\end{definition}
+\begin{definition}[Nominal Interest Rate]
+  When the frequency of compounding is not equal to the basic time unit, we call
+  the associated interest rate the \textbf{nominal interest rate} $i$, defined:
+  \[i=r\times \frac{t_{i}}{t_{r}}.\] 
+  where $r$ is the effective interest rate, $t_{i}$ is the nominal interest
+  time period, $t_{r}$ is the basic time unit of the effective interest rate.
+\end{definition}
+Suppose a nominal interest rate of $i$, with $m$ interest payments during a
+year (once every $t=\frac{1}{m}$ years). The effective interest rate of each
+sub-period $t$ years is $\frac{i}{m}$, and the effective interest rate for a
+year is
+\[r={(1+\frac{i}{m})}^{m}-1.\]
+\subsubsection{Continuous Compounding}
+As the interest payments happen at increasingly frequent intervals, $m\to\infty$:
+\[\lim_{m \to \infty} {(1+\frac{r}{m})}^{m}= e^{r}.\]
+\begin{proof}
+  Using the binomial theorem,
+  \begin{align*}
+    {\left( 1+\frac{r}{m} \right)} ^{m}=&\sum_{i=0}^{m} \binom{m}{i}{\left( \frac{r}{m} \right)}^{i}\\
+    =&1+\binom{m}{1}\frac{r}{m}+\binom{m}{2}{\left( \frac{r}{m} \right) }^{2}+\cdots+{\left( \frac{r}{m} \right)}^{m}\\
+    =&1+r+\frac{m-1}{m}\frac{r^{2}}{2\mathpunct{!}}+\cdots+{\left( \frac{r}{m} \right) }^{m}
+  \end{align*}
+  Taking the limit $m\to\infty$:
+  \[\lim_{m \to \infty} {(1+\frac{r}{m})}^{m}=1+r+\frac{r^{2}}{2\mathpunct{!}}+\frac{r^{3}}{3\mathpunct{!}}+\cdots= e^{r}.\]
+  This is known as continuous compounding.
+  \qed%
+\end{proof}
+\begin{remark}
+  Continously compounded interest rates are used unless stated otherwise. The
+  value of $b$ compounded over $T$ years at interest rate $r$ is: \[b\times
+  e^{rT}.\]
+\end{remark}
+\subsubsection{Present Value}
+\begin{definition}[Present Value]
+  We define a mapping $P:\mathbb{R}\mapsto \mathbb{R}$ with initial condition
+  $P(0)=k$ and interest rate $r$, such that:
+  \[P(T)=ke^{rT}.\] 
+  Due to the time value of money, cash flows in the future have smaller value
+  that that in the present. We can then relate cash flows in the future (at
+  time $T$) to their \textbf{present value} by:
+  \[P(t)=P(T)e^{-r(T-t)},\quad t\in \left[ 0,T \right].\]
+  This operation is known as \textbf{discounting}.
+\end{definition}
+\subsection{Fixed-Income Securities}
+When a corporation wishes to borrow money from the public on a long-term basis,
+it does so by issuing and selling debt securities known as \textbf{bonds}.
+\begin{definition}[Bond]
+  A \textbf{bond} is typically an interest-only loan, where interest is paid
+  every period and principal is repaid at the end of the loan. It is defined by
+  the \textit{face value/par value/nominal} (the lump sum), the
+  \textit{coupons} and the \textit{maturity}.
+\end{definition}
+\begin{definition}[Coupons]
+  The interest payments made on a bond is known as \textbf{coupons}. We can
+  derive the \textit{coupon rate} from the \textit{annual coupon} $C$ and the
+  face value $F$ of a bond $\frac{C}{F}$.
+\end{definition}
+The PV of a bond consists the PV of the face value and the annuity:
+\begin{align*}
+  PV_{\text{Bond}}=&PV_{\text{Face}}+PV_{\text{Coupon Cash Flow}}\\
+  =&\frac{Face}{{(1+r)}^{t}}+\left(\frac{Annuity}{r}\right)\left( 1-\frac{1}{{(1+r)}^{t}} \right) 
+\end{align*}
+where $r$ is the interest rate, and $t$ the time to the bond's maturity.
+
+\begin{definition}[Zero Coupon Bond]
+  A \textbf{zero coupon bond} is a bond that pays no coupons at all. It must be
+  offered at a price much lower than its face value.
+\end{definition}
+
+\subsection{Market Assumptions}
+\begin{definition}[Arbitrage]
+  Arbitrage refers to the possibility to make money without any risk.
+\end{definition}
+In a real market involving many participants, each motivated by making a
+profit, any arbitrage opportunities that arises would vanish very quickly. We
+make some market assumptions to ensure that there will only be a unique fair
+price for a given bond.
+
+\subsubsection{Terminologies}
+\begin{definition}[Spot Price]
+  We denote the price of any given stock or commodity at time $t\in
+  \left.\left[0,\infty\right. \right)$ by $S(t)$. For present time (\textbf{spot time})
+  $t=t_0$, $S(t_0)$ is the \textbf{spot price}.
+\end{definition}
+\begin{definition}[Price Process]
+  For some $T\in \left( 0,\infty \right) $, the \textbf{price process} denoted ${\left(
+  S(t) \right)}_{t\in [0,T]}=\left\{ S(t):t\in \left[ 0,T \right] \right\}$ for
+  some function of randomness and time $S:\Omega\times \left[ 0,T
+  \right]\mapsto [0,\infty)$. The price process is a random variable evolving
+  through time, or a stochastic process.
+\end{definition}
+\begin{definition}[Underlyings]
+  For contracts or derivatives written in relation to a certain amount of
+  stocks or commodities, the particular stocks or commodities involved are
+  referred to as the \textbf{underlyings}.
+\end{definition}
+\begin{definition}[Short-Selling]
+  \textbf{Short-selling} involves selling an unowned or borrowed asset
+  with the intention of buying it back later.
+\end{definition}
+\begin{definition}[Hedging]
+  A strategy intended to reduce or minimise risk is known as \textbf{hedging}.
+\end{definition}
+\begin{definition}[Speculation]
+  Taking a position in the market where the investor speculates that the price
+  of the underlying asset will go up or down is known as \textbf{speculation}.
+\end{definition}
+\begin{definition}[Derivatives]
+  \textbf{Derivatives} are financial contracts whose value depends from the
+  values of some underlying asset(s).
+\end{definition}
+
+\subsubsection{Market Assumptions}
+\begin{itemize}
+  \item There are no transaction costs, e.g.\ no taxes, no bid-ask price, no
+    brokerage fees. We call this market a \textbf{frictionless market}.
+  \item The same risk-free rate of interest applies for borrowing and lending
+    money (\textbf{market efficiency}) and the bank never goes bankrupt.
+  \item There is an `absence' of arbitrage, as market participants take
+    advantage of opportunities as they occur.
+  \item It is always possible to buy/sell something in any amount at its fair
+    price.
+\end{itemize}
+
+\subsection{Forward Contract}
+\begin{definition}[Forward Contracts]
+  \textbf{Forward Contracts} are agreements between two parties to buy or sell
+  an asset $S(T)$ at a specified future time $T$ at a specified delivery price
+  $K$, known as the maturity or delivery date.  Participants are obligated to
+  buy or sell the asset at maturity.
+\end{definition}
+One of the parties assumes a long position to purchase the underlying asset at
+time $T$, and the other party assumes a short position to sell the underlying
+asset.
+\subsubsection{Pay-off}
+Pay-off per unit of asset from the long position in a forward contract: $S(T)-K$.\\
+Pay-off per unit of asset from the short position in a forward contract: $K-S(T)$.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{forward-payoff}
+\end{figure}\\
+
+\centering
+\begin{tabular}{c c c}
+\toprule
+Holding & Value at time $t$ & Value at maturity $T$\\
+\midrule
+Forward & $+0$ & $S(T)-K$\\
+Stock & $-S(t)$ & $-S(T)$\\
+Bank & $+S(T)$ & $S(t)e^{r(T-t)}$\\
+\midrule
+Total & $0$ & $S(t)e^{r(T-t)}-K$\\
+\bottomrule
+\end{tabular}
+
+\raggedright%
+\begin{prop}[Fair Delivery Price of a Forward Contract]
+  The arbitrage free delivery price of a forward contract is a map $K: \left[
+  0,T \right]\times [0,\infty)\mapsto [0, \infty)$ such that:
+  \[K(t,T)=S(t)e^{r(T-t)}.\] 
+\end{prop}
+\begin{prop}[Convergence to Spot Price]
+  The fair no-arbitrage delivery price of a forward contract converges to the spot price
+  of the underlying asset as we approach maturity. That is,
+  \[\lim_{t \to T} K(t,T)=S(T).\]
+\end{prop}
+
+\subsection{Options Contracts}
+Options are similar to forward contracts, but without their obligatory aspect.
+Additionally, options are sold for a certain specified initial amount, known as
+the \textit{premium}.  The holder of a option has the decision whether to
+execute the contract or not.  There are two types of options contracts:
+\begin{itemize}
+  \item A \textbf{call option} gives the holder the right to buy the underlying
+    asset $S$ at a certain future \textit{expiration date} $T$ for a certain
+    \textit{strike price} $K$.
+  \item A \textbf{put option} gives the holder the right to sell the underlying
+    asset $S$ at a certain future \textit{expiration date} $T$ for a certain
+    \textit{strike price} $K$.
+\end{itemize}
+\begin{remark}
+  There are two subtypes of the options contracts:
+  \begin{itemize}
+    \item \textbf{European options} can be exercised only on the expiration date itself.
+    \item \textbf{American options} can be exercised at any time up to the expiration date.
+  \end{itemize}
+  Due to the additionally flexibility, premiums of the same parameters will be
+  higher in American options than European options.
+\end{remark}
+\subsubsection{Pay-off}
+Suppose an investor purchases a European call option on a certain stock with a
+strike price $K=10$ and an expiration datae in three months.
+At maturity, there are two possibilities for $S(T)$:
+ \begin{enumerate}
+  \item $S(T)<K$:
+    The investor will choose not to exercise the option, as they can purchase
+    the stock in the market for a better price. There is no profit to be made
+    from the option and the investor loses money by paying for the premium.
+  \item $S(T)>K$:
+    The investor will exercise the option and will make a profit by selling them
+    immediately at the spot price.
+\end{enumerate} 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{option-long-payoff}
+\end{figure}
+The pay-off of the long European call is given by $\max \left\{ S(T)-K,0
+\right\}$ and we define the \textbf{call function} the map
+$f:\mathbb{R}\mapsto \mathbb{R}$:
+\[f(x)=\max \left\{ x-K,0 \right\}={(x-K)}^{+}.\]
+Similarly, the pay-off of the long European put is given by $\max \left\{
+K-S(T),0 \right\}$ and we define the \textbf{put function} the map
+$f:\mathbb{R}\mapsto \mathbb{R}$:
+\[f(x)=\max \left\{ K-x,0 \right\}={(K-x)}^{+}.\]
+
+\centering
+\begin{tabular}{c c c}
+  \toprule
+  Contract & Position & Pay-off \\
+  \midrule
+  Call & Long & $\max \left\{ S(T)-K,0 \right\}$ \\
+  Call & Short & $-\max \left\{ S(T)-K,0 \right\}$\\
+  \midrule
+  Put & Long & $\max \left\{ K-S(T) \right\}$\\
+  Put & Short & $-\max \left\{ K-S(T),0 \right\}$ \\
+  \bottomrule
+\end{tabular}
+
+\raggedright
+
+\subsubsection{Replicating Portfolio}
+\begin{definition}[Replicating Portfolios]
+  We say that a portfolio is \textbf{replicating} with relation to a given
+  contract if at maturity time, the future value of the replciating portfolio
+  is the same as the future value of the contract.
+\end{definition}
+\begin{theorem}[Law of One Price]
+  In an arbitrage free market, two portfolios with identical future values must
+  have identical present values.
+\end{theorem}
+We see that replicating portfolios (by definition) have the same value at the
+present and in the future.
+
+\subsubsection{Put-Call Parity}
+\begin{theorem}[Put-Call Parity]
+  Consider a call and put option written on a stock $S$ with maturity $T$ and
+  strike price $K$. Let ${\left( c_t \right)}_{t\in \left[ 0,T \right]}$ and
+  ${\left( p_t \right)}_{t\in \left[ 0,T \right]}$ denote the fair prices of a
+  call and put option at time  $t\in \left[ 0,T \right]$. Then for any $t\in \left[ 0,T \right]$,
+  \[c_{t}+Ke^{-r(T-t)}=p_{t}+S(t).\] 
+\end{theorem}
+\begin{proof}
+  Consider two portfolios:\\
+  \textit{Portfolio A}: A cash amount of £$Ke^{-rT}$ and a European call option
+  written on a non-dividend-paying stock.\\
+  \textit{Portfolio B}: A European put option written on a non-dividend-paying
+  stock and one share.
+  At time $t=T$, we have:
+  \[V_A=\max \left\{ S(T),K \right\}\qquad V_B=\max \left\{ S(T),K \right\}.\]
+  They are replicating portfolios and by the law of one price, the values
+  of the portfolios at time $t=0$ should be equal. That is:
+  \[c_{0}+Ke^{-rT}=p_{0}+S(0).\]
+  We obtain the put-call parity at time $t=0$ which applies $\forall t\in [0,T]$ by finding the
+  values of the portfolios at time $t$.
+  \qed%
+\end{proof}
+
+\subsubsection{Synthetic Securities}
+Using the put-call parity, we may create synthetic versions of other
+securities, of which replicates or simulate a security by combining the
+features of other assets.
+\begin{example}[Synthetic Stock]
+  A long position in a underlying stock is equivalent to a long position in a
+  call option, a long position in a risk-free bond and a short position in a
+  put option.
+  \[S(0)=c_0+Ke^{-rT}-p_0.\] 
+\end{example}
+\begin{example}[Synthetic Put Option]
+  A long position in a put option is equivalent to a long position in a call
+  option, a long position in a risk-free bond and a short position in the
+  underlying stock.
+  \[p_0=c_0+Ke^{-rT}-S(0).\] 
+\end{example}
+
+\subsection{Trading Strategies}
+With these financial objects, we may derive further common strategies driven by
+speculation motives or desires to hedge, of which can
+\begin{enumerate}
+  \item involve a single option and a stock
+  \item involve two or more options of the same type (\textbf{spreads})
+  \item involve both calls and puts on the same stock (\textbf{combinations})
+\end{enumerate}
+\begin{remark}
+  We ignore the time value of money in calculating the profit functions, that
+  is, $r=0$. Profits are calculated simply by subtracting the initial cost from
+  the final payoff.
+\end{remark}
+\subsubsection{Covered Calls, Protective Puts}
+These strategies seek to reduce the risk from the short position of a call
+option, or the risk of a sharp decrease in the value of a stock. We hedge the
+unlimited/large downside risk of large price changes, by holding a long
+position in the underlying stock, or the long position in a put option.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{covered-protective}
+\end{figure}
+An investor may also short these financial objects, of which the profit
+diagrams is the negative of those above.
+\subsubsection{Spreads}
+A spread is a portfolio consisting two or more options of the same type, with
+different positions.
+\begin{itemize}
+  \item \textbf{Bull Spread}: long one call with strike price $K_l$, and short
+    one call with higher strike price $K_s>K_l$ 
+  \item \textbf{Bear Spread}: long one call with strike price $K_l$, and short
+    one call with lower strike price $K_s<K_l$ 
+  \item \textbf{Butterfly Spread}: long two calls with strike prices
+    $K_{l1},K_{l2}$ and short two calls with strike price $K_s = \frac{K_{l1} +
+    K_{l2}}{2}$
+\end{itemize}
+\subsubsection{Combinations}
+A combination is a portfolio consisting both call and put options with the same
+position on the same stock. The strikes and maturities of all the options
+included are the same.
+\begin{itemize}
+  \item \textbf{Straddle}: long one call and one put
+  \item \textbf{Strips}: long one call and two puts
+  \item \textbf{Straps}: long one put and two calls
+  \item \textbf{Strangles}: long a put and a call
+\end{itemize}

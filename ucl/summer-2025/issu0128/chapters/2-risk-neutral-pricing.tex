@@ -1,0 +1,240 @@
+\section{Risk Neutral Asset Pricing}
+\subsection{The One-Period Model}
+\subsubsection{Introduction and Setup}
+The market consists of a stock and a bank account over a single period $n\in
+\left\{ 0,1 \right\}$. The bank account pays interests discretely at a rate
+$r$. The stock price is a stochastic process ${\left( S_{n} \right)}_{n=0,1}$,
+where $S_0\in \mathbb{R}^{+}_{*}$ and $S_1$ is a Bernoulli random variable such that:
+\[S_1=S_0Z\quad\text{ where }\quad Z:\Omega \mapsto \left\{ u,d \right\},P[Z=u]=p_u, P[Z=d]=p_d.\]
+For positive constants $d,u,p_u,p_d$, such that $d<u$, we refer to the market
+model as the one-period binomial model.
+\begin{definition}[Trading Strategy]
+  We refer to a vector $h:=\left( x_0,y_0 \right)\in \mathbb{R}^{2}$ as
+  the \textbf{portfolio} or \textbf{trading strategy}, where $x_0$ denotes the
+  number of units of money in the bank account and $y_0$ denotes the
+  number of units of stocks at time $t=0$ or period $n=0$.
+\end{definition}
+\begin{definition}[Value Process]
+  We define the \textbf{value process} of a portfolio $h$ to be
+  \[V_{n}^{h}:=x_0B_{n}+y_0S_{n},\qquad n=0,1.\]
+\end{definition}
+\begin{definition}[Arbitrage]
+  A portfolio $h$ in the one-period binomial model is an \textbf{arbitrage portfolio} if the following
+  conditions hold:
+  \begin{itemize}
+    \item $V_0^{h}=0$ 
+    \item $P[V_1^{h}\ge 0]=1$
+    \item $P[V_1^{h}> 0]>0$
+  \end{itemize}
+  That is, we are guaranteed a nonzero profit without risk.
+\end{definition}
+If no such portfolio exists, we say that the market is \textit{free of arbitrage}.
+\begin{prop}[Free of Arbitrage]
+  The one-period binomial model is free of arbitrage if and only if
+  \[d\le 1+r\le u.\]
+\end{prop}
+\subsubsection{Risk-Neutral Measure}
+With a market free of arbitrage in the one-period binomial model, we have $d\le 1+r\le u$ and
+\[\exists q_u,q_d\in [0,1]\qquad \text{s.t.}\qquad 1+r=q_u\cdot u+q_d\cdot d\quad \text{and}\quad q_u+q_d=1.\] 
+These conditions have the unique solution:
+\[q_u=\frac{(1+r)-d}{u-d}\qquad\text{and}\qquad q_d=\frac{u-(1+r)}{u-d}.\]
+We interpret $q_u$ and $q_d$ as a new probability measure $\mathbb{Q}$ where
+the $\mathbb{Q}[Z=u]=q_u$ and $\mathbb{Q}[Z=d]=q_d$, of which the expected
+value of the value of the stock is equal to that of the riskless bank account.
+It follows that the value of the stock today is the discounted expected value
+of the stock in the future.
+This $\mathbb{Q}$ is known as the \textbf{risk-neutral measure}, (or
+\textbf{martingale measure}), as we are indifferent between the bank account or
+the stock under this measure. 
+\begin{prop}[Existence of Risk-Neutral Measure]
+  There exists such a measure if and only if the model is arbitrage free.
+\end{prop}
+\subsubsection{Contingent Claims}
+With this market model, we are able to introduce derivative products and find the
+fair prices for such objects.
+\begin{definition}[Contingent Claim]
+  A \textbf{contingent claim} is a stochastic variable $X$ of the form
+  $X=\Phi(S_1)$ where $S_1$ is the stochastic variable representing the value
+  of the stock.
+\end{definition}
+The real valued function $\Phi$ is known as the contract function.
+\begin{notation}[Price Process of a Claim]
+  We denote $\Pi\left( n;\Phi\left( S_1 \right)  \right) $ the price operator
+  associated with the claim which returns the price of the claim at period $n$.
+\end{notation}
+\begin{definition}[Reachability of a Claim]
+  We say that a contingent claim $X$ is \textbf{reachable} if there exits a portfolio
+  $h$ such that
+  \[P(V_1^{h}=X)=1.\]
+  $h$ is known as the \textit{hedging portfolio} or a \textit{replicating
+  portfolio}.
+\end{definition}
+By the law of one price, the hedging portfolio has the same value as the contingent claim:
+\[\Pi\left( n;\Phi \right) =V_{n}^{h}.\]
+By solving the equation at $n=1$ in the one-period binomial model,
+\[V_1^{h}=\Phi=\Pi\left( 1;\Phi \right) \iff
+  \begin{cases}x(1+r)+yS_0u=\Phi(S_0u)&Z=u\\x(1+r)+yS_0d=\Phi(S_0d)&Z=d\end{cases}\] 
+which has a solution due to the no arbitrage condition $d<u$, $h^{*}=\left( x^{*},y^{*} \right) $ where:
+\begin{align*}
+  x^{*}=&\frac{1}{1+r}\frac{u\Phi\left( S_0d \right) -d\Phi\left( S_0u \right) }{u-d}\\
+  y^{*}=&\frac{1}{S_0}\frac{\Phi\left( S_0u \right) -\Phi\left( S_0d \right) }{u-d}
+\end{align*}
+We have the price of the claim:
+\[\Pi\left( 0;\Phi \right)=\frac{1}{1+r}E_{\mathbb{Q}}\left[  \Phi\left( S_1(Z) \right) \right].\] 
+\begin{theorem}[Fair Price of a Contingent Claim]
+  If the binomial model is free of arbitrage, then any claim $\Phi$ is replicable and
+  the no-arbitrage price of $\Phi$ is given by
+  \[\Pi\left( 0;\Phi \right)=\frac{1}{1+r}E_{\mathbb{Q}}\left[  \Phi\left( S_1\right) \right].\]
+  where $\mathbb{Q}$ is the risk-neutral probability measure.
+\end{theorem}
+\begin{remark}
+  The continuously compounded version of the one-period binomial measure
+  follows, where $(1+r)$ is replaced by the continuously compounded interest
+  $e^{rt}$
+\end{remark}
+\subsubsection{Risk-Free Portfolio Pricing}
+We may also derive a portfolio such that there is no risk of the value of the
+portfolio at its maturity. The value of the portfolio is independent of the
+value of the underlying asset.\\
+We find such a portfolio by solving for a portfolio $h=(0,\triangle)$ with a
+short position in a European call with contract function $\Phi$ such that:
+\[\triangle\cdot S_1(u)-\Phi(S_1(u))=\triangle\cdot S_1(d)-\Phi(S_1(d)).\]
+\begin{remark}
+  A riskless portfolio pays the exact same as a deposit in the bank account.
+\end{remark}
+
+\subsection{Multi-Period Model}
+We extend the one-period binomial model into a multi-period binomial model, a
+discrete-time model with $N \in \mathbb{N}$ periods and a running time index
+$n=0,\ldots,N$. The time periods have a fixed time length $\triangle t$ and the
+total time of the $N$ periods is $T=N\triangle t$.
+\subsubsection{Setup}
+The two underlying assets, namely a bond with price process
+${(B_{n})}_{n=0,\ldots,N}$ and a stock with price process
+${(S_{n})}_{n=0,\ldots,N}$, are defined as follows:
+\[\text{Bank/Bond}=\begin{cases}B_0=1\\B_{n+1}=(1+r)B_{n}={(1+r)}^{n+1}\end{cases}\] 
+\[\text{Bank/Bond}=\begin{cases}S_0=1\\S_{n+1}=S_{n}Z_{n}\end{cases}\] 
+where we have a collection of i.i.d.\ Bernoulli r.v. $Z_0,\ldots,Z_{N-1}$.
+\begin{definition}[Portfolio Strategy]
+  We extend the portfolio strategy to a stochastic process
+  \[\left\{ h_{n}=(x_{n},y_{n}) : n=1,\ldots,N\right\}.\]
+  where each $h_{n}$ is a function of the stock prices. $h_0=h_1$ by
+  convention. The corresponding \textit{value/wealth process} is
+  \[V_{n}^{h}=x_{n}B_{n}+y_{n}S_{n}=x_{n}{(1+r)}^{n}+y_{n}S_{n}.\]
+\end{definition}
+\begin{definition}[Self-Financing Strategy]
+  We say a portfolio strategy $h_{n}$ is a \textbf{self-financing strategy} if
+  \[x_{n}(1+r)+y_{n}S_{n}=x_{n+1}(1+r)+y_{n+1}S_{n}.\]
+  There is no extra capital into the portfolio at any time. We assume all
+  portfolio strategies are self-financing.
+\end{definition}
+\begin{theorem}[Arbitrage-Free Market Model]
+  For some $d<u$, the model is arbitrage-free if and only if $d\le 1+r\le u$,
+  and there exists a unique risk-neutral measure $\mathbb{Q}$ whose defining probabilities
+  $q_d$ and $q_u$ are defined by
+  \[s=\frac{1}{1+r}E_{\mathbb{Q}}\left[ S_{n+1}|S_{n}=s \right].\] 
+\end{theorem}
+\subsubsection{Contingent Claims: European Claims}
+\begin{notation}[Price Process of a Claim]
+  We write, for a claim $\Phi$ written on $S$, for any $n\in \left\{ 0,\ldots,N \right\}$
+  \[\left.\Pi\left( n;\Phi \right)\right|_{S_{n}}.\]
+  the price of the option $\Phi$ at period $n$ when the stock takes the value
+  $S_{n}$.
+\end{notation}
+\begin{prop}[Fair Price of a Contingent Claim]
+  For a arbitrage-free $N$-period binomial market model and an European type claim $\Phi(S_N)$,
+  \[\Pi\left( 0;\Phi\left( S_N \right)  \right) ={\left( e^{-r\triangle t} \right)}^{N}\sum_{k=0}^{N} \binom{N}{k}q_u^{k}q_d^{N-k}\Phi\left( S_0u^{k}d^{N-k} \right).\] 
+\end{prop}
+
+\subsubsection{Contingent Claims: American Options}
+We consider claims of which we may exercise at any time. Exercising the
+American option before maturity time is known as an \textit{early-exercise}.
+\begin{definition}[Intrinsic Value]
+  We define the intrinsic value of an American option at period $n$ as the
+  market value (the payoff) of the option if one exercises the option at period
+  $n$.
+\end{definition}
+If the intrinsic value of the American option is higher than the expected fair
+price if it were an European option, one would exercise the option at that tree
+node. Hence, we have:
+\begin{itemize}
+  \item At period $N$, the price of the option is exactly its pay-off.\\
+  \item At periods $n<N$, the price of the option is the maximum between its
+    expected future gain given risk neutrality, and its intrinsic value from an
+    early exercise.
+\[\left.\Pi\left( n;\Phi \right)\right|_{S_{n}=s}:=\max \left\{ \Phi(s),e^{-r\triangle t}\left( q_u\left.\Pi\left( n+1;\Phi \right) \right|_{S_{n+1}=us} + q_d\left.\Pi\left( n+1;\Phi \right) \right|_{S_{n+1}=ds}\right) \right\}.\] 
+\end{itemize}
+If the intrinsic value at period $n$ is less than the future expected value of
+the option, the investor can expect to make a profit by waiting and will not
+commit an early-exercise. If there is no early-exercise of the American call,
+the price of the American call is the price as if it were a European call.
+\begin{remark}
+  The put-call parity does not hold for American options. We have, instead:
+  \[S_0-K\le c_0-p_0\le S_0-Ke^{-rT}.\] 
+\end{remark}
+
+\subsection{Volatility and Model Calibration}
+How should we pick $u,d$ such that it accurately models a stock? This depends
+on the volatility of the stock, denoted $\sigma$, as a measure of uncertainty
+of the returns of the stock.
+\begin{remark}
+  Stocks typically have a volatility betwen $15\%$ and $60\%$
+\end{remark}
+\subsubsection{Black-Scholes Model}
+The returns of a stock are typically modelled over time as
+\[\frac{\triangle S_t}{S_t}=\frac{S_{t+\triangle t}-S_t}{S_t}=\mu\triangle t+\sigma\sqrt{\triangle t}\varepsilon,\qquad \varepsilon\sim\mathcal{N}\left( 0,1 \right)\]
+with $\mu$ representing the drift or trend. Additionally, the uncertainty about
+a future stock price scales with the square root of ``how far into the
+future''. We then have, in the binomial tree model:
+\[S(t_{k+1})=S(t_k)\left( 1+\mu\triangle t+\sigma \sqrt{\triangle t}\varepsilon \right).\] 
+\begin{remark}
+  As a measure of uncertainty of the future stock price movements, higher
+  volatility intuitively implies a greater chance of doing very well or very
+  poorly. The two outcomes tend to offset each other as a investor of a stock.
+  However, due to the limited downside risk of a option, investors of options
+  benefit from greater volatility and \textit{the value of both calls and puts
+  increases as volatility increases.}
+\end{remark}
+\subsubsection{Model Calibration}
+Assuming we have the drift $\mu$ and volatility $\sigma$, how can we choose the
+parameters of the model to accurately predict the market? We match the first
+two moments of the Black-Scholes model and the Binomial model: Choosing $u,d,p_u,p_d$ such that:
+\[E_\mathbb{P}\left[ S_1 \right]=E_\mathbb{P}\left[ S(t_1) \right]\qquad\text{and}\qquad \Var_\mathbb{P}\left[ S_1 \right]=\Var_\mathbb{P}\left[ S(t_1) \right].\] 
+Matching the expectations, we have
+\[S_0(u\cdot p_u+d\cdot\left( 1-p_u\right) )=S_0(1+e^{\mu\triangle t})\]
+\[p_u=\frac{e^{\mu\triangle t}-d}{u-d}\]
+Matching the variances, we have
+\[S_0^{2}p_u\left( 1-p_u \right) {\left( u-d \right)}^{2}=\sigma^{2}S_0^{2}\triangle t\]
+\[u=e^{\sigma \sqrt{\triangle t}}\qquad\text{and}\qquad d=e^{-\sigma \sqrt{\triangle t}}\]
+\subsubsection{Risk-Neutral Measure}
+The expectation under risk neutrality approaches the expectation under the
+calibrated model as $r\to \mu$, but is not equal in general. The variance under
+$\mathbb{Q}$ reproduces the calibrated model.\\
+Moving between risk preferencees changes the expected growth rates, but the
+volatilities remain the same (as $\triangle t\to0$). This is known as changing the (probability)
+measure. [Girsanov's Theorem]
+
+\subsection{Continuous-Time Multi-Period Binomial Model}
+Since our model more accurately models the volatility as $\triangle t\to 0$, we
+attempt to take the limits and compute the continuous-time case. 
+\subsubsection{Setup}
+Consider a market of continuous interest rate $r$ and volatility $\sigma$. Let
+$\Phi\left( S(T) \right) $be a European Call or Put option with maturity $T$
+written on a stock ${\left( S(t) \right) }_{t\in \left[ 0,T \right]}$. Consider $N$ sub-intervals
+with time step $\triangle t=\frac{T}{N}$ and time points $t_{n}^{N}=n\times
+\triangle t, n\in \left\{ 0,1,\ldots,N \right\}$.\\
+We then have $u_N=e^{\sigma \sqrt{\triangle t}}, d_N=e^{-\sigma \sqrt{\triangle
+t}}$ and probabilities
+\[q_{u,N}=\frac{e^{r\triangle t}-d_N}{u-d}\qquad\text{and}\qquad q_{d,N}=1-q_{u,N}.\]
+\begin{theorem}[Black-Scholes European Option Valuation Formula]
+  The continuous time limit of the calibrated binomial for a call/put option of
+  function $\Phi_c$/$\Phi_p$ with strike $K$ has fair prices:
+  \[c_t=\lim_{\triangle t \to 0} \left.\Pi\left( 0,\Phi_c \right)
+    \right|_{S_0}=S_0N\left( d_+ \right)-Ke^{-rT}N(d_{-}).\] 
+  \[p_t=\lim_{\triangle t \to 0} \left.\Pi\left( 0,\Phi_p \right)
+    \right|_{S_0}=Ke^{-rT}N(-d_{-})-S_0N\left( -d_+ \right).\] 
+  where $d_+=\frac{\ln\left( \frac{S_0}{K}\right)+\left( r+\frac{\sigma^{2}}{2}
+  \right) T  }{\sigma \sqrt{T}}$ and $d_-=d_+-\sigma \sqrt{T}=\frac{\ln\left(
+  \frac{S_0}{K}\right)+\left( r-\frac{\sigma^{2}}{2} \right) T  }{\sigma
+  \sqrt{T}}$ and $N(\cdot)$ the cumulative Normal distribution function.
+\end{theorem}
