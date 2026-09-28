@@ -1,0 +1,14 @@
+\section{Search \& Adversarial Search}
+\defn{PEAS} (Performance / Environment / Actuators / Sensors). \defn{Problem} $=$ (states, init, actions, transition, goal-test, cost $c(s,a,s')$); tree vs.\ graph ($+$ visited).
+\paragraph{Uninformed} \defn{BFS} / \defn{UCS} / \defn{IDS} complete \& optimal (BFS / IDS unit-cost; UCS needs $c{\geq}\epsilon{>}0$, $C^*{<}\infty$; UCS $=$ Dijkstra). \defn{DFS}: $O(b^m)$ time, $O(bm)$ space, \trap{not optimal, complete only with visited $+$ finite}.
+\paragraph{Informed (A$^*$)} \defn{A$^*$}: $f{=}g{+}h$, $h(\text{goal}){=}0$. \defn{Admissible}: $h{\leq}h^*$. \defn{Consistent}: $h(n){\leq}c(n,a,n'){+}h(n')$ (triangle); consistent $\Rightarrow$ admissible. Optimality (Hart '68): tree if $h$ admissible; graph (visited) if $h$ consistent. \defn{Dominance}: $h_1{\geq}h_2$ (admissible) $\Rightarrow h_1$ expands fewer. \defn{Relaxed problem}: optimal cost gives admissible $h$. \trap{Greedy ($f{=}h$) not optimal.}
+\paragraph{Local} Incomplete, suboptimal, any-time. \defn{Hill-climb}: best-evaluation neighbour; stuck at \trap{local max / shoulder / ridge}. Escapes:
+\begin{itemize}
+\item Random restart.
+\item \defn{Simulated annealing}: accept worse with $P{=}e^{-\Delta/T}$.
+\item Beam search.
+\item Genetic algorithm.
+\end{itemize}
+\paragraph{Adversarial} 2-player zero-sum turn-taking; A maximises, B minimises. \defn{Minimax}:
+\[V(s)=u(s)\text{ at terminal, else }\max_{s'}V(s')\text{ or }\min_{s'}V(s'),\]
+$O(b^m)$ time / $O(bm)$ space, optimal vs.\ optimal opponent. \defn{$\alpha$-$\beta$ pruning}: $\alpha$ / $\beta$ best for A / B; max-prune $v{\geq}\beta$, min-prune $v{\leq}\alpha$; \ex{perfect order $O(b^{m/2})$}. \defn{Cutoff $+$ eval}: \texttt{is\_cutoff} returns eval$(s)$ between min / max utility; \trap{admissibility / consistency don't apply}.

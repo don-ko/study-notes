@@ -1,0 +1,52 @@
+\section{Neural Networks}
+\defn{Idea}: instead of handcrafting $\phi$, jointly learn feature transform $\phi$ and predictor $h$ end-to-end via a NN; compose into $h(\phi(x))$.
+
+\subsection{Neuron \& Architectures}
+\defn{Neuron}: $z{=}\sum_{j=0}^{d}w_jx_j$, $a{=}g(z)$ (with dummy $x_0{=}1$ so $w_0$ is bias). Linear regression $=$ identity $g$; logistic regression $=$ sigmoid $g$; both $\hat y{=}a$. A neuron is a hyperplane $\Rightarrow$ does NOT, AND, OR, but \trap{not XOR (linearly inseparable)}.
+\defn{NN} $=$ computation graph $G{=}(V,E)$; node $v$ holds $h_v$ with parameters $w^{[v]}$; edges $=$ data flow. \defn{FFNN} $=$ DAG (input $\to$ output, no cycles). \defn{FCNN} $=$ FFNN of sequential \defn{FC layers}, where every input node connects to every neuron of the layer (parallel neurons). \defn{Depth} $L$ $=$ \#layers (\trap{excludes input}); \defn{Width} $=$ \#neurons in a layer. \defn{Deep learning}: $\geq2$ hidden layers. Containment: FCNN $\subset$ FFNN $\subset$ NN.
+\defn{XOR}: not a single neuron; build via $A\bar B+\bar AB$ as a 2-layer net (NOTs $\to$ ANDs $\to$ OR).
+\defn{Universal approximation} (informal): single hidden layer $+$ non-linear $g$ $+$ sufficient width $\Rightarrow$ approximates any continuous function on bounded region. Depth helps in practice.
+
+\subsection{Activations}
+$g$ usually non-linear (else network collapses to one linear map):
+\begin{itemize}
+\item \defn{Identity} $g(z){=}z$ (regression output).
+\item \defn{Sigmoid} $\sigma(z){=}1/(1+e^{-z})\in(0,1)$.
+\item \defn{Tanh} $(e^z{-}e^{-z})/(e^z{+}e^{-z})\in({-}1,1)$.
+\item \defn{ReLU} $\max(0,z)$.
+\item \defn{Leaky ReLU} $\max(\alpha z,z)$, e.g.\ $\alpha{=}0.2$.
+\item \defn{Softmax} (output for $K$-way classification) $\mathrm{softmax}(z)_i{=}e^{z_i}/\!\sum_j e^{z_j}\in[0,1]$, sums to $1$.
+\end{itemize}
+Derivatives in miscMath.
+
+\subsection{FCNN Forward Pass}
+Per-layer dimensions: $W^{[l]}\!\in\!\mathbb{R}^{d_{l-1}\times d_l}$ (rows $=$ sources, cols $=$ destinations; entry $W^{[l]}_{ij}$ links source $i\!\in\!l{-}1$ to destination $j\!\in\!l$). With $a^{[0]}{=}x$, for $l{=}1{:}L$:
+\[z^{[l]}=(W^{[l]})^{\top}a^{[l-1]},\quad a^{[l]}=g^{[l]}(z^{[l]}),\quad \hat y=a^{[L]}.\]
+Bias absorbed by augmenting $a^{[l-1]}$ with a leading $1$ (or kept as separate $b^{[l]}$).
+
+\subsection{Tasks \& Output Layers}
+General view: \defn{Feature transform} $\phi$ (hidden layers) $+$ \defn{Predictor} $h$ (output layer) jointly learned. Data $D{=}\{(x^{(i)},y^{(i)})\}$, $x^{(i)}\!\in\!\mathbb{R}^{d}$.
+\begin{itemize}
+\item \defn{Single regression} ($y\!\in\!\mathbb{R}$): 1 output neuron, identity $g$;
+\[J_{MSE}=\tfrac1{2n}\sum_i(\hat y^{(i)}-y^{(i)})^2.\]
+\item \defn{Multi-output regression} ($y\!\in\!\mathbb{R}^m$): $m$ identity neurons;
+\[J_{MSE}=\tfrac1{2n}\sum_i\sum_{j=1}^{m}(\hat y^{(i)}_j-y^{(i)}_j)^2.\]
+\item \defn{Binary classification} ($y\!\in\!\{0,1\}$): 1 sigmoid neuron; $J_{BCE}$ in miscMath.
+\item \defn{Multi-class} ($K$): \defn{one-hot} $y\!\in\!\{0,1\}^K$; $K$ softmax neurons; \defn{Categorical CE}
+\[\mathrm{CCE}(y,\hat y)=-\sum_{i=1}^{K}y_i\log\hat y_i,\quad J_{CCE}=\tfrac1n\sum_i\mathrm{CCE}(y^{(i)},\hat y^{(i)}).\]
+\item \defn{Multi-label}: split outputs per group; sum task losses (e.g.\ softmax $+$ CCE for one group, sigmoid $+$ BCE for an independent binary label).
+\end{itemize}
+
+\subsection{Backpropagation}
+Goal: compute $\partial J/\partial W^{[l]}$ for all $l$ to run GD
+\[w_j\leftarrow w_j-\gamma\,\partial J/\partial w_j\]
+($\gamma$ learning rate). Backprop $=$ DP application of chain rule (reverse-mode autodiff in libraries; in PyTorch: \texttt{loss.backward()}). Two passes:
+\paragraph{Forward} cache $z^{[l]},a^{[l]}$ for $l{=}1{:}L$.
+\paragraph{Backward} let \defn{$\delta^{[l]}$} $:=\partial J/\partial z^{[l]}\!\in\!\mathbb{R}^{d_l}$.
+\begin{itemize}
+\item Output layer: $\delta^{[L]}{=}(\partial J/\partial a^{[L]})\odot g^{[L]\prime}(z^{[L]})$.
+\item Recurrence ($l{=}L{-}1,\ldots,1$): $\delta^{[l]}{=}(W^{[l+1]}\delta^{[l+1]})\odot g^{[l]\prime}(z^{[l]})$.
+\item Weight gradient: $\partial J/\partial W^{[l]}{=}a^{[l-1]}(\delta^{[l]})^{\top}\!\in\!\mathbb{R}^{d_{l-1}\times d_l}$.
+\end{itemize}
+$\odot$ $=$ Hadamard. Output-layer shortcuts: BCE $+$ sigmoid $\Rightarrow\delta^{[L]}{=}\hat y{-}y$; CCE $+$ softmax $\Rightarrow\delta^{[L]}_j{=}\hat y_j{-}y_j$ (miscMath). Identity all layers $+$ MSE: $\delta^{[L]}{=}\hat y{-}y$, then $\delta^{[l]}{=}W^{[l+1]}\delta^{[l+1]}$.
+\trap{Naming}: backprop $=$ inner gradient computation; colloquially ``backprop'' sometimes means the whole training loop.

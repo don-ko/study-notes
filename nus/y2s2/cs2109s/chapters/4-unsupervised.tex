@@ -1,0 +1,53 @@
+\section{Unsupervised Learning}
+Most data (text / image / video) unlabelled; human labels $=$ expensive (time / money / expertise). \defn{Unsupervised learning}: train on inputs only (no human labels). \defn{Self-supervised learning (SSL)}: subset where supervision is generated automatically from the data itself.
+
+\subsection{Pretext Tasks}
+\defn{Pretext task}: a fabricated task whose \defn{pseudo-labels} are auto-generated; solving it forces the model to learn useful features. Examples:
+\begin{itemize}
+\item Rotation prediction.
+\item Contrastive learning.
+\item Image inpainting.
+\item Next-token prediction.
+\end{itemize}
+\paragraph{Rotation prediction} For each image $x^{(i)}$, generate 4 rotated versions $x^{(i)[j]}$, $j\!\in\!\{0,1,2,3\}$ (rotations $0/90/180/270^{\circ}$); pseudo-label $y^{(i)[j]}$ is the one-hot of $j$. Total $4n$ rotated images. Train CNN feature extractor $+$ 4-way softmax head with CCE loss. Forces the model to learn object orientation, edges, contours.
+
+\subsection{Pre-training $+$ Fine-tuning}
+\defn{Downstream task}: target task of interest. \trap{Pre-trained model usually cannot be applied directly} (task mismatch, e.g.\ 4-class rotation $\neq$ binary classification).
+\paragraph{Build a new model}
+\begin{itemize}
+\item \defn{Feature extractor}: reuse pre-trained one, initialise with pre-trained weights (better than random).
+\item \defn{Predictor}: new, task-specific head, random init.
+\end{itemize}
+\paragraph{Fine-tuning strategies} Train on labelled $\{(x^{(i)},y^{(i)})\}_{i=1}^{n}$ with task loss (BCE binary, CCE multi):
+\begin{itemize}
+\item Update every weight.
+\item Update only a subset (e.g.\ freeze early layers, train predictor $+$ last block).
+\item Direct application: skip fine-tune, use features as is — no annotation needed but lower accuracy.
+\end{itemize}
+
+\subsection{Image Retrieval \& Contrastive Loss}
+\defn{Category-level retrieval}: given query $x^q$, return top-$k$ database images of same class. Pipeline: feature-extract $\to$ similarity match $\to$ sort.
+\[\mathrm{sim}(x,y)=\tfrac{x\cdot y}{\|x\|\|y\|}\in[-1,1]\quad\text{(\defn{Cosine similarity})}\]
+$1$ same direction, $-1$ opposite.
+\paragraph{Contrastive fine-tuning} Form pairs from labelled data: \defn{Positive pair} $(x^{(i)},x^{(i^{+})})$ same class; \defn{Negative pair} $(x^{(i)},x^{(i^{-})})$ different. Extract $z{=}f(x)$. Exponential similarity ($\tau{\approx}0.1$): $s^{(i^+)}{=}e^{\mathrm{sim}(z^{(i)},z^{(i^+)})/\tau}$, $s^{(i^-)}$ analogously.
+\[J^{(i)}=-\log\!\tfrac{s^{(i^+)}}{s^{(i^+)}+\sum_{i^-\in A(i)} s^{(i^-)}},\quad A(i)=\{k:y^{(k)}\!\neq\!y^{(i)}\}.\]
+
+\subsection{Common Misconceptions}
+\paragraph{Attention NN}
+\begin{itemize}
+\item \trap{FFN / FC weights are SHARED across tokens within a layer} (same NN applied to every token).
+\item \trap{Encoder vs decoder use SEPARATE FFNs.}
+\item \trap{Each attention layer has its OWN $W^{q},W^{k},W^{v}$} (self $W^{qs},W^{ks},W^{vs}$; masked-self $W^{qm},\ldots$; cross $W^{qc},\ldots$).
+\item \trap{Decoder output $z^{[t]}$ is the embedding / representation of the predicted token (NOT one-hot).}
+\end{itemize}
+\paragraph{RNN}
+\begin{itemize}
+\item \trap{Unrolling does NOT create distinct layers} — same RNN weights repeated across all $t$.
+\item \trap{Encoder \& decoder use separate RNN layers with different weights.}
+\item \trap{$h^{[0]}$ need not be $\mathbf{0}$}: in image captioning use a CNN's image-feature vector; in seq2seq init $h^{[0]}_{dec}{=}h^{[T_x]}_{enc}$.
+\end{itemize}
+\paragraph{CNN}
+\begin{itemize}
+\item \trap{Bias is channel-wise, NOT pixel-wise}: one bias per output channel, shared over all spatial locations.
+\item \trap{Pooling layers have ZERO trainable parameters} — fixed deterministic ops (max / avg).
+\end{itemize}

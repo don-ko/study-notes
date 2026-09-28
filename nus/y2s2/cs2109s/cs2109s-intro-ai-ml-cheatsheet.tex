@@ -1,0 +1,86 @@
+\documentclass[11pt,landscape,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{PTSansNarrow}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage[top=0mm,bottom=1mm,left=0mm,right=1mm]{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,graphs,shapes.misc,decorations.pathreplacing}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{cool}
+\usepackage{graphicx}
+\graphicspath{{./src/}}
+
+\setlist[itemize]{noitemsep, topsep=0pt}
+
+\setlength{\jot}{0pt}
+\appto{\footnotesize}{%
+    \setlength{\abovedisplayskip}{0pt}
+    \setlength{\belowdisplayskip}{0pt}
+    \setlength{\abovedisplayshortskip}{0pt}
+    \setlength{\belowdisplayshortskip}{0pt}
+}
+
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\pagestyle{empty}
+\renewcommand{\baselinestretch}{0.9}
+
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%
+                                {\sffamily\small\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{1}{0mm}%
+                                {.2ex}%
+                                {.2ex}%
+                                {\sffamily\small\bfseries}}
+\renewcommand{\paragraph}{\@startsection{paragraph}{1}{0mm}%
+                                {.2ex}%
+                                {-1em}%
+                                {\sffamily\bfseries}*}
+\makeatother
+
+\setlist[itemize]{noitemsep,nolistsep,leftmargin=*}
+\setlist[enumerate]{noitemsep,nolistsep,leftmargin=*}
+\setlength{\parindent}{0pt}
+
+% ===== Cheatsheet conventions =====
+% Palette (semantic, locked):
+%   \defn{...}  Blue + bold        : a defined term (noun being introduced)
+%   \trap{...}  Bittersweet         : pitfall / gotcha / "watch out" only
+%   \ex{...}    ForestGreen          : worked example / common numerical value
+%   plain text                       : descriptive prose, supporting names, canonical formulas
+% Formulas: load-bearing equations on their own \[ ... \] line, no color.
+% Voice: telegraphic / definitional ("Term = definition" or "Term: clause; clause").
+% Headings: Title Case; no module references.
+% Abbreviations: spell out except whitelist (BFS, DFS, UCS, IDS, DAG, DT, NN, FFNN,
+%   FCNN, FC, CNN, RNN, ID3, MSE, MAE, BCE, CCE, IG, GD, SGD, BPTT, NP, RBF, SVM,
+%   SSL, ReLU, OvR, OvO, GA, PEAS).
+% Lint: any \textcolor{...} in chapters/ is a drift signal (use macros instead).
+\newcommand{\defn}[1]{\textcolor{Blue}{\textbf{#1}}}
+\newcommand{\trap}[1]{\textcolor{Bittersweet}{#1}}
+\newcommand{\ex}[1]{\textcolor{ForestGreen}{#1}}
+
+\begin{document}
+\footnotesize
+\begin{multicols*}{4}
+    \input{misc-math.tex}
+    \input{chapters/0-search.tex}
+    \input{chapters/1-classical-ml.tex}
+    \input{chapters/2-neural-nets.tex}
+    \input{chapters/3-deep-archs.tex}
+    \input{chapters/4-unsupervised.tex}
+\end{multicols*}
+\end{document}

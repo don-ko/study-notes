@@ -1,0 +1,48 @@
+\section{Deep Architectures}
+Specialised layers for grid (CNN) and sequence (RNN, attention) data; everything trained end-to-end with backprop $+$ GD.
+
+\subsection{Convolutional Neural Network}
+\defn{CNN}: stack of conv $+$ pool $+$ FC layers; extracts spatial features by sliding small kernels. Local connectivity $+$ weight sharing $\Rightarrow$ far fewer parameters than FC over images.
+\paragraph{Conv layer} Input $I_H\!\times\!I_W\!\times\!C$. \defn{Kernel/filter} $K\!\times\!K\!\times\!C$ (channels MUST match input). Each kernel: slides over input, dot product per location $\to$ 1 \defn{feature map}. \#kernels $=$ \#output channels. Kernel weights $+$ \trap{1 bias per kernel (channel-wise, NOT pixel-wise)}. Hyperparameters: stride $S$, padding $P$.
+\[O = 1 + \left\lfloor \tfrac{I+2P-K}{S} \right\rfloor\quad\text{(per spatial axis)}\]
+Output volume $O_H\!\times\!O_W\!\times\!C_{out}$. Parameter count per layer:
+\[K\cdot K\cdot C_{in}\cdot C_{out}+C_{out}.\]
+\paragraph{Pooling layer} \defn{Max-pool} / \defn{Average-pool}: window size $W$, stride $S$. Reduces spatial size, keeps channels. \trap{Zero trainable parameters} (deterministic op).
+\paragraph{Architecture \& receptive field} Typical pipeline: $[\text{conv}+\text{ReLU}+\text{pool}]^{\times k}\to\text{flatten}\to\text{FC}\to\hat y$. \defn{Receptive field} of a deep neuron $=$ region of input it depends on; grows with depth, kernel size, stride.
+
+\subsection{Recurrent Neural Network}
+\defn{RNN}: NN layer designed for sequential data $x^{[1]},\ldots,x^{[T]}$; maintains hidden state $h^{[t]}$ summarising the past. \trap{Same RNN layer applied at every step (shared weights, NOT distinct copies upon ``unrolling'').}
+\paragraph{Vanilla recurrence}
+\[h^{[t]}=g\!\big((W^{[xh]})^{\top}x^{[t]}+(W^{[hh]})^{\top}h^{[t-1]}+b^{[h]}\big)\]
+$h^{[0]}{=}\mathbf{0}$ default. Per-step output (e.g.\ word tagging) $\hat y^{[t]}=\sigma((W^{[hy]})^{\top}h^{[t]})$ via an FC layer (also shared across $t$).
+\paragraph{Variants}
+\begin{itemize}
+\item \defn{Bidirectional}: forward $\vec h^{[t]}$ and backward $\overleftarrow h^{[t]}$ RNNs; concat $h^{[t]}{=}[\vec h^{[t]};\overleftarrow h^{[t]}]$.
+\item \defn{Stacked}: $h^{[l,t]}{=}f^{[l]}(h^{[l-1,t]},h^{[l,t-1]})$.
+\item \defn{Encoder-decoder (seq2seq)}: encoder reads $x_{enc}^{[1{:}T_x]}$ producing $h_{enc}^{[T_x]}$; decoder \trap{(separate weights!)} starts at $h_{dec}^{[0]}{=}h_{enc}^{[T_x]}$, takes $\langle\text{SOS}\rangle$ then its own previous output, emits $\hat y^{[1{:}T_y]}$ until $\langle\text{EOS}\rangle$.
+\item \defn{Image captioning}: $h^{[0]}$ initialised by image-feature vector (CNN encoder output) instead of $\mathbf{0}$.
+\end{itemize}
+\paragraph{Training (BPTT)} \defn{Back-propagation through time}: unroll over $T$ steps then backprop. Loss $J{=}\sum_t J^{[t]}$; gradient w.r.t.\ $W^{[hh]}$ accumulates contributions from all time steps via repeated $W^{[hh]}$ Jacobians $\Rightarrow$ \trap{vanishing / exploding gradients} for long sequences.
+
+\subsection{Attention \& Transformer}
+\textbf{Motivation}: seq2seq RNN bottlenecks all source info into a single $h_{enc}^{[T_x]}$; attention lets each output token query all source tokens directly; processes tokens in parallel (no recurrence).
+\paragraph{Self-attention layer} Tokens stacked column-wise $X{=}[x^{[1]}\,\cdots\,x^{[T]}]\!\in\!\mathbb{R}^{d_v\times T}$. Linear projections \trap{(layer-specific weights, NOT shared across attention layers)}: $Q{=}W^{q}X,\ K{=}W^{k}X,\ V{=}W^{v}X$.
+\[C=V\,\mathrm{softmax}_{\mathrm{col}}\!\big(K^{\top}Q/\sqrt{d_k}\big)\in\mathbb{R}^{d_v\times T}.\]
+Column $t$ of $C$ is a convex combination of value vectors weighted by query-$t$'s similarity to all keys; $\sqrt{d_k}$ stops softmax saturating.
+\paragraph{Variants}
+\begin{itemize}
+\item \defn{Self-attention} $W^{qs},W^{ks},W^{vs}$: each token attends to all (encoder).
+\item \defn{Masked self-attention} $W^{qm},W^{km},W^{vm}$: future positions masked $-\infty$ before softmax (decoder; preserves causality during training).
+\item \defn{Cross-attention} $W^{qc},W^{kc},W^{vc}$: $Q$ from decoder, $K,V$ from encoder output.
+\end{itemize}
+\paragraph{Positional encoding} (attention has no order built-in): add to inputs at the bottom,
+\[x^{[t]}\leftarrow x^{[t]}+PE^{[t]},\]
+with $PE^{[t]}_{2k}{=}\sin(t/L^{2k/d})$, $PE^{[t]}_{2k+1}{=}\cos(t/L^{2k/d})$, $L{\approx}10^4$.
+\paragraph{Attention NN block} Per-token:
+\begin{itemize}
+\item Self-attention produces $c^{[t]}$.
+\item Residual add $x^{[t]}{+}c^{[t]}$.
+\item \trap{Same feed-forward NN} applied independently to each token vector.
+\item \trap{Same FC} for output $\hat y^{[t]}$.
+\end{itemize}
+\trap{Encoder and decoder use separate FFNs with different weights.} For language generation the decoder emits $z^{[t]}$, the \trap{representation / embedding of the predicted token (NOT one-hot)}; fed back as input at step $t{+}1$ until $\langle\text{EOS}\rangle$.

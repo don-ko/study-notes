@@ -1,0 +1,20 @@
+\paragraph{Notation}
+\defn{Data}: $D=\{(x^{(i)},y^{(i)})\}_{i=1}^{n}$, $x^{(i)}\in\mathbb{R}^{d}$, $\hat y^{(i)}=h(x^{(i)})$. $n$ examples, $d$ features.\\
+\defn{Linear/logistic}: $h_w(x)=w^{\top}x=\sum_{j=0}^{d}w_jx_j$ with dummy $x_0\!=\!1$, so bias is $w_0$; logistic $h_w(x)=\sigma(w^{\top}x)$. Design matrix $X\!\in\!\mathbb{R}^{n\times(d+1)}$ (row per example, leading $1$); targets $Y\!\in\!\mathbb{R}^{n}$. MSE $J_{MSE}(w)=\frac{1}{2n}\sum_i(h_w(x^{(i)})-y^{(i)})^{2}$.\\
+\defn{DT}: entropy $H(Y)=-\sum_k P(y_k)\log_2 P(y_k)$; conditional $H(Y|X)=\sum_x P(X{=}x)H(Y|X{=}x)$; gain $IG(Y;X)=H(Y)-H(Y|X)$.\\
+\defn{Reg/Kernel}: $J_{reg}(w)=J(w)+\lambda R(w)$, $\lambda\!\geq\!0$; $\|w\|_p=(\sum_j|w_j|^{p})^{1/p}$. Dual $h_\alpha(x)=\sum_j\alpha_j\langle x^{(j)},x\rangle$; kernel $k_\phi(u,v)=\langle\phi(u),\phi(v)\rangle$; hyperplane $h_w(x)=\mathrm{sign}(w^{\top}x)$, distance $|w^{\top}x|/\|w\|$.\\
+\defn{NN}: $L$ layers (excludes input). Layer $l$: $W^{[l]}$, bias $b^{[l]}$, activation $g^{[l]}$; $\hat y=g^{[L]}\!\big((W^{[L]})^{\top}\,g^{[L-1]}(\cdots g^{[1]}((W^{[1]})^{\top}x))\big)$. Entry $W^{[l]}_{ij}$ connects source $i$ in layer $l{-}1$ to destination $j$ in layer $l$ (so $W^{[l]}\!\in\!\mathbb{R}^{(\text{in})\times(\text{out})}$).\\
+\defn{CNN}: $*$ convolution; input $I_H\!\times\!I_W\!\times\!C$, kernel $K\!\times\!K$, stride $S$, padding $P$. Output side $1+\lfloor(I_W+2P-K)/S\rfloor$. Each kernel matches input channels; \#kernels $=$ \#output feature maps.\\
+\defn{RNN}: $h^{[t]}=g((W^{[xh]})^{\top}x^{[t]}+(W^{[hh]})^{\top}h^{[t-1]}+b)$, $h^{[0]}\!=\!\mathbf{0}$, $T$ time steps; output $\hat y^{[t]}=\sigma((W^{[hy]})^{\top}h^{[t]})$. Bidirectional $h^{[t]}=[\vec h^{[t]};\overleftarrow h^{[t]}]$; stacked $h^{[l,t]}=f^{[l]}(h^{[l-1,t]},h^{[l,t-1]})$.\\
+\defn{Attention}: $Q\!=\!W^{q}X$, $K\!=\!W^{k}X$, $V\!=\!W^{v}X$; $C=V\,\mathrm{softmax}_{\mathrm{col}}(K^{\top}Q/\sqrt{d_k})\in\mathbb{R}^{d_v\times T}$. Position: $x^{[t]}\!\leftarrow\!x^{[t]}+PE^{[t]}$, $PE^{[t]}_{2k}=\sin(t/L^{2k/d})$, $PE^{[t]}_{2k+1}=\cos(t/L^{2k/d})$.
+
+\paragraph{Identities}
+\textbf{Chain}: $\frac{d}{dx}f(g(x))=f'(g(x))\,g'(x)$; multivariate $\nabla_w J(h(w))=h'(w)\,J'(h)$.\\
+\textbf{Gradients}: $\nabla_w(w^{\top}x)=x$, $\nabla_w(w^{\top}w)=2w$, $\nabla_w(w^{\top}Aw)=(A+A^{\top})w$, $\nabla_w\|Xw-Y\|^{2}=2X^{\top}(Xw-Y)$.\\
+\textbf{MSE gradient}: $\partial J_{MSE}/\partial w_j=\tfrac{1}{n}\sum_i(w^{\top}x^{(i)}-y^{(i)})x^{(i)}_j$; ridge adds $+\lambda w_j$.\\
+\textbf{Normal equation}: $w=(X^{\top}X)^{-1}X^{\top}Y$; ridge $w=(X^{\top}X+\lambda\mathbb{I})^{-1}X^{\top}Y$.\\
+\textbf{Activations}: $\sigma'(z)=\sigma(z)(1-\sigma(z))$; $\tanh'(z)=1-\tanh^{2}(z)$; $\mathrm{ReLU}'(z)=\mathbb{1}[z>0]$.\\
+\textbf{BCE+sigmoid}: if $\hat y=\sigma(z)$ and $\ell=-y\log\hat y-(1-y)\log(1-\hat y)$, then $\partial\ell/\partial z=\hat y-y$.\\
+\textbf{Softmax}: $s_i=e^{z_i}/\!\sum_k e^{z_k}$, $\partial s_i/\partial z_j=s_i(\delta_{ij}-s_j)$; CE+softmax $\partial\ell/\partial z_j=\hat y_j-y_j$.\\
+\textbf{Log-sum-exp}: $\log\sum_i e^{z_i}=z^{*}+\log\sum_i e^{z_i-z^{*}}$, $z^{*}=\max_i z_i$.\\
+\ex{Common entropies: $H(1)\!=\!0$, $H(\tfrac12,\tfrac12)\!=\!1$, $H(\tfrac13,\tfrac23)\!\approx\!0.918$, $H(\tfrac35,\tfrac25)\!\approx\!0.971$.}

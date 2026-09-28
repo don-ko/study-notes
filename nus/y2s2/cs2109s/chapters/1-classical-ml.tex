@@ -1,0 +1,94 @@
+\section{Classical Machine Learning}
+\defn{Supervised}: labelled $D$, learn $h:X\!\to\!Y$. \defn{Regression} ($y\!\in\!\mathbb{R}$, MSE / MAE); \defn{Classification} ($y\!\in\!\{1,\dots,K\}$; accuracy, $P{=}\tfrac{TP}{TP+FP}$, $R{=}\tfrac{TP}{TP+FN}$, $F1{=}\tfrac{2}{1/P+1/R}$). Train / test split; performance on test $=$ generalisation (assumes shared ground truth).
+
+\subsection{Decision Trees}
+\defn{DT}: internal nodes $=$ attribute tests, branches $=$ outcomes, leaves $=$ class; predict via nested if-else. Inputs categorical $x\!\in\!\{c_1,\dots,c_m\}^d$, target $\!\in\!\{1,\dots,K\}$. Representational completeness: any consistent finite-categorical set has a perfectly-classifying DT. \trap{Optimal (smallest) DT is NP-hard.} Greedy \defn{ID3}: at each node pick $a^{*}{=}\arg\max_a IG(Y;a)$, partition rows by $a^{*}$'s values, recurse.
+\paragraph{Base cases}
+\begin{itemize}
+\item Rows empty $\to$ default (parent's majority).
+\item Pure $\to$ that label.
+\item No attributes left $\to$ majority(rows) (handles noise / inconsistent data).
+\end{itemize}
+\paragraph{Entropy / IG} $H(Y|X){=}\sum_x P(X{=}x)H(Y|X{=}x)$ (weighted average of specific entropies); $IG$ $=$ uncertainty reduction after observing $X$. Common values in miscMath.
+\paragraph{Overfit / pruning} DT fits noise $\Rightarrow$ overfit. \defn{Pre-pruning}:
+\begin{itemize}
+\item \defn{Max-depth}: longest root-leaf path.
+\item \defn{Min-leaf-size}: refuse splits making a leaf below threshold $\to$ majority.
+\end{itemize}
+Real-world: continuous $\to$ binned intervals; missing $\to$ most-common (overall / per-class), sample by prior, drop attribute / row.
+
+\subsection{Linear Regression}
+\defn{Model} $h_w(x){=}w^{\top}x$, $J_{MSE}$ in miscMath ($\tfrac12$ for clean derivative).
+\paragraph{Normal equation}
+\[w=(X^{\top}X)^{-1}X^{\top}Y\]
+(set $X^{\top}(Xw{-}Y){=}0$); closed form, no $\gamma$, but $O(d^3)$ inversion, needs $X^{\top}X$ invertible (linearly independent features); fails for non-linear models.
+\paragraph{Gradient descent}
+\[w_j\leftarrow w_j-\gamma\,\partial J/\partial w_j\]
+\trap{Learning rate $\gamma$: too large diverges, too small slow.} Compute all $\partial J/\partial w_j$ from current $w$, then update simultaneously. Variants:
+\begin{itemize}
+\item \defn{Batch}: all $n$ examples per step.
+\item \defn{Mini-batch}: subset; cheaper, noisy gradient escapes plateaus.
+\item \defn{SGD}: one example per step.
+\end{itemize}
+\paragraph{Convexity} Convex $\Rightarrow$ every local min global; strictly convex $\Rightarrow$ unique global min. MSE $+$ linear is convex; if features linearly independent then strictly convex $\Rightarrow$ GD finds unique global min.
+\paragraph{Feature scaling} (for GD)
+\begin{itemize}
+\item \defn{Min-max}: $x'{=}(x{-}\min)/(\max{-}\min)$.
+\item \defn{Standardise}: $x'{=}(x{-}\mu)/\sigma$.
+\end{itemize}
+Equalises curvature $\to$ faster convergence; \trap{not needed for normal equation}.
+\paragraph{Feature transform} $\phi:\mathbb{R}^d\!\to\!\mathbb{R}^M$. \defn{Polynomial} $\phi_{pk}$ degree $k$ ($\Rightarrow$ \defn{Polynomial regression}), log, exp. Linear-in-$w$ after $\phi$ $\Rightarrow$ same algorithms.
+
+\subsection{Logistic Regression}
+\defn{Sigmoid} $\sigma(z){=}1/(1{+}e^{-z})$, $\sigma'{=}\sigma(1{-}\sigma)$. \defn{Model} $h_w(x){=}\sigma(w^{\top}x){=}P(y{=}1|x)$ (confidence); predict 1 iff $h_w(x){\geq}\tau$ (\defn{Decision threshold}, default $.5$). Decision boundary: $w^{\top}x{=}0$ (hyperplane).
+\paragraph{BCE loss} $\ell{=}{-}y\log\hat y-(1{-}y)\log(1{-}\hat y)$, $J_{BCE}{=}\tfrac1n\sum_i\ell$. Logistic regression $=$ sigmoid model $+$ BCE. \trap{MSE here is non-convex} (sigmoid keeps S-shape under squaring); BCE (i.e.\ $-\log\sigma$) is convex (preserved under feature transforms) $\Rightarrow$ GD finds global min. No closed form (transcendental). Gradient:
+\[\partial J/\partial w_j=\tfrac1n\sum_i(h_w(x^{(i)})-y^{(i)})x^{(i)}_j\]
+\emph{Same form as linear regression.} Non-linearly separable $\to$ feature transforms.
+\paragraph{Multi-class ($K$)} Reduce to binary:
+\begin{itemize}
+\item \defn{One-vs-Rest}: $K$ classifiers (class-$k$ vs.\ rest); predict $\arg\max_k h_{w^{[k]}}$.
+\item \defn{One-vs-One}: $K(K{-}1)/2$ pairwise; majority vote.
+\end{itemize}
+\paragraph{Multi-label} ($y\!\in\!\{0,1\}^K$):
+\begin{itemize}
+\item \defn{Binary relevance}: one classifier per label; \trap{ignores correlations}.
+\item \defn{Classifier chain}: feed prior predictions as features.
+\item \defn{Label powerset}: each label-set $=$ one multi-class label.
+\end{itemize}
+
+\subsection{Bias--Variance \& Tuning}
+\trap{High bias / underfit}: simple model on complex truth; train \& test both high; more data won't help. \trap{High variance / overfit}: complex model on scarce / noisy data; train $\ll$ test; retraining on a fresh sample gives a very different model. Diagnose via train-vs-test gap. Generalisation depends on data (relevance, noise, balance, quantity) and model complexity.
+\paragraph{Hyperparameters} Set pre-training ($\gamma$, polynomial degree, batch size, $\lambda$); tune on a \defn{validation set}. Methods:
+\begin{itemize}
+\item Grid search (exhaustive).
+\item Random search.
+\item Local search (hill-climb).
+\item Successive halving.
+\item Bayesian optimisation.
+\end{itemize}
+
+\subsection{Regularization}
+Overfit often correlates with large-magnitude $w$. Regularised loss in miscMath. Variants:
+\begin{itemize}
+\item \defn{Ridge} ($L_2$): $R{=}\tfrac12\|w\|_2^2$; gradient adds $\lambda w_j$. Closed form $w{=}(X^{\top}X{+}\lambda\mathbb{I})^{-1}X^{\top}Y$. $X^{\top}X{+}\lambda\mathbb{I}$ invertible for $\lambda{>}0$ $\Rightarrow$ unique solution; strictly shrinks $\|w\|$.
+\item \defn{Lasso} ($L_1$): $R{=}\|w\|_1$; subgradient $\lambda\,\mathrm{sgn}(w_j)$. Sparsity: feature kept only if its MSE-gradient contribution $\geq\lambda$, else $w_j{=}0$.
+\item \defn{Elastic net}: $L_1{+}L_2$.
+\end{itemize}
+Effect: shrink weights $\to$ less variance, more bias.
+
+\subsection{Dual Models \& Kernels}
+\defn{Representer theorem} (informal; ridge, $L_2$-logistic, SVM): optimal $w{=}\sum_{j=1}^{n}\alpha_j x^{(j)}$ (linear combination of training inputs) $\Rightarrow$ \defn{Dual model}
+\[h_\alpha(x)=\sum_j\alpha_j\langle x^{(j)},x\rangle.\]
+Primal: $d{+}1$ weights; dual: $n$ — wins when transformed dim.\ $M\!\gg\!n$. (Ridge proof: push-through $(X^{\top}X{+}\lambda\mathbb{I})^{-1}X^{\top}{=}X^{\top}(XX^{\top}{+}\lambda\mathbb{I})^{-1}$.)
+\paragraph{Kernel trick} Replace $\langle\cdot,\cdot\rangle$ with \defn{Kernel} $k_\phi(u,v){=}\langle\phi(u),\phi(v)\rangle$ — never expand $\phi$.
+\[h_\alpha^\phi(x)=\sum_j\alpha_j\,k_\phi(x^{(j)},x)\quad\text{(\defn{kernel machine})}.\]
+Common families:
+\begin{itemize}
+\item \ex{Linear $u^{\top}v$.}
+\item \ex{Polynomial $k_{pk}{=}(u^{\top}v)^{k}$.}
+\item \ex{RBF / Gaussian $\exp(-\|u-v\|^{2}/(2s^{2}))$ — \trap{implicit infinite-dimensional $\phi$}.}
+\end{itemize}
+\defn{Mercer} (informal): any continuous symmetric positive-definite kernel corresponds to some $\phi$ (so $k$ can be designed directly).
+\paragraph{Hyperplane classifier} $y\!\in\!\{{-}1,{+}1\}$:
+\[h_w(x)=\mathrm{sign}(w^{\top}x),\quad\text{distance }=|w^{\top}x|/\|w\|.\]
+Zero-offset plane $w^{\top}u{=}0$, normal $w$.
