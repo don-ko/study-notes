@@ -1,0 +1,93 @@
+\documentclass[10pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage{fix-cm}        % scale one design size, as OT1 does --- keeps the title bold
+\usepackage[T1]{fontenc}   % accented French terms kept inline in the prose
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{pdfpages}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{arrows,calc,decorations.markings,decorations.pathreplacing,patterns}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{titlesec}
+\titleformat*{\subsubsection}{\large\bfseries\sffamily}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0in} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily PHY 3TC20: Optique et Photonique }\\
+\vspace{24pt}
+%{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+%\vspace{6pt}
+%{\fontsize{12}{12} \selectfont \ttfamily dkkl1137@gmail.com} \\
+%\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt
+  This module is an introduction to optics. Over the last decades optics, until
+  then a classical discipline, has developed very strong links with the
+  information and communication sciences --- links that rest not only on a
+  shared formalism (Fourier analysis) but also on the ability of optical waves
+  to carry and store spatial signals naturally suited to parallel processing of
+  the information they transport. The course gives the fundamental concepts of
+  the discipline: propagation of light in optical fibres and the notion of
+  transverse mode, by both a geometrical and a wave approach; lasers, and the
+  difference between the mechanisms of light emission (thermal field,
+  luminescence, stimulated emission); diffraction in scalar theory, Fourier
+  optics and optical information processing --- spatial-frequency filtering,
+  optical transfer functions, image sampling; and an introduction to
+  holography, analogue and digital.
+
+  \medskip
+  Prose is in English; the French terms the poly, the TDs and the exam actually
+  use are kept inline, so the vocabulary stays findable in both languages.
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\input{chapters/1-optique-geometrique.tex}
+\input{chapters/2-ondes-analyse-spectrale.tex}
+\input{chapters/3-diffraction.tex}
+\input{chapters/4-fibre-optique.tex}
+\input{chapters/5-laser.tex}
+\input{chapters/6-holographie.tex}
+\input{chapters/7-annexe-transformees-fourier.tex}
+\end{document}
