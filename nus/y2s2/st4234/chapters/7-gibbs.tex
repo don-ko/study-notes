@@ -1,0 +1,21 @@
+% Chapter 7 — Markov Chain Monte Carlo (Lecture 8)
+
+\section{Markov Chain Monte Carlo}
+
+\paragraph{Recipe}
+If every full conditional $\pi(\theta_j\mid\theta_{-j},x)$ is sampleable, cycle through $j=1,\ldots,k$ updating one coordinate at a time. After a burn-in of $w$ cycles, the next $M$ draws approximate $\pi(\theta\mid x)$.
+\[\mathbb{E}[g(\theta)\mid x]\approx \tfrac{1}{M}\sum_{i=w+1}^{w+M}g(\theta^{(i)}).\]
+\textcolor{Bittersweet}{Convergence in distribution} as cycles $\to\infty$; chains are autocorrelated, so SE uses effective sample size, not $M$.
+
+\paragraph{Dirichlet via Gibbs}
+$f(u,v,w)\propto u^{4}v^{3}w^{2}(1-u-v-w)$ on the 3-simplex. Full conditionals (after rescaling by the residual mass):
+\[u\mid v,w\sim (1-v-w)\,\mathrm{Beta}(5,2),\]
+\[v\mid u,w\sim (1-u-w)\,\mathrm{Beta}(4,2),\]
+\[w\mid u,v\sim (1-u-v)\,\mathrm{Beta}(3,2).\]
+
+\paragraph{Gamma-Normal via Gibbs}
+With posterior parameters $(\alpha_n,\beta_n,m_n,t_n)$ from Ch.\ 2:
+\[\mu\mid\tau,x\sim N\!\bigl(m_n,\tfrac{1}{t_n\tau}\bigr),\]
+\[\tau\mid\mu,x\sim \mathrm{Gamma}(\alpha_n+\tfrac{1}{2},\,1/\beta'),\]
+\[\beta'=\beta_n+\tfrac{t_n}{2}(\mu-m_n)^{2}.\]
+Initialise $\tau^{(0)}>0$ (e.g.\ $1/s^{2}$), then alternate. Estimate e.g.\ CV $=\mu\sqrt{\tau}$ via $\tfrac{1}{M}\sum \mu^{(i)}\sqrt{\tau^{(i)}}$.

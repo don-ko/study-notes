@@ -1,0 +1,23 @@
+% Chapter 4 — Predictive distributions (Lecture 5)
+
+\section{Predictive distributions}
+
+\paragraph{Prior / posterior predictive}
+\[f_{X_{n+1}}(x_{n+1})=\int \pi(x_{n+1}\mid\theta)\,\pi(\theta)\,d\theta,\]
+\[f_{X_{n+1}}(x_{n+1}\mid\mathbf{X}=\mathbf{x})=\int \pi(x_{n+1}\mid \theta)\,\pi(\theta\mid x)\,d\theta.\]
+\[\mathbb{E}[X_{n+1}\mid\mathbf{X}=\mathbf{x}]=\int\mathbb{E}[X_{n+1}\mid\theta]\,\pi(\theta\mid x)\,d\theta.\]
+\textcolor{Bittersweet}{Integrate out $\theta$} — this is the marginal for a future observation given the data.
+
+\textcolor{ForestGreen}{\textbf{Beta-Binomial predictive.}} $\theta\sim\mathrm{Beta}(\alpha,\beta)$, $x\mid\theta\sim\mathrm{Bin}(n,\theta)$:
+\[m(x)=\binom{n}{x}\frac{B(\alpha+x,\beta+n-x)}{B(\alpha,\beta)}.\]
+Post.\ predictive for a Bernoulli $x_{n+1}$: $\mathbb{P}(x_{n+1}=1\mid x)=\tfrac{\alpha+x}{\alpha+\beta+n}$ (post.\ mean of $\theta$).
+
+\textcolor{ForestGreen}{\textbf{Gamma-Normal predictive.}} $\tau\sim\mathrm{Gamma}(\alpha,1/\beta)$, $\mu\mid\tau\sim N(m,1/(t\tau))$, $x_i\mid\mu,\tau\sim N(\mu,1/\tau)$:
+\[X\sim m+\!\sqrt{\tfrac{\beta(1+t)}{\alpha t}}\,t_{2\alpha},\]
+\[X_{n+1}\mid x\sim m_n+\!\sqrt{\tfrac{\beta_n(1+t_n)}{\alpha_n t_n}}\,t_{2\alpha_n}.\]
+\textcolor{Bittersweet}{Same scale-family} (location-scaled $t_{2\alpha}$); only the four hyperparameters update on data.
+
+\textcolor{ForestGreen}{\textbf{Exp / Gamma predictive.}} $x_i\mid\lambda\sim\mathrm{Gamma}(k,\lambda)$ ($k$ known shape, rate $\lambda$), prior $\lambda\sim\mathrm{Gamma}(\alpha,1/\beta)$:
+\[f_{X_{n+1}}(x_{n+1})=\tfrac{\Gamma(\alpha+k)}{\Gamma(\alpha)\Gamma(k)}\,\tfrac{\beta^{\alpha}\,x_{n+1}^{k-1}}{(\beta+x_{n+1})^{\alpha+k}},\]
+\[f_{X_{n+1}}(x_{n+1}\mid\mathbf{X}=\mathbf{x})=\tfrac{\Gamma(\alpha_n+k)}{\Gamma(\alpha_n)\Gamma(k)}\,\tfrac{\beta_n^{\alpha_n}\,x_{n+1}^{k-1}}{(\beta_n+x_{n+1})^{\alpha_n+k}}.\]
+\textcolor{ForestGreen}{\textbf{Exponential}}: $k=1$, so prior pred.\ $\sim\mathrm{Lomax}(\alpha,\beta)$ and posterior pred.\ $\sim\mathrm{Lomax}(\alpha_n,\beta_n)$ on $(0,\infty)$.

@@ -1,7 +1,7 @@
 \documentclass[11pt,landscape,a4paper]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[ngerman]{babel}
-\usepackage{PTSansNarrow} 
+\usepackage[english]{babel}
+\usepackage{PTSansNarrow}
 \renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
 \usepackage[T1]{fontenc}
 \usepackage[dvipsnames]{xcolor}
@@ -18,10 +18,8 @@
 \usepackage{amsmath}
 \usepackage{cool}
 \usepackage{graphicx}
-
 \graphicspath{{./src/}}
 
-\setlist[itemize]{noitemsep, topsep=0pt}
 
 \setlength{\jot}{0pt}
 \appto{\footnotesize}{%
@@ -41,38 +39,16 @@
 \makeatletter
 \renewcommand{\section}{\@startsection{section}{1}{0mm}%
                                 {.2ex}%
-                                {.2ex}%x
+                                {.2ex}%
 								{\sffamily\small\bfseries}}
 \renewcommand{\subsection}{\@startsection{subsection}{1}{0mm}%
                                 {.2ex}%
-                                {.2ex}%x
+                                {.2ex}%
 								{\sffamily\small\bfseries}}
 \renewcommand{\paragraph}{\@startsection{paragraph}{1}{0mm}%
                                 {.2ex}%
-                                {.2ex}%x
+                                {.2ex}%
 								{\sffamily\bfseries}*}
-\newcommand*{\rsimdots}{%
-  \mathrel{%
-    \mathpalette\@rsimdots{}% Adopt to math style size via \mathpalette
-  }%
-}
-\newcommand*{\@rsimdots}[2]{%
-  % #1: math style
-  % #2: unused
-  \sbox0{$#1\sim\m@th$}%
-  \sbox2{$#1\vcenter{}$}% \ht2 is height of the math axis
-  \dimen@=.75\ht2\relax % distance dot to math axis
-  \sbox2{$#1\cdot\m@th$}% single vertically centered dot
-  \sbox2{% two dots above and below the math axis
-    \rlap{\raisebox{\dimen@}{\copy2}}%
-    \raisebox{-\dimen@}{\copy2}%
-  }%
-  % Rotate the two dots.
-  \sbox2{$#1\rotatebox[origin=c]{-45}{\copy2}$}%
-  % Combine symbol
-  \rlap{\hbox\ to \wd0{\hss\copy2\hss}}%
-  \copy0 %
-}
 \makeatother
 
 \setlist[itemize]{noitemsep,nolistsep,leftmargin=*}
@@ -82,6 +58,15 @@
 \begin{document}
 \footnotesize
 \begin{multicols*}{4}
-	\input{chapters/4-conjugate-priors.tex}
+  \setcounter{section}{-1}
+  \input{misc-math.tex}
+  \input{chapters/1-foundations.tex}
+  \input{chapters/2-discrete-normal.tex}
+  \input{chapters/3-conjugate.tex}
+  \input{chapters/4-predictive.tex}
+  \input{chapters/5-one-sample-testing.tex}
+  \input{chapters/6-computation.tex}
+  \input{chapters/7-gibbs.tex}
+  \input{chapters/8-two-sample-testing.tex}
 \end{multicols*}
 \end{document}

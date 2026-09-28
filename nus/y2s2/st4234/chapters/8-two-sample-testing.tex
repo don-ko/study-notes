@@ -1,0 +1,23 @@
+% Chapter 8 — Two-sample hypothesis testing (Lecture 9)
+
+\section{Two-sample testing}
+
+\paragraph{Set-up}
+Independent samples $x^{(1)},x^{(2)}$ with parameters $\theta_1,\theta_2$ and independent priors $\pi_1\pi_2$. Joint posterior factorises:
+\[\pi(\theta_1,\theta_2\mid x)\propto \pi_1(\theta_1)L_1(\theta_1)\cdot \pi_2(\theta_2)L_2(\theta_2).\]
+\textcolor{Bittersweet}{Independence preserved} post data.
+
+\paragraph{Region null, e.g.\ $H_0:\theta_1<\theta_2$}
+\[\mathbb{P}(H_0\mid x)=\!\int\!\!\int_{\theta_1<\theta_2}\!\pi(\theta_1\mid x^{(1)})\pi(\theta_2\mid x^{(2)})\,d\theta_1 d\theta_2.\]
+Evaluate by Monte Carlo: draw $\theta_j^{(i)}\sim\pi(\theta_j\mid x^{(j)})$ and take the fraction with $\theta_1^{(i)}<\theta_2^{(i)}$. \textcolor{Bittersweet}{Beta-Beta special case}: closed form in terms of incomplete Beta.
+
+\paragraph{Point null $\{\theta_1=\theta_2\}$}
+Zero posterior mass under a continuous joint prior — use a \textcolor{Blue}{\textbf{mixture}}
+\[\pi=p\,\delta_{\{\theta_1=\theta_2\}}\pi_{\text{common}}+(1-p)\,\pi_1\pi_2.\]
+Under $H_0$, pool both samples under common parameter $\theta$ with prior $\pi_{\text{common}}$.
+\[\mathbb{P}(H_0\mid x)\propto p\!\int \pi_{\text{c}}(\theta)L_1(\theta)L_2(\theta)\,d\theta.\]
+
+\paragraph{Nuisance in two samples}
+Same marginal recipe as Ch.\ 5: integrate $\lambda$ out of each sample's likelihood, then proceed.
+
+\textcolor{ForestGreen}{\textbf{Example: two proportions.}} $x^{(j)}\sim\mathrm{Bin}(n_j,\theta_j)$, $\theta_j\sim\mathrm{Beta}(\alpha_j,\beta_j)$. Posteriors are independent Beta. Test $H_0:\theta_1<\theta_2$ by Monte Carlo: draw $\theta_j^{(i)}\sim\mathrm{Beta}(\alpha_j+x^{(j)},\beta_j+n_j-x^{(j)})$ for $i=1,\ldots,M$, then $\mathbb{P}(H_0\mid x)\approx \tfrac{1}{M}\sum_i \mathbf{1}\{\theta_1^{(i)}<\theta_2^{(i)}\}$. 95\% CI for $\theta_1-\theta_2$: empirical 2.5\% / 97.5\% quantiles of $\{\theta_1^{(i)}-\theta_2^{(i)}\}$.

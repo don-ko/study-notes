@@ -1,0 +1,50 @@
+% Chapter 3 — Conjugate families (Lecture 4)
+
+\section{Conjugate families}
+
+\paragraph{Definition}
+A family $\mathcal{F}$ is \textcolor{Blue}{\textbf{conjugate}} to likelihood $L$ if $\pi\in\mathcal{F}\Rightarrow \pi(\cdot\mid x)\in\mathcal{F}$ for every $x$. The \textcolor{Blue}{\textbf{natural conjugate}} is the member of $\mathcal{F}$ whose kernel in $\theta$ matches $L(\theta\mid x)$ as a function of $\theta$.
+
+\paragraph{Exponential-family recipe}
+If $L(\theta\mid x)=h(x)\,c(\theta)^{n}\exp\bigl(\sum_j w_j(\theta)\,T_j(x)\bigr)$, the \textcolor{Blue}{natural conjugate prior} has kernel
+\[\pi(\theta)\propto c(\theta)^{\nu}\exp\!\Bigl(\sum_j w_j(\theta)\,\tau_j\Bigr).\]
+\textcolor{Bittersweet}{Update}: add $n$ to $\nu$ and $\sum_i T_j(x_i)$ to $\tau_j$.
+
+\paragraph{Binomial / Bernoulli}
+$x_i\mid\theta\sim\mathrm{Bin}(m,\theta)$ ($m$ known), prior $\theta\sim\mathrm{Beta}(\alpha,\beta)$:
+\[\theta\mid x\sim\mathrm{Beta}\!\Bigl(\alpha+\!\sum_i x_i,\ \beta+nm-\!\sum_i x_i\Bigr).\]
+\textcolor{ForestGreen}{\textbf{Bernoulli}}: $m=1$, so $\theta\mid x\sim\mathrm{Beta}(\alpha+\sum x_i,\beta+n-\sum x_i)$.
+
+\paragraph{Negative-Binomial / Geometric}
+$x_i\mid\theta\sim\mathrm{NegBin}(r,\theta)$ ($x_i\ge 0$ failures before $r$th success), prior $\theta\sim\mathrm{Beta}(\alpha,\beta)$:
+\[\theta\mid x\sim\mathrm{Beta}\!\Bigl(\alpha+nr,\,\beta+\!\sum_i x_i\Bigr).\]
+\textcolor{ForestGreen}{\textbf{Geometric}}: $r=1$, so $\theta\mid x\sim\mathrm{Beta}(\alpha+n,\beta+\sum x_i)$.
+
+\paragraph{Poisson}
+$x_i\mid\lambda\sim\mathrm{Pois}(\lambda)$, prior $\lambda\sim\mathrm{Gamma}(\alpha,1/\beta)$:
+\[\lambda\mid x\sim\mathrm{Gamma}\!\Bigl(\alpha+\!\sum_i x_i,\ \tfrac{1}{\beta+n}\Bigr).\]
+
+\paragraph{Gamma (rate) / Exponential}
+$x_i\mid\lambda\sim\mathrm{Gamma}(k,\lambda)$ ($k$ known shape, rate $\lambda$), prior $\lambda\sim\mathrm{Gamma}(\alpha,1/\beta)$:
+\[\lambda\mid x\sim\mathrm{Gamma}\!\Bigl(\alpha+nk,\ \tfrac{1}{\beta+\sum_i x_i}\Bigr).\]
+\textcolor{ForestGreen}{\textbf{Exponential}}: $k=1$, so $\lambda\mid x\sim\mathrm{Gamma}(\alpha+n,1/(\beta+\sum x_i))$.
+
+\paragraph{Uniform}
+$x_i\mid\theta\sim U(0,\theta)$, prior $\theta\sim\mathrm{Pareto}(\alpha,x_0)$:
+\[\theta\mid x\sim\mathrm{Pareto}\!\bigl(\alpha+n,\,\max\{x_0,\max_i x_i\}\bigr).\]
+
+\paragraph{Multinomial / Categorical}
+$\mathbf x_i\mid\mathbf p\sim\mathrm{Mult}(N;p_1,\ldots,p_k)$ iid for $i=1,\ldots,M$, prior $\mathbf p\sim\mathrm{Dir}(\alpha_1,\ldots,\alpha_k)$:
+\[\mathbf p\mid\mathbf x\sim\mathrm{Dir}(\alpha_1+m_1,\ldots,\alpha_k+m_k),\ m_j=\!\sum_{i=1}^{M}\!x_{ij}.\]
+\textcolor{ForestGreen}{\textbf{Categorical}}: $N=1$, so $m_j$ counts category-$j$ observations across $M$ draws.
+
+\paragraph{Jeffreys prior}
+\[\pi_J(\theta)\propto \sqrt{\det I(\theta)},\quad I(\theta)=-\mathbb{E}\!\left[\tfrac{\partial^2\log L}{\partial\theta\partial\theta^\top}\right].\]
+\textcolor{Bittersweet}{Invariant} under reparametrisation; often improper.
+
+\textcolor{ForestGreen}{\textbf{Examples.}}
+\begin{itemize}
+  \item Bernoulli: $\pi_J(\theta)\propto \theta^{-1/2}(1-\theta)^{-1/2}=\mathrm{Beta}(1/2,1/2)$.
+  \item Normal (mean $\mu$, known $\sigma$): $\pi_J(\mu)\propto 1$ (flat).
+  \item Normal (precision $\tau$): $\pi_J(\tau)\propto 1/\tau$.
+\end{itemize}

@@ -1,0 +1,29 @@
+% Chapter 2 — Discrete priors and Normal inference (Lectures 3, 5)
+
+\section{Discrete priors \& Normal inference}
+
+\paragraph{Discrete prior}
+$\theta\in\{\theta_1,\ldots,\theta_K\}$ with prior weights $\pi_k$. Posterior:
+\[\pi(\theta_k\mid x)=\tfrac{\pi_k\,L(\theta_k\mid x)}{\sum_{j}\pi_j\,L(\theta_j\mid x)}.\]
+Pure re-weighting of the PMF; no integral.
+
+\paragraph{Normal mean (precision $r$ known)}
+$x_i\mid\mu\sim N(\mu,1/r)$, prior $\mu\sim N(m,1/t)$:
+\[\mu\mid x\sim N(m_n,1/t_n),\quad t_n=t+nr,\]
+\[m_n=\tfrac{t\,m+nr\,\bar x}{t_n}.\]
+\textcolor{ForestGreen}{\textbf{Flat prior}}: $t\to 0$, so $\mu\mid x\sim N(\bar x,1/(nr))$ — matches MLE.
+
+\paragraph{Normal precision (mean $\mu$ known)}
+$x_i\mid\tau\sim N(\mu,1/\tau)$, prior $\tau\sim\mathrm{Gamma}(\alpha,1/\beta)$:
+\[\tau\mid x\sim\mathrm{Gamma}\!\Bigl(\alpha+\tfrac{n}{2},\ \tfrac{1}{\beta+\tfrac{1}{2}\sum_i(x_i-\mu)^{2}}\Bigr).\]
+
+\paragraph{Gamma-Normal$(\alpha,1/\beta;m,1/t)$ (both unknown)}
+$x_i\mid\mu,\tau\sim N(\mu,1/\tau)$. Prior: $\tau\sim\mathrm{Gamma}(\alpha,1/\beta)$ and $\mu\mid\tau\sim N(m,1/(t\tau))$.
+\[\alpha_n=\alpha+\tfrac{n}{2},\quad t_n=t+n,\quad m_n=\tfrac{tm+n\bar x}{t_n},\]
+\[\beta_n=\beta+\tfrac{1}{2}\!\left[\sum_i(x_i-\bar x)^2+\tfrac{(m-\bar x)^{2}}{t^{-1}+n^{-1}}\right].\]
+
+\paragraph{Gamma-Normal marginals (Student-$t$)}
+\[\mu\mid x\sim m_n+\!\sqrt{\tfrac{\beta_n}{\alpha_n t_n}}\,t_{2\alpha_n},\]
+\[X_{n+1}\mid x\sim m_n+\!\sqrt{\tfrac{\beta_n(1+t_n)}{\alpha_n t_n}}\,t_{2\alpha_n}.\]
+\textcolor{Bittersweet}{Same centre, wider scale} for the predictive: extra $(1+t_n)$ factor accounts for a new-observation noise on top of posterior uncertainty in $\mu$.
+\textcolor{ForestGreen}{\textbf{Flat Gamma-Normal.}} $t\to 0,\ \alpha\to -1/2,\ \beta\to 0$: $\mu\mid x\sim \bar x+(s/\sqrt{n})\,t_{n-1}$ with $s^2=\tfrac{1}{n-1}\sum(x_i-\bar x)^2$ — classical one-sample $t$ interval.

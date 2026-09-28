@@ -1,0 +1,47 @@
+% Chapter 1 — Bayesian foundations (Lectures 1–2)
+
+\section{Foundations}
+
+\paragraph{Bayesian vs frequentist}
+\begin{itemize}
+  \item \textcolor{Blue}{\textbf{Frequentist}}: $\theta$ fixed; MLE $\hat\theta$, CI from sampling distribution of $\hat\theta$.
+  \item \textcolor{Blue}{\textbf{Bayesian}}: $\theta$ random; prior $\pi(\theta)\to$ posterior $\pi(\theta\mid x)$.
+  \item \textcolor{Bittersweet}{Posterior mean} $=\mathbb{E}[\theta\mid x]$; \textcolor{Bittersweet}{posterior variance} $=\mathrm{Var}(\theta\mid x)$.
+  \item \textcolor{Bittersweet}{$(1-\alpha)$ credible set} $C$: $\mathbb{P}(\theta\in C\mid x)=1-\alpha$.
+  \item \textcolor{Bittersweet}{HDR} $=$ smallest-volume $C=\{\theta:\pi(\theta\mid x)\ge k_\alpha\}$. Equal-tail $=$ HDR iff posterior is symmetric unimodal.
+\end{itemize}
+
+\paragraph{Point estimates by loss}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Squared loss} $(\hat\theta-\theta)^2$: $\hat\theta=\mathbb{E}[\theta\mid x]$ (posterior \textbf{mean}).
+  \item \textcolor{Bittersweet}{Absolute loss} $|\hat\theta-\theta|$: $\hat\theta=$ posterior \textbf{median}.
+  \item \textcolor{Bittersweet}{$0$--$1$ loss} $\mathbf{1}\{\hat\theta\ne\theta\}$ (or $\to 0$ width): $\hat\theta=\arg\max_\theta \pi(\theta\mid x)$ (\textcolor{Blue}{\textbf{MAP}} / posterior \textbf{mode}).
+\end{itemize}
+
+\paragraph{Bayes' theorem}
+\[\pi(\theta\mid x)=\tfrac{\pi(\theta)\,L(\theta\mid x)}{m(x)}\propto \pi(\theta)\,L(\theta\mid x),\]
+\[m(x)=\int \pi(\theta)\,L(\theta\mid x)\,d\theta.\]
+
+\paragraph{Sequential updating}
+For observations $x_1,\ldots,x_k$,
+\[\pi(\theta\mid x_{1:k})\propto \pi(\theta\mid x_{1:k-1})\,\pi(x_k\mid\theta,x_{1:k-1}).\]
+
+\paragraph{Dirichlet via conditional Betas}
+$(X_1,\ldots,X_k)\sim\mathrm{Dir}(\alpha_1,\ldots,\alpha_k)$ iff
+\[X_1\sim\mathrm{Beta}(\alpha_1,\alpha_{2+}),\]
+\[\tfrac{X_{i+1}}{1-X_1-\cdots-X_i}\mid X_{1:i}\sim\mathrm{Beta}(\alpha_{i+1},\alpha_{(i+2)+}),\]
+with $\alpha_{j+}=\sum_{l\ge j}\alpha_l$. \textcolor{Bittersweet}{Use} to simulate Dirichlet by chained Betas.
+
+\paragraph{Multinomial conditional}
+$(X_1,\ldots,X_k)\sim\mathrm{Mult}(n,p_1,\ldots,p_k)$:
+\[X_{k-1}\mid X_{1:k-2}\sim\mathrm{Bin}(n^{*},\tilde p),\]
+\[n^{*}=n-\!\!\sum_{i=1}^{k-2}\!x_i,\ \tilde p=\tfrac{p_{k-1}}{1-\sum_{i=1}^{k-2}p_i}.\]
+
+\paragraph{Improper / flat priors}
+$\pi(\theta)\propto 1$ or $\pi(\theta)\propto 1/\theta$ integrates to $\infty$, yet the posterior can still be proper.
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Trick}: deflate prior influence to recover frequentist-like answers (e.g.\ flat prior on $\mu$ gives $\bar x\pm$ usual SE).
+  \item \textcolor{Bittersweet}{Must check}: $\int \pi(\theta\mid x)\,d\theta<\infty$ — improper prior $\not\Rightarrow$ proper posterior automatically.
+\end{itemize}
+
+\textcolor{ForestGreen}{\textbf{Example: Laplace's rule.}} $\theta\sim\mathrm{Beta}(1,1)$, $x\sim\mathrm{Bin}(n,\theta)$: posterior $\mathrm{Beta}(1+x,1+n-x)$, mean $(1+x)/(n+2)$.

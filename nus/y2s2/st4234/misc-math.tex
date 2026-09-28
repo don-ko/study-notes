@@ -1,0 +1,67 @@
+% miscMath.tex — shared identities, inequalities, distributions reference.
+
+\section{Quick reference}
+
+\paragraph{Conditional moments}
+\begin{itemize}
+  \item \textcolor{Bittersweet}{Tower}: $\mathbb{E}[X]=\mathbb{E}[\mathbb{E}[X\mid Y]]$.
+  \item \textcolor{Bittersweet}{Total variance}: $\mathrm{Var}(X)=\mathbb{E}[\mathrm{Var}(X\mid Y)]+\mathrm{Var}(\mathbb{E}[X\mid Y])$.
+  \item \textcolor{Bittersweet}{Jensen}: $f$ convex $\Rightarrow f(\mathbb{E}[X])\le \mathbb{E}[f(X)]$.
+\end{itemize}
+
+\paragraph{Gamma / Beta identities}
+\[\Gamma(\alpha)=\int_0^\infty t^{\alpha-1}e^{-t}\,dt,\quad \Gamma(n)=(n-1)!\]
+\[\Gamma(\alpha+1)=\alpha\Gamma(\alpha).\]
+\[\int_0^\infty t^{\alpha-1}e^{-\beta t}\,dt=\tfrac{\Gamma(\alpha)}{\beta^{\alpha}}\ (\beta>0).\]
+\[B(\alpha,\beta)=\int_0^1 t^{\alpha-1}(1-t)^{\beta-1}\,dt=\tfrac{\Gamma(\alpha)\Gamma(\beta)}{\Gamma(\alpha+\beta)}.\]
+
+\paragraph{Change of variables}
+$Y=g(X)$, $g$ smooth invertible: $f_Y(y)=f_X(g^{-1}(y))\,\bigl|\tfrac{dg^{-1}}{dy}\bigr|$.
+\textcolor{ForestGreen}{Linear:} $Y=aX\Rightarrow f_Y(y)=\tfrac{1}{|a|}f_X(y/a)$.
+\textcolor{ForestGreen}{Reciprocal:} $Y=1/X\Rightarrow f_Y(y)=\tfrac{1}{y^{2}}f_X(1/y)$.
+
+\paragraph{Sum of squares}
+\[\sum_{i=1}^{n}(x_i-\mu)^{2}=\sum_{i=1}^{n}(x_i-\bar{x})^{2}+n(\bar{x}-\mu)^{2}.\]
+\textcolor{Bittersweet}{Use:} splits a Normal log-likelihood into a $\mu$-free SSR and a quadratic in $\mu$ — feeds directly into the Normal / Gamma–Normal posteriors.
+
+\paragraph{Completing the square}
+\[a\mu^{2}-2b\mu+c=a\!\left(\mu-\tfrac{b}{a}\right)^{2}+\!\left(c-\tfrac{b^{2}}{a}\right).\]
+\textcolor{Bittersweet}{Use:} a Normal kernel $\exp\!\bigl(-\tfrac{1}{2}(a\mu^{2}-2b\mu)\bigr)$ is $\mathcal{N}(b/a,\,1/a)$ in $\mu$; the leftover $c-b^{2}/a$ is the marginal-likelihood factor.
+
+\paragraph{Distributions}
+\setlength{\tabcolsep}{1.5pt}\renewcommand{\arraystretch}{0.9}
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}l l l l@{}}%
+\textbf{Family} & $f(x)\propto$ & $\mathbb{E}[X]$; $\mathrm{Var}(X)$ & \textbf{Conj.} \\
+\addlinespace[1pt]
+\textcolor{Blue}{\textbf{Beta}$(\alpha,\beta)$}    & $x^{\alpha-1}(1-x)^{\beta-1}$           & $\tfrac{\alpha}{\alpha+\beta}$; $\tfrac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}$ & Beta-lhoods \\
+\addlinespace[1pt]
+\textcolor{Blue}{\textbf{Gamma}$(\alpha,1/\beta)$} & $x^{\alpha-1}e^{-\beta x}$              & $\alpha/\beta$; $\alpha/\beta^2$                                        & Pois/Exp/Gam \\
+\textcolor{Blue}{\textbf{InvGam}$(\alpha,\beta)$}  & $x^{-\alpha-1}e^{-\beta/x}$             & $\tfrac{\beta}{\alpha-1}$; $\tfrac{\beta^2}{(\alpha-1)^2(\alpha-2)}$    & Normal \\
+\textcolor{Blue}{\textbf{Exp}$(\lambda)$}          & $\lambda e^{-\lambda x}$                & $1/\lambda$; $1/\lambda^2$                                             & Gamma \\
+\addlinespace[1pt]
+\textcolor{Blue}{\textbf{Pareto}$(\alpha,x_0)$}    & $x^{-\alpha-1}$                         & $\tfrac{\alpha x_0}{\alpha-1}$; $\tfrac{\alpha x_0^2}{(\alpha-1)^2(\alpha-2)}$ & Unif \\
+\textcolor{Blue}{\textbf{Unif}$(0,\theta)$}        & $\theta^{-1}\mathbf{1}\{x<\theta\}$     & $\theta/2$; $\theta^2/12$                                              & Pareto \\
+\addlinespace[1pt]
+\textcolor{Blue}{\textbf{Normal}$(\mu,1/\tau)$}    & $e^{-\frac{\tau}{2}(x-\mu)^2}$         & $\mu$; $1/\tau$                                                        & Normal \\
+\textcolor{Blue}{\textbf{Student-}$t_\nu$}         & $(1+x^2/\nu)^{-(\nu+1)/2}$             & $0$; $\nu/(\nu-2)$                                                     & --- \\
+\addlinespace[1pt]
+\textcolor{Blue}{\textbf{Bern}$(p)$}               & $p^x(1-p)^{1-x}$                        & $p$; $p(1-p)$                                                          & Beta \\
+\textcolor{Blue}{\textbf{Bin}$(n,p)$}              & $\binom{n}{x}p^x(1-p)^{n-x}$           & $np$; $np(1-p)$                                                        & Beta \\
+\textcolor{Blue}{\textbf{Geom}$(\theta)$}          & $(1-\theta)^x\theta$                    & $\tfrac{1-\theta}{\theta}$; $\tfrac{1-\theta}{\theta^2}$               & Beta \\
+\textcolor{Blue}{\textbf{NegBin}$(r,\theta)$}      & $\binom{x+r-1}{x}(1-\theta)^x\theta^r$ & $\tfrac{r(1-\theta)}{\theta}$; $\tfrac{r(1-\theta)}{\theta^2}$         & Beta \\
+\textcolor{Blue}{\textbf{Pois}$(\lambda)$}         & $\lambda^x/x!$                          & $\lambda$; $\lambda$                                                   & Gamma \\
+\addlinespace[1pt]
+\textcolor{Blue}{\textbf{Dir}$(\boldsymbol\alpha)$} & $\prod_i x_i^{\alpha_i-1}$             & $\tfrac{\alpha_i}{\alpha_\cdot}$; $\tfrac{\alpha_i(\alpha_\cdot-\alpha_i)}{\alpha_\cdot^2(\alpha_\cdot+1)}$ & Mult \\
+\textcolor{Blue}{\textbf{Mult}$(n,\mathbf{p})$}    & $\prod_i p_i^{x_i}/x_i!$               & $np_i$; $np_i(1-p_i)$                                                  & Dir \\
+\end{tabular}%
+}
+\footnotesize
+\textcolor{Bittersweet}{Notes:}
+\begin{itemize}
+  \item Dir marginals: $X_i\sim\mathrm{Beta}(\alpha_i,\alpha_\cdot-\alpha_i)$ with $\alpha_\cdot=\sum_j\alpha_j$.
+  \item Mult cross-moments: $\mathrm{Cov}(X_i,X_j)=-np_ip_j$ ($i\ne j$).
+  \item Geom / NegBin convention here: failures before $r$th success ($r=1$ for Geom).
+  \item Conj. partner is the \emph{other} family in the conjugate pairing --- read row-by-row whether the family acts as prior or likelihood.
+\end{itemize}

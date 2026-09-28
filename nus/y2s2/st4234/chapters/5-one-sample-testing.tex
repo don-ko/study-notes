@@ -1,0 +1,31 @@
+% Chapter 5 — One-sample hypothesis testing (Lecture 6)
+
+\section{One-sample testing}
+
+\paragraph{Posterior odds and Bayes factor}
+Hypotheses $H_0,H_1$ with prior probabilities $\pi_0,\pi_1$, data $x$:
+\[\textcolor{Blue}{\textbf{prior odds}}=\tfrac{\pi_0}{\pi_1}=\tfrac{\mathbb{P}(H_0)}{\mathbb{P}(H_1)},\]
+\[\textcolor{Blue}{\textbf{posterior odds}}\ O_n=\tfrac{\mathbb{P}(H_0\mid x)}{\mathbb{P}(H_1\mid x)},\]
+\[O_n=\tfrac{\pi_0}{\pi_1}\times \underbrace{\tfrac{m(x\mid H_0)}{m(x\mid H_1)}}_{\text{Bayes factor } BF_{01}}.\]
+\textcolor{Bittersweet}{Reject $H_0$} if $O_n<1$ (or weigh by decision loss).
+$BF_{10}=1/BF_{01}$, so evidence \textit{against} $H_0$ grows with $BF_{10}$.
+\textcolor{Bittersweet}{Kass--Raftery scale} for $2\ln BF_{10}$: $0$--$2$ weak, $2$--$6$ positive, $6$--$10$ strong, ${>}10$ very strong evidence vs $H_0$.
+
+\paragraph{Region vs region}
+$H_0: \theta\in\Theta_0$ vs $H_1:\theta\in\Theta_1$ with $\Theta_0\cup\Theta_1$ the support.
+\[\mathbb{P}(H_j\mid x)=\int_{\Theta_j}\pi(\theta\mid x)\,d\theta.\]
+Evaluate via the posterior CDF over $\Theta_j$, or Normal approximation of Beta using $\alpha_n/(\alpha_n+\beta_n)$ and its variance.
+
+\paragraph{Point null $\{\theta=\theta_1\}$ vs $\{\theta\in\Theta_2\}$}
+Any continuous prior gives $\mathbb{P}(\theta=\theta_1)=0$, so use a \textcolor{Blue}{\textbf{mixture prior}}:
+\[\pi(\theta)=p\,\delta_{\theta_1}+(1-p)\,Y,\quad Y\text{ continuous on }\Theta_2.\]
+Then
+\[\mathbb{P}(\theta=\theta_1\mid x)\propto p\,\pi(x\mid\theta_1),\]
+\[\mathbb{P}(\theta\in\Theta_2\mid x)\propto (1-p)\!\int \pi_Y(\theta)\,\pi(x\mid\theta)\,d\theta.\]
+
+\paragraph{Nuisance parameters}
+If $(\theta,\lambda)$ with $\lambda$ nuisance, use conditional prior $\pi(\lambda\mid\theta)$:
+\[L(\theta\mid x)=\int L(\theta,\lambda\mid x)\,\pi(\lambda\mid\theta)\,d\lambda,\]
+then apply the machinery above to the marginal $L(\theta\mid x)$.
+
+\textcolor{ForestGreen}{\textbf{Example.}} $\theta\sim \mathrm{Beta}(\alpha,\beta)$, $x\sim\mathrm{Bin}(n,\theta)$, test $H_0:\theta\le 0.5$. Posterior $\mathrm{Beta}(\alpha+x,\beta+n-x)$, so $\mathbb{P}(H_0\mid x)=F_{\mathrm{Beta}(\alpha+x,\beta+n-x)}(0.5)$.

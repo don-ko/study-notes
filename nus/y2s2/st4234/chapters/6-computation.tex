@@ -1,0 +1,28 @@
+% Chapter 6 — Bayesian computation (Lecture 7)
+
+\section{Computation}
+
+\paragraph{Direct Monte Carlo}
+If $\theta^{(1)},\ldots,\theta^{(M)}\stackrel{\text{iid}}{\sim}\pi(\theta\mid x)$,
+\[\mathbb{E}[g(\theta)\mid x]\approx \tfrac{1}{M}\sum_{i=1}^{M}g(\theta^{(i)}).\]
+SE $\sim \sigma_g/\sqrt{M}$.
+
+\paragraph{Importance sampling}
+Trial density $h(\theta)$ covering supp$(\pi(\cdot\mid x))$; weight $\omega(\theta)=\tfrac{\pi(\theta)\pi(x\mid\theta)}{h(\theta)}$.
+\[\mathbb{E}[g(\theta)\mid x]\approx \tfrac{\sum_i g(\theta^{(i)})\omega(\theta^{(i)})}{\sum_i \omega(\theta^{(i)})}.\]
+\textcolor{Bittersweet}{Self-normalised}: denominator absorbs $m(x)$, so unnormalised $\pi$ and $\pi(x\mid\theta)$ are fine.
+
+\paragraph{Choice of trial density}
+\begin{itemize}
+  \item $h=\pi$ (prior): unbiased but often terrible — prior far from posterior, weights concentrate on a few draws.
+  \item $h\propto L(\theta\mid x)$ (normalised likelihood) or a Laplace approximation to $\pi(\theta\mid x)$: usually much better.
+  \item \textcolor{Bittersweet}{Warning}: if $h$ has thinner tails than posterior, weights explode — keep $h$ at least as heavy-tailed.
+\end{itemize}
+
+\paragraph{Effective sample size}
+\[\mathrm{ESS}=\tfrac{(\sum_i\omega_i)^{2}}{\sum_i\omega_i^{2}}\in[1,M].\]
+\textcolor{Bittersweet}{Diagnostic}: $\mathrm{ESS}\ll M$ signals weight degeneracy — a few draws dominate. Aim for $\mathrm{ESS}/M\gtrsim 0.1$.
+
+\textcolor{ForestGreen}{\textbf{Example: Student-$t$ prior + Normal likelihood.}} With $n=20$, $\bar x=\ldots$, posterior
+\[\pi(\mu\mid x)\propto (1+\mu^{2}/40)^{-20.5}\exp\!\left(-\tfrac{nr}{2}(\mu-\bar x)^{2}\right),\]
+has no closed form. Sample $\mu^{(i)}\sim t_{40}$ (prior) or $N(\bar x,1/(nr))$ (likelihood-based $h$) and reweight. The latter concentrates the weights near the posterior mode.
