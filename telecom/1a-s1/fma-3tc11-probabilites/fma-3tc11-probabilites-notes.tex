@@ -1,0 +1,96 @@
+\documentclass[10pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage{fix-cm}        % scale one design size, as OT1 does --- keeps the title bold
+\usepackage[T1]{fontenc}   % accented French terms kept inline in the prose
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{arrows,calc,positioning,decorations.pathreplacing}
+\usepgfplotslibrary{fillbetween}
+
+% module-specific --- custom.sty is byte-identical across seven documents and is
+% never edited, so what this module needs is declared here
+\DeclareMathOperator{\Cov}{Cov}          % custom.sty defines lowercase \cov only
+\newcommand{\indep}{\perp\!\!\!\perp}    % the poly's A ⊥⊥ B
+\newcommand{\cvas}{\xrightarrow{\text{p.s.}}}
+\newcommand{\cvL}{\xrightarrow{\;\mathcal{L}\;}}
+\newcommand{\cvP}{\xrightarrow{\;\prob\;}}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{titlesec}
+\titleformat*{\subsubsection}{\large\bfseries\sffamily}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0in} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily FMA 3TC11: Probabilités }\\
+\vspace{24pt}
+%{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+%\vspace{6pt}
+%{\fontsize{12}{12} \selectfont \ttfamily dkkl1137@gmail.com} \\
+%\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt
+  Probability, from measure theory to the limit theorems. Assuming discrete probability
+  (\textit{probabilités discrètes}), the course covers measure theory and the
+  Lebesgue integral; random variables, expectation, independence and change of
+  variables; the characteristic function; Gaussian vectors; conditional expectation;
+  and the limit theorems.
+
+  \medskip
+  Prose is in English; the French terms the poly and the exams actually use are kept
+  inline, so the vocabulary stays findable in both languages.
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\input{chapters/1-probabilites-discretes}
+\input{chapters/2-theorie-mesure}
+\input{chapters/3-integrale-lebesgue}
+\input{chapters/4-theorie-probabilites}
+\input{chapters/5-loi-conditionnelle}
+\input{chapters/6-fonction-caracteristique}
+\input{chapters/7-vecteurs-gaussiens}
+\input{chapters/8-theoremes-limites}
+\input{chapters/9-annexes-classe-monotone-lois}
+
+\end{document}

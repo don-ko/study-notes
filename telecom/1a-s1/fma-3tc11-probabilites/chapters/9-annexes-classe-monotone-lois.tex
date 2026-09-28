@@ -1,0 +1,505 @@
+\section{Annexes}
+This last chapter is the one to open with an exam paper in front of you. It carries
+three pieces of reference material --- the lemme de classe monotone, the table of
+lois discrètes and the table of lois à densité --- and adds to them a summary the
+course gives nowhere, a single page on the modes of convergence.\\
+Two things are worth saying before the tables. The first is that the lemme de
+classe monotone is not decoration: chapter 2's théorème d'unicité for mesures is
+proved by building a classe monotone and invoking the lemma, and without the lemma
+that proof has a hole in the middle. It is stated and proved here in full,
+hypotheses included.\\
+The second is that the two tables of lois are \emph{not} a bare list of
+definitions. Such a list gives a name, the parameters, the notation, the support
+and the loi; the tables below add the espérance, the variance and the
+fonction caractéristique on both sides, and --- for the lois discrètes only --- the
+fonction génératrice, from which their fonction caractéristique is read off
+directly. Those added columns are computed in chapters 1, 6 and 7, and they are
+the reason to have the tables at all: the first five columns alone tell you nothing
+you could not read off a definition.
+
+\subsection{Classe monotone}
+On se donne un ensemble $\Omega$; all the families considered in this subsection
+are families of subsets of $\Omega$.
+
+\begin{definition}[Classe monotone]
+  Une famille $\mathcal{M}$ de sous-ensembles de $\Omega$ est appelée classe
+  monotone sur $\Omega$ si elle vérifie les propriétés suivantes :
+  \begin{itemize}
+    \item $\Omega \in \mathcal{M}$ ;
+    \item pour tous $A, B \in \mathcal{M}$ tels que $A \subr B$,
+      $B \setminus A \in \mathcal{M}$ ;
+    \item pour tous $A_{1}, A_{2}, \dots \in \mathcal{M}$ tels que
+      $A_{n} \uparrow A$, $A \in \mathcal{M}$.
+  \end{itemize}
+\end{definition}
+
+\begin{remark}[Why the first condition is needed]
+  The first condition is $\Omega \in \mathcal{M}$, membership in the family
+  $\mathcal{M}$ itself, and it has to be: the second condition produces complements
+  only by subtracting from a set already in the family, so without $\Omega$ in
+  $\mathcal{M}$ the family need not contain a single complement and the proposition
+  below would be false.
+\end{remark}
+
+Il est facile de vérifier que toute tribu est une classe monotone: a tribu contains
+$\Omega$; it is stable under proper difference, since
+$B \setminus A = B \intersect A^{c}$; and it is stable under increasing limits,
+since an increasing limit is a countable union. L'inverse n'est pas vrai en
+général --- a classe monotone need not be stable under intersection, and then it is
+not a tribu. Une condition nécessaire et suffisante pour qu'une classe monotone soit
+une tribu est qu'elle soit stable par intersection finie: the gap between the two
+notions is exactly that stability, which is the content of the next statement.
+
+\begin{prop}[Classe monotone qui est une tribu]
+  Une classe monotone $\mathcal{M}$ est une tribu si et seulement si elle est stable
+  par intersection finie.
+\end{prop}
+
+\begin{proof}
+  If $\mathcal{M}$ is a tribu then it is stable par intersection finie, since
+  $A \intersect B = \left(A^{c} \union B^{c}\right)^{c}$ and a tribu is stable under
+  complement and under countable --- hence finite --- union.\\
+  Conversely, suppose the classe monotone $\mathcal{M}$ is stable par intersection
+  finie. It contains $\Omega$ by the first axiom. It is stable under
+  complement: for $A \in \mathcal{M}$ one has $A \subr \Omega$ and both sets lie in
+  $\mathcal{M}$, so $A^{c} = \Omega \setminus A \in \mathcal{M}$ by the second
+  axiom. Par passage au complémentaire, on obtient donc la stabilité par réunion
+  finie, since
+  \[
+    A \union B = \left(A^{c} \intersect B^{c}\right)^{c},
+  \]
+  the intersection on the right being in $\mathcal{M}$ by hypothesis. There remains
+  countable union. Pour montrer la stabilité par réunion dénombrable, on considère
+  une suite $(A_{n})_{n \geq 1}$ dans $\mathcal{M}$. Put
+  $B_{n} = \bigcup_{k=1}^{n} A_{k}$: each $B_{n}$ lies in $\mathcal{M}$ by stability
+  under finite union. Alors la suite $(B_{n})_{n \geq 1}$ est croissante, si bien
+  que sa limite
+  \[
+    \bigcup_{n \geq 1} A_{n} = \lim_{n \to +\infty} \uparrow B_{n}
+  \]
+  appartient à $\mathcal{M}$, by the third axiom. So $\mathcal{M}$ contains
+  $\Omega$ and is stable under complement and countable union: it is a tribu.
+\end{proof}
+
+\begin{remark}
+  The finite-union step is where stability under intersection is spent, and it is
+  spent only there. That is the shape of every application: one wants a countable
+  union, the third axiom delivers increasing limits only, and the gap is closed by
+  turning an arbitrary countable union into an increasing one --- which costs finite
+  unions, which cost complements and finite intersections.
+\end{remark}
+
+Comme pour les tribus, toute intersection de classes monotones sur $\Omega$ est une
+classe monotone: each of the three conditions is stable under intersecting the
+families, because each is a condition of the form ``these sets belong to the
+family''. Since $\mathcal{P}(\Omega)$ is itself a classe monotone containing any
+collection whatsoever, the intersection below is taken over a non-empty family, ce
+qui permet de définir la notion de classe monotone engendrée.
+
+\begin{definition}[Classe monotone engendrée]
+  Soit $\mathcal{C} \subr \mathcal{P}(\Omega)$ une collection d'ensembles.
+  L'intersection de toutes les classes monotones contenant $\mathcal{C}$ est une
+  classe monotone, appelée la \textbf{classe monotone engendrée}
+  (\textit{generated monotone class}) par $\mathcal{C}$. On la note
+  $\mathcal{M}(\mathcal{C})$.
+\end{definition}
+
+The classe monotone engendrée is contained in the tribu engendrée, since a tribu is
+a classe monotone. La classe monotone engendrée n'est pas la tribu engendrée en
+général. C'est le cas dès que la collection $\mathcal{C}$ est stable par
+intersection finie. C'est le \textbf{lemme de classe monotone} (\textit{monotone
+class lemma}).
+
+\begin{lemma}[Lemme de classe monotone]
+  Soit $\mathcal{C} \subr \mathcal{P}(\Omega)$ une collection d'ensembles stable par
+  intersection finie. Alors
+  \[
+    \mathcal{M}(\mathcal{C}) = \sigma(\mathcal{C}).
+  \]
+\end{lemma}
+
+\begin{proof}
+  Puisque toute tribu est une classe monotone --- $\sigma(\mathcal{C})$ is one, and
+  it contains $\mathcal{C}$ ---, on a nécessairement
+  $\mathcal{M}(\mathcal{C}) \subr \sigma(\mathcal{C})$.\\
+  Pour montrer l'autre inclusion, il suffit de montrer que $\mathcal{M}(\mathcal{C})$
+  est une tribu --- it then contains $\sigma(\mathcal{C})$, the smallest tribu
+  containing $\mathcal{C}$ ---, c'est-à-dire, d'après la proposition, qu'elle est
+  stable par intersection finie: being a tribu amounts to that for a classe
+  monotone, and that is what is proved, in two steps.\\
+  \emph{First step: one set in $\mathcal{C}$.} Soit $A \in \mathcal{C}$. On
+  définit :
+  \[
+    \mathcal{M} = \{B \in \mathcal{M}(\mathcal{C}) :
+      A \intersect B \in \mathcal{M}(\mathcal{C})\}.
+  \]
+  Comme $\mathcal{C}$ est stable par intersection finie --- $A \intersect B$ lies
+  in $\mathcal{C} \subr \mathcal{M}(\mathcal{C})$ for every $B \in \mathcal{C}$
+  ---, on a $\mathcal{C} \subr \mathcal{M}$. On vérifie par ailleurs que
+  $\mathcal{M}$ est une classe monotone :
+  \begin{itemize}
+    \item $\Omega \in \mathcal{M}$, because $A \intersect \Omega = A \in
+      \mathcal{C} \subr \mathcal{M}(\mathcal{C})$ ;
+    \item pour tous $A', B' \in \mathcal{M}$ tels que $A' \subr B'$,
+      \[
+        A \intersect (B' \setminus A')
+          = (A \intersect B') \setminus (A \intersect A')
+          \in \mathcal{M}(\mathcal{C}),
+      \]
+      the two sets on the right being in $\mathcal{M}(\mathcal{C})$ by definition of
+      $\mathcal{M}$ and nested because $A' \subr B'$, donc
+      $B' \setminus A' \in \mathcal{M}$ ;
+    \item pour tous $A'_{1}, A'_{2}, \dots \in \mathcal{M}$ tels que
+      $A'_{n} \uparrow A'$, one has $A \intersect A'_{n} \uparrow A \intersect A'$,
+      an increasing limit of sets of $\mathcal{M}(\mathcal{C})$, whence
+      $A \intersect A' \in \mathcal{M}(\mathcal{C})$, de sorte que
+      $A' \in \mathcal{M}$.
+  \end{itemize}
+  Comme $\mathcal{M}$ --- a classe monotone --- contient $\mathcal{C}$, on a
+  $\mathcal{M}(\mathcal{C}) \subr \mathcal{M}$. Unwinding the definition of
+  $\mathcal{M}$, on a donc montré que :
+  \[
+    \forall A \in \mathcal{C}, \ \forall B \in \mathcal{M}(\mathcal{C}), \qquad
+      A \intersect B \in \mathcal{M}(\mathcal{C}).
+  \]
+  \emph{Second step: both sets in $\mathcal{M}(\mathcal{C})$.} Pour conclure, on
+  fixe $B \in \mathcal{M}(\mathcal{C})$ et on définit :
+  \[
+    \mathcal{M}' = \{A \in \mathcal{M}(\mathcal{C}) :
+      A \intersect B \in \mathcal{M}(\mathcal{C})\}.
+  \]
+  On sait que $\mathcal{C} \subr \mathcal{M}'$: it is exactly the conclusion of the
+  first step. Par les mêmes arguments que précédemment --- the same three
+  verifications as above, with $B$ now playing the role $A$ played there ---, on
+  montre que $\mathcal{M}'$ est une classe monotone, si bien que
+  $\mathcal{M}(\mathcal{C}) \subr \mathcal{M}'$. On a donc :
+  \[
+    \forall A, B \in \mathcal{M}(\mathcal{C}), \qquad
+      A \intersect B \in \mathcal{M}(\mathcal{C}).
+  \]
+  Ce qui prouve que $\mathcal{M}(\mathcal{C})$ est stable par intersection finie.
+  Being a classe monotone, it is therefore a tribu, which completes the proof.
+\end{proof}
+
+\begin{remark}[Why the two steps]
+  The asymmetry is the whole proof. The hypothesis on $\mathcal{C}$ gives
+  intersections of two sets \emph{of $\mathcal{C}$}; the first step upgrades one of
+  the two arguments to an arbitrary element of $\mathcal{M}(\mathcal{C})$, and the
+  second step upgrades the other, using the first step's conclusion as the seed
+  $\mathcal{C} \subr \mathcal{M}'$. Dropping stability of $\mathcal{C}$ under finite
+  intersection kills the first step at its first line, and the lemma is false
+  without it --- as is chapter 2's théorème d'unicité, which is why that theorem
+  carries the same hypothesis, alongside its own second condition that $\Omega$ be
+  covered by countably many elements of $\mathcal{C}$ of finite mesure. Both are
+  load-bearing there: the first buys this lemma, the second is what lets the
+  equality be passed to the limit along an increasing exhaustion of $\Omega$.
+\end{remark}
+
+\subsection{Lois usuelles}
+The two tables below list the usual lois with columns added --- four to the table
+of lois discrètes, three to the table of lois à densité. Name, parameters,
+notation, support and loi define each entry; the espérance, the variance and the
+transforms are computed elsewhere in these notes and are gathered here. Read the
+notation column first: it fixes which meaning each of the overloaded symbols
+carries, and the closing note of this chapter lists the
+overloads.
+
+\subsubsection{Lois discrètes}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llllccc}
+  \toprule
+  Nom & Paramètre(s) & Notation & Support & Loi & $\expec(X)$ & $\Var(X)$ \\
+  \midrule
+  Bernoulli & $p \in [0,1]$ & $\mathcal{B}(p)$ & $\{0,1\}$
+    & $\begin{cases} p & k = 1\\ 1-p & k = 0\end{cases}$ & $p$ & $p(1-p)$ \\[6pt]
+  Binomiale & $n \in \mathbb{N}$, $p \in [0,1]$ & $\mathcal{B}(n,p)$
+    & $\{0,1,\dots,n\}$ & $\binom{n}{k}p^{k}(1-p)^{n-k}$ & $np$ & $np(1-p)$ \\[3pt]
+  Poisson & $\lambda > 0$ & $\mathcal{P}(\lambda)$ & $\mathbb{N}$
+    & $e^{-\lambda}\dfrac{\lambda^{k}}{k!}$ & $\lambda$ & $\lambda$ \\[5pt]
+  Géométrique & $p \in\, ]0,1]$ & $\mathcal{G}(p)$ & $\mathbb{N}^{*}$
+    & $(1-p)^{k-1}p$ & $\dfrac{1}{p}$ & $\dfrac{1-p}{p^{2}}$ \\[5pt]
+  Uniforme & $n \in \mathbb{N}^{*}$ & $\mathcal{U}(1,\dots,n)$ & $\{1,\dots,n\}$
+    & $\dfrac{1}{n}$ & $\dfrac{n+1}{2}$ & $\dfrac{n^{2}-1}{12}$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{llcc}
+  \toprule
+  Nom & Notation & $G_{X}(t) = \expec\!\left(t^{X}\right)$
+    & $\varphi_{X}(t) = G_{X}\!\left(e^{it}\right)$ \\
+  \midrule
+  Bernoulli & $\mathcal{B}(p)$ & $1-p+pt$ & $1-p+pe^{it}$ \\[3pt]
+  Binomiale & $\mathcal{B}(n,p)$ & $(1-p+pt)^{n}$ & $\left(1-p+pe^{it}\right)^{n}$
+    \\[3pt]
+  Poisson & $\mathcal{P}(\lambda)$ & $e^{\lambda(t-1)}$
+    & $e^{\lambda\left(e^{it}-1\right)}$ \\[3pt]
+  Géométrique & $\mathcal{G}(p)$ & $\dfrac{pt}{1-(1-p)t}$
+    & $\dfrac{pe^{it}}{1-(1-p)e^{it}}$ \\[5pt]
+  Uniforme & $\mathcal{U}(1,\dots,n)$ & $\dfrac{t}{n}\dfrac{1-t^{n}}{1-t}$
+    & $\dfrac{1}{n}e^{it}\dfrac{e^{int}-1}{e^{it}-1}$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+The first table gives the definitions plus the two moment columns; the second carries
+the fonction génératrice computed in chapter 1 and, beside it, the fonction
+caractéristique of chapter 6. The two are the same object: for a variable with
+values in $\mathbb{N}$,
+\[
+  \varphi_{X}(t) = \expec\!\left(e^{itX}\right)
+    = \expec\!\left(\left(e^{it}\right)^{X}\right) = G_{X}\!\left(e^{it}\right),
+\]
+so the right-hand column is the middle one evaluated on the unit circle and nothing
+new has to be memorised. The entry for the loi uniforme is written for $t \neq 1$
+and, in the characteristic form, for $t \notin 2\pi\zee$; at the excluded points
+every term of the sum is $1$ and the value is $1$.
+
+\begin{remark}[The geometric support is a convention, and it moves]
+  The table supports the loi géométrique on $\mathbb{N}^{*}$: $X$ counts the
+  trials up to and including the first success, so $\expec(X) = 1/p$. Many
+  sources, and some exercises, instead use $\tau = X - 1$, the number of failures
+  \emph{before} the
+  first success, supported on $\mathbb{N}$, with $\expec(\tau) = (1-p)/p$ and the
+  same variance $(1-p)/p^{2}$. The table above follows the course's convention.
+  Check which of the two a question means before quoting a mean.
+\end{remark}
+
+\subsubsection{Lois à densité}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lllllcc}
+  \toprule
+  Nom & Paramètre(s) & Notation & Support & Densité & $\expec(X)$ & $\Var(X)$ \\
+  \midrule
+  Exponentielle & $\lambda > 0$ & $\mathcal{E}(\lambda)$ & $\reals_{+}$
+    & $\lambda e^{-\lambda x}\indic_{\reals_{+}}(x)$
+    & $\dfrac{1}{\lambda}$ & $\dfrac{1}{\lambda^{2}}$ \\[5pt]
+  Gamma & $a, \lambda > 0$ & $\Gamma(a,\lambda)$ & $\reals_{+}$
+    & $\dfrac{\lambda^{a}}{\Gamma(a)}x^{a-1}e^{-\lambda x}\indic_{\reals_{+}}(x)$
+    & $\dfrac{a}{\lambda}$ & $\dfrac{a}{\lambda^{2}}$ \\[7pt]
+  Uniforme & $a < b$ & $\mathcal{U}([a,b])$ & $[a,b]$
+    & $\dfrac{1}{b-a}\indic_{[a,b]}(x)$
+    & $\dfrac{a+b}{2}$ & $\dfrac{(b-a)^{2}}{12}$ \\[7pt]
+  Beta & $a, b > 0$ & $\mathcal{B}(a,b)$ & $[0,1]$
+    & $\dfrac{1}{B(a,b)}x^{a-1}(1-x)^{b-1}\indic_{[0,1]}(x)$
+    & $\dfrac{a}{a+b}$ & $\dfrac{ab}{(a+b)^{2}(a+b+1)}$ \\[7pt]
+  Normale & $\mu \in \reals$, $\sigma^{2} > 0$ & $\mathcal{N}(\mu,\sigma^{2})$
+    & $\reals$
+    & $\dfrac{1}{\sqrt{2\pi}\,\sigma}\,e^{-\frac{(x-\mu)^{2}}{2\sigma^{2}}}$
+    & $\mu$ & $\sigma^{2}$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Each support is the set on which the densité's indicator does not vanish; the
+densité of the loi normale carries no indicator, and its support is all of
+$\reals$. The fonctions caractéristiques, computed in chapter 6, are:
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{llc}
+  \toprule
+  Nom & Notation & $\varphi_{X}(t) = \expec\!\left(e^{itX}\right)$ \\
+  \midrule
+  Exponentielle & $\mathcal{E}(\lambda)$ & $\dfrac{\lambda}{\lambda - it}$ \\[5pt]
+  Gamma & $\Gamma(a,\lambda)$
+    & $\left(\dfrac{\lambda}{\lambda - it}\right)^{a}$ \\[7pt]
+  Uniforme & $\mathcal{U}([a,b])$
+    & $\dfrac{e^{itb} - e^{ita}}{it\,(b-a)}$ for $t \neq 0$, and $1$ at $t = 0$
+    \\[7pt]
+  Beta & $\mathcal{B}(a,b)$
+    & $\displaystyle\sum_{k \geq 0}
+      \left(\prod_{r=0}^{k-1}\frac{a+r}{a+b+r}\right)\frac{(it)^{k}}{k!}$ \\[9pt]
+  Normale & $\mathcal{N}(\mu,\sigma^{2})$
+    & $e^{i\mu t}e^{-\sigma^{2}t^{2}/2}$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\begin{remark}[The loi normale row is an addition]
+  The loi normale is developed with the vecteurs gaussiens in chapter 7 rather
+  than alongside the lois exponentielle, Gamma, uniforme and Beta. The row above is
+  added anyway --- its fonction caractéristique is chapter 6's, and the reason for
+  wanting it in a reference table at all is chapter 7's Gaussian development ---
+  and it is worth having here, because it is the one loi an exam is certain to use
+  and the one row a revision sheet built from those four lois alone would lack.
+\end{remark}
+
+\begin{remark}[Which entries are computed, and where]
+  The moments of the lois exponentielle and Gamma come from the fonction
+  caractéristique by the moment expansion of chapter 6, and the Gamma line at
+  $a = 1$ reproduces the Exponentielle line as a check. The moments of the loi
+  uniforme are chapter 6's unit-interval
+  computation $\expec = 1/2$, $\Var = 1/12$ transported by the affine map
+  $x \mapsto a + (b-a)x$, which shifts the mean to $(a+b)/2$ and scales the variance
+  by $(b-a)^{2}$. The moments of the loi Beta come from the moment formula
+  $\expec(X^{k}) = \prod_{r=0}^{k-1}\frac{a+r}{a+b+r}$ of the same chapter, at
+  $k = 1$ and $k = 2$. The Normale row's fonction caractéristique is chapter 6's;
+  its mean and variance are its parameters, as chapter 7 defines them.
+\end{remark}
+
+\begin{remark}[The beta fonction caractéristique has no elementary closed form]
+  Four of the five lois above have a fonction caractéristique in closed form; the
+  loi Beta does not, and the series recorded in the table is the honest answer
+  rather than an omission. It converges everywhere --- the support is
+  bounded, so every moment exists and the partial sums are dominated by $e^{|t|}$
+  times the densité --- and it is the confluent hypergeometric function
+  $M(a,\,a+b,\,it)$. On an exam a question about the loi Beta asks for a
+  moment, not for $\varphi_{X}$.
+\end{remark}
+
+\subsection{Notions de convergence}
+The course defines two modes of convergence for variables aléatoires and names a
+third only to say that it is not treated. They are collected here with the
+implications between them, because the two theorems of chapter 8 deliver different
+ones and saying which is half of a correct answer.\\
+La notion de convergence la plus forte --- the strongest of the three --- est une
+convergence simple, valable pour presque toute réalisation $\omega$: the numbers
+$X_{n}(\omega)$ converge, and the set of $\omega$ at which
+$X_{n}(\omega) \to X(\omega)$ has probability $1$. On parle de convergence
+presque sûre. On utilise la notation
+$X_{n} \cvas X$. It composes freely with continuous maps, as convergence en loi also does.\\
+La convergence en loi forgets the univers entirely: elle ne concerne que les lois
+des variables aléatoires impliquées, et non leur réalisation. They are compared
+through the fonctions de répartition, and
+$F_{n}(x) \to F(x)$ is required at the continuity points of $F$ alone. On utilise
+la notation $X_{n} \cvL X$; comme cette notion de convergence s'applique aux lois,
+on pourra également l'écrire comme tel, par exemple
+$X_{n} \cvL \mathcal{N}(0,1)$. The restriction to continuity
+points is the content of the definition and not a technicality: without
+it the deterministic sequence $1/n$ would fail to converge en loi to $0$.\\
+La convergence en probabilité requires $\prob(|X_{n} - X| > a) \to 0$ for every
+$a > 0$, and is written $X_{n} \cvP X$.
+\emph{The course does not define it.} D'autres notions de convergence existent,
+comme la convergence en probabilité, mais ne sont pas abordées dans ce cours: the
+course names it only to say so, and proves nothing about it. It
+is carried in these notes as an addition, because it sits between the two modes the
+course does define, and a problem on this syllabus may well supply its definition
+inline before asking for an implication --- which is itself a sign that the course
+does not supply it.
+
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[>=stealth, node distance=12mm and 26mm]
+    \node[draw, very thick, rounded corners, inner sep=6pt] (as)
+      {$X_{n} \cvas X$};
+    \node[draw, dashed, rounded corners, inner sep=6pt, right=of as] (p)
+      {$X_{n} \cvP X$};
+    \node[draw, very thick, rounded corners, inner sep=6pt, right=of p] (l)
+      {$X_{n} \cvL X$};
+    \draw[->, very thick] (as) -- node[above,font=\footnotesize] {conv.\ dominée} (p);
+    \draw[->, dashed] (p) -- node[above,font=\footnotesize] {not proved here} (l);
+    \draw[->, very thick] (as.south) .. controls +(0,-1.2) and +(0,-1.2) ..
+      node[below,font=\footnotesize]
+      {conv.\ dominée on bounded continuous tests} (l.south);
+    \node[below=18mm of p, align=center, font=\footnotesize]
+      {the dashed box and the dashed arrow are the addition ---\\
+       the course defines only the two solid modes};
+  \end{tikzpicture}
+\end{figure}
+
+\begin{remark}[No arrow reverses]
+  Convergence presque sûre implies convergence en probabilité --- proved in
+  chapter 8 --- and convergence en probabilité implies convergence en loi,
+  an implication carried here without proof; neither converse holds. An indicator
+  window of width $1/n$ sliding cyclically around $[0,1]$ has $\prob(|X_{n}| > a)
+  = 1/n \to 0$, so $X_{n} \cvP 0$, while every $\omega$ is hit infinitely often
+  and $X_{n}(\omega)$
+  converges for no $\omega$ at all. And with $X$ of loi normale centrée réduite and
+  $X_{n} = -X$ for every $n$, the lois are equal so $X_{n} \cvL X$ holds trivially,
+  while $|X_{n} - X| = 2|X|$ never gets small. The one partial converse worth
+  knowing belongs to the addition and is stated, not proved, in these notes:
+  convergence en loi \emph{to a constant} does imply convergence en probabilité to
+  that constant.
+\end{remark}
+
+The practical criterion for convergence en loi is not the definition but the
+fonction caractéristique, and it comes from two results used together. Chapter 6
+proves that the fonction caractéristique determines the loi:
+$\prob_{X} = \prob_{Y}$ if and only if $\varphi_{X} = \varphi_{Y}$. Chapter 8's
+theorem on the three characterisations of convergence en loi then upgrades that
+from lois to sequences of lois.
+
+\begin{theorem}[Trois caractérisations de la convergence en loi]
+  Soit $X_{1}, X_{2}, \dots$ une suite de variables aléatoires réelles, de
+  fonctions caractéristiques respectives $\varphi_{1}, \varphi_{2}, \dots$, et
+  $X$ une variable aléatoire réelle, de fonction caractéristique $\varphi$. Les
+  propositions suivantes sont équivalentes :
+  \begin{enumerate}
+    \item $X_{n} \cvL X$ ;
+    \item $\expec(\phi(X_{n})) \to \expec(\phi(X))$ pour toute fonction
+      \emph{continue bornée} $\phi$ ;
+    \item $\varphi_{n}(t) \to \varphi(t)$ pour tout $t \in \reals$.
+  \end{enumerate}
+\end{theorem}
+
+The third characterisation is the one that gets used: to prove a convergence en
+loi, compute the fonction caractéristique of the $n$-th term, take its
+pointwise limit, and recognise the result. That is exactly how the théorème
+central limite is proved.\\
+Two hypotheses inside the criterion are worth keeping in view. The fonctions test
+of the second characterisation must be bounded \emph{and} continuous ---
+boundedness alone is what makes convergence dominée available, and continuity
+alone is what lets convergence presque sûre be pushed through. And the pointwise
+convergence of the third is convergence at every real $t$, not on a neighbourhood
+of $0$ and not uniformly.\\
+Which mode does each theorem deliver? The two results of chapter 8 answer
+differently, and confusing them is the standard error.
+
+\begin{theorem}[Loi forte des grands nombres]
+  Pour toute suite $X_{1}, X_{2}, \dots$ de variables aléatoires réelles
+  i.i.d.\ \emph{ayant une espérance},
+  \[
+    \frac{1}{n}\sum_{i=1}^{n} X_{i} \cvas \expec(X_{1}).
+  \]
+\end{theorem}
+
+\begin{theorem}[Théorème central limite]
+  Pour toute suite $X_{1}, X_{2}, \dots$ de variables aléatoires réelles
+  i.i.d.\ d'espérance finie $\mu$ et de variance finie $\sigma^{2}$,
+  \[
+    \sqrt{n}\left(\frac{1}{n}\sum_{i=1}^{n} X_{i} - \mu\right)
+      \cvL \mathcal{N}(0,\sigma^{2}).
+  \]
+\end{theorem}
+
+\begin{remark}[The hypotheses are not interchangeable either]
+  The loi forte asks for an espérance, that is $\expec(|X_{1}|) < +\infty$, and
+  \emph{not} for a finite variance; the finite variance belongs to the weak law and
+  to one proof of the loi forte, and importing it into the statement weakens the
+  theorem for nothing. The théorème central limite does need a finite variance,
+  since $\sigma^{2}$ appears in its conclusion. So the loi forte delivers the
+  strongest mode under the weaker hypothesis, and the théorème central limite the
+  weakest mode under the stronger one --- which is not a paradox: they say
+  different things, one about where the mean goes and one about how large the
+  error is on the way.
+\end{remark}
+
+\begin{conclusion}
+Five symbols in these notes carry more than one meaning, because the course's
+notation is kept as exams use it, collisions included, and each time the meaning is fixed by what
+sits in the parentheses. $\mathcal{P}$ is the ensemble des parties
+$\mathcal{P}(\Omega)$ and the loi de Poisson $\mathcal{P}(\lambda)$. $\mathcal{B}$
+is the tribu de Borel $\mathcal{B}(\reals)$, the loi de Bernoulli
+$\mathcal{B}(p)$, the loi binomiale $\mathcal{B}(n,p)$ and the loi Beta
+$\mathcal{B}(a,b)$. $\lambda$ is the mesure de Lebesgue and the parameter of the
+loi exponentielle and the loi de Poisson. $\Gamma$ is the loi Gamma
+$\Gamma(a,\lambda)$ and the matrice de covariance of a vecteur gaussien,
+$\mathcal{N}(\mu,\Gamma)$ --- and, in the densité of the loi Gamma, also the gamma
+function. $\mathcal{E}$ is a generic tribu, as in $(E,\mathcal{E})$, and the loi
+exponentielle $\mathcal{E}(\lambda)$. All five appear in the tables above in their
+meaning as a loi, and two of them collide there on a single page: $\mathcal{B}$
+carries the loi de Bernoulli, the loi binomiale and the loi Beta in the same two
+tables, and the Gamma row prints the loi Gamma and the gamma function
+side by side. That is why the notation column is the one to read first.
+\end{conclusion}
