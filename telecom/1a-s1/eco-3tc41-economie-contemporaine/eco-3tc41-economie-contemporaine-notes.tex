@@ -1,0 +1,87 @@
+\documentclass[10pt]{article}
+
+% basic packages
+\usepackage[margin=1in]{geometry}
+\usepackage{fix-cm}        % scale one design size, as OT1 does --- keeps the title bold
+\usepackage[T1]{fontenc}   % accented French terms kept inline in the prose
+\usepackage[pdftex]{graphicx}
+\graphicspath{{./src/}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{custom}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{xcolor}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{arrows,calc,positioning,patterns,decorations.pathreplacing}
+\usepgfplotslibrary{fillbetween}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+% page formatting
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage{titlesec}
+\titleformat*{\subsubsection}{\large\bfseries\sffamily}
+
+\renewcommand{\sectionmark}[1]{\markright{\textsf{\arabic{section}. #1}}}
+\renewcommand{\subsectionmark}[1]{}
+\lhead{\textbf{\thepage} \ \ \nouppercase{\rightmark}}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+\setlength{\headheight}{14pt}
+
+\linespread{1.03} % give a little extra room
+\setlength{\parindent}{0in} % reduce paragraph indent a bit
+\setcounter{secnumdepth}{2} % no numbered subsubsections
+\setcounter{tocdepth}{2} % no subsubsections in ToC
+
+\begin{document}
+
+% make title page
+\thispagestyle{empty}
+\bigskip \
+\vspace{0.1cm}
+
+\begin{center}
+{\fontsize{30}{30} \selectfont \bf \sffamily ECO 3TC41: Introduction à l'économie contemporaine }\\
+\vspace{24pt}
+%{\fontsize{14}{14} \selectfont \rmfamily Donald Kong} \\
+%\vspace{6pt}
+%{\fontsize{12}{12} \selectfont \ttfamily dkkl1137@gmail.com} \\
+%\vspace{24pt}
+\end{center}
+
+{\parindent0pt \baselineskip=15.5pt
+  The module teaches the basic concepts of economics in order to discuss
+  contemporary problems such as competition, economic rationality, monopoly and
+  oligopolies, living standards and macroeconomic indicators, money and monetary
+  policy, international trade, and the economics of the environment.
+
+  \medskip
+  Chapters 1 to 6 are the « micro » half: how transactions are organised, the
+  competitive market, welfare analysis, the long run, market failures, and economic
+  rationality and strategic reasoning. Chapters 7 to 9 are the « macro » half: the
+  role of the State, the national-accounts aggregates, public finances and the
+  steering of the economy; the conjunctural policies France has run since 1970; and
+  the present French situation --- the sustainability of the public debt and how to
+  reduce the deficit.
+
+  \medskip
+  Titles and technical terms are in French, the language of the course and its exam:
+  each term is glossed in English once, where it is defined, definitions keep the
+  course's own French, and the commentary is in English.
+}
+
+% make table of contents
+% \newpage
+\microtoc%
+\newpage
+
+% main content
+\end{document}
