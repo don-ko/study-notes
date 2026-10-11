@@ -359,7 +359,7 @@ only a term not yet in this table, and adds it here.
 | crise des dettes souveraines | sovereign debt crisis | 8-politiques-conjoncturelles-1970-2026.tex | Succession de chocs économiques | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 38 |
 | politique monétaire non conventionnelle | unconventional monetary policy | 8-politiques-conjoncturelles-1970-2026.tex | Succession de chocs économiques | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 38 |
 | croissance structurelle | structural growth | 8-politiques-conjoncturelles-1970-2026.tex | La crise des dettes souveraines en zone euro, 2008-2012 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 39 |
-| Mécanisme européen de stabilisation financière (MESF) | European Financial Stabilisation Mechanism | 8-politiques-conjoncturelles-1970-2026.tex | La crise des dettes souveraines en zone euro, 2008-2012 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 39; the deck dates it 2012; it is the 2010 mechanism (B8.17, S) |
+| Mécanisme européen de stabilité (MES) | European Stability Mechanism | 8-politiques-conjoncturelles-1970-2026.tex | La crise des dettes souveraines en zone euro, 2008-2012 | not printed: the deck names the 2012 mechanism «Mécanisme européen de stabilisation financière (MESF)», cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 39; the MESF is the 2010 mechanism, and the 2012 one is the MES (B8.17, S) |
 | canal des taux d'intérêt | interest-rate channel | 8-politiques-conjoncturelles-1970-2026.tex | Le risque de déflation, 2015-2020 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 40 |
 | canal des crédits | credit channel | 8-politiques-conjoncturelles-1970-2026.tex | Le risque de déflation, 2015-2020 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 40 |
 | assouplissement quantitatif (QE) | quantitative easing | 8-politiques-conjoncturelles-1970-2026.tex | Le risque de déflation, 2015-2020 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 40; «Assouplissement quantitatif (QE)»; also cours-concepts-cadres-theoriques-2026-27 p. 45 |
@@ -544,12 +544,12 @@ does not gloss, each with the reason.
 
 - prix, marché, État — ordinary words of the subject, written in English prose as price, market, the state
 - demande, offre — ordinary words of the subject (demand, supply); their compounds (courbe de demande, barème d'offre, demande agrégée…) are glossed
-- concurrence, consommation, investissement, épargne, production, emploi, croissance, impôts, taxes — ordinary words of the decks; the compounds that are terms (concurrence parfaite, consommation finale, épargne brute, croissance économique…) are glossed
+- concurrence, consommation, investissement, épargne, production, emploi, croissance, impôts, taxes — ordinary words of the decks; the compounds that are terms (épargne brute, croissance économique…) are glossed; concurrence parfaite and consommation finale are only mentioned (below)
 - ménages, entreprises — the two boxes of the circuit économique (« households », « firms »), ordinary words
 - inégalités, justice, valeur, sanctions, dividendes, espérance de vie — ordinary words, named in passing
-- subventions, subsides — ordinary words for subsidies («subsides», cours-3 p. 6; «subventions», cours-concepts-cadres-theoriques-2026-27 pp. 7, 19)
+- subventions, subsides — ordinary words for subsidies («subsides», cours-patrick-waelbroeck-2026-27/cours-3 p. 6; «subventions», cours-concepts-cadres-theoriques-2026-27 pp. 7, 19)
 - conjoncture — the macro decks' everyday word for the state of the economy; its compounds (politiques conjoncturelles, chômage conjoncturel, déficit conjoncturel) are glossed
-- souveraineté — an ordinary word; souveraineté monétaire and souveraineté budgétaire are glossed
+- souveraineté — an ordinary word; souveraineté budgétaire is glossed; souveraineté monétaire is only mentioned
 - transition numérique, transition écologique, économie du travail, compétences, protection de la vie privée, coordination internationale — theme names on the opening slide (cours-patrick-waelbroeck-2026-27/cours-1 p. 3), named only
 - crise de 2008 — an episode, named only (cours-patrick-waelbroeck-2026-27/cours-1 p. 5)
 - technological advance (« A Shift in the Production Possibilities Frontier ») — the cause the figure gives for the frontier's shift (cours-patrick-waelbroeck-2026-27/cours-1 p. 6); described in English prose, no term of its own
@@ -594,7 +594,7 @@ does not gloss, each with the reason.
 - effet externe — the slide's synonym of externalités (chapter 5) (cours-concepts-cadres-theoriques-2026-27 p. 7)
 - relance et stabilisation de la conjoncture — the third function's name (cours-concepts-cadres-theoriques-2026-27 p. 7), made of relance and conjoncture
 - politiques économiques de régulation conjoncturelle monétaire ou budgétaire — a phrase naming politique monétaire and politique budgétaire (cours-concepts-cadres-theoriques-2026-27 p. 7)
-- valeur ajoutée brute — a row of the INSEE table (cours-concepts-cadres-theoriques-2026-27 p. 10, image), made of valeur ajoutée (VA), which is glossed; it stays unglossed in the PIB definition too (B7.2), where impôts sur les produits and subventions sur les produits are glossed
+- valeur ajoutée brute — a row of the INSEE table (cours-concepts-cadres-theoriques-2026-27 p. 10, image), made of valeur ajoutée (VA), which is glossed; it stays unglossed in the PIB definition too (B7.2), where impôts sur les produits and subventions sur les produits are only mentioned too
 - dépense de consommation finale, formation brute de capital, excédent brut d'exploitation et revenu mixte brut, rémunération des salariés — rows of the INSEE table (cours-concepts-cadres-theoriques-2026-27 p. 10, image), carried in the reproduced table; a table cell stays unglossed
 - par la production, par les revenus, par les dépenses — the Annexe 1 infographic's titles (cours-concepts-cadres-theoriques-2026-27 p. 53) for approche production, approche revenus and approche demande
 - transferts de richesse — the slide's paraphrase of prestations sociales, « (= transferts de richesse) » (cours-concepts-cadres-theoriques-2026-27 p. 12)
@@ -662,7 +662,7 @@ does not gloss, each with the reason.
 - déficit primaire conjoncturel, déficit primaire structurel, déficit budgétaire structurel — made of déficit conjoncturel and déficit structurel, which are glossed, and déficit primaire, which is not (cours-discussion-situation-actuelle-france-2026-27 pp. 15, 25)
 - rendement mécanique — the yield the effet mécanique gives (cours-discussion-situation-actuelle-france-2026-27 p. 27)
 - réponse comportementale des contribuables — the slide's wording for the effet comportemental (cours-discussion-situation-actuelle-france-2026-27 p. 27)
-- évasion fiscale — printed only within « évasion ou optimisation fiscale » (cours-discussion-situation-actuelle-france-2026-27 p. 28); optimisation fiscale and fraude fiscale are glossed
+- évasion fiscale — printed only within « évasion ou optimisation fiscale » (cours-discussion-situation-actuelle-france-2026-27 p. 28); fraude fiscale is glossed, optimisation fiscale only mentioned
 - gel en volume, virage ambulatoire, geler l'indexation, délai de carence, crédit d'impôt recherche, accises, niches sociales, prélèvement forfaitaire unique (PFU), quotient conjugal, quotient familial — cells of the CAE tables (images, cours-discussion-situation-actuelle-france-2026-27 pp. 26-32), carried in the reproduced tables
 - désindexation partielle — made of désindexation (désindexation des salaires, chapter 8) (cours-discussion-situation-actuelle-france-2026-27 p. 35)
 - leviers structurels — the heading word for réformes structurelles (cours-discussion-situation-actuelle-france-2026-27 p. 38)
@@ -797,7 +797,7 @@ does not gloss, each with the reason.
 - Fonds monétaire international (FMI) — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
 - assainissement des comptes publics — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
 - Fonds européen de stabilité financière (FESF) — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
-- Mécanisme européen de stabilité (MES) — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
+- Mécanisme européen de stabilisation financière (MESF) — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
 - aversion au risque — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
 - âge légal de départ — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
 - niches fiscales — 8-politiques-conjoncturelles-1970-2026.tex; only mentioned; appears in French alone
