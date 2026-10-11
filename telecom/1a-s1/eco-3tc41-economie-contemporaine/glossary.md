@@ -381,10 +381,10 @@ only a term not yet in this table, and adds it here.
 | clause dérogatoire générale | general escape clause | 8-politiques-conjoncturelles-1970-2026.tex | Pacte de Stabilité et de Croissance (PSC) (1997) | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 69 |
 | clause dérogatoire nationale | national escape clause | 8-politiques-conjoncturelles-1970-2026.tex | Pacte de Stabilité et de Croissance (PSC) (1997) | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 69 |
 | ratio dettes/PIB | debt-to-GDP ratio | 9-situation-actuelle-france.tex | Contexte général | cours-discussion-situation-actuelle-france-2026-27 p. 2 |
-| solvabilité | solvency | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire (CB) publique | cours-discussion-situation-actuelle-france-2026-27 p. 6 |
-| charge de la dette | interest burden | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire (CB) publique | cours-discussion-situation-actuelle-france-2026-27 p. 6; «charge de la dette (ou d'intérêts)» |
-| contrainte budgétaire (CB) publique | government budget constraint | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire (CB) publique | cours-discussion-situation-actuelle-france-2026-27 p. 6 |
-| rouler la dette | roll over the debt | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire (CB) publique | cours-discussion-situation-actuelle-france-2026-27 p. 6; «« rouler la dette »» |
+| solvabilité | solvency | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire publique | cours-discussion-situation-actuelle-france-2026-27 p. 6 |
+| charge de la dette | interest burden | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire publique | cours-discussion-situation-actuelle-france-2026-27 p. 6; «charge de la dette (ou d'intérêts)» |
+| contrainte budgétaire (CB) publique | government budget constraint | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire publique | cours-discussion-situation-actuelle-france-2026-27 p. 6 |
+| rouler la dette | roll over the debt | 9-situation-actuelle-france.tex | Les spécificités de la contrainte budgétaire publique | cours-discussion-situation-actuelle-france-2026-27 p. 6; «« rouler la dette »» |
 | insolvabilité | insolvency | 9-situation-actuelle-france.tex | Insolvabilité, défaut de paiement et conséquences | cours-discussion-situation-actuelle-france-2026-27 p. 7 |
 | défaut de paiement | default | 9-situation-actuelle-france.tex | Insolvabilité, défaut de paiement et conséquences | cours-discussion-situation-actuelle-france-2026-27 p. 7 |
 | restructuration de la dette publique | public debt restructuring | 9-situation-actuelle-france.tex | Insolvabilité, défaut de paiement et conséquences | cours-discussion-situation-actuelle-france-2026-27 p. 7 |
@@ -398,10 +398,10 @@ only a term not yet in this table, and adds it here.
 | taux d'intérêt apparent de la dette | implicit interest rate on the debt | 9-situation-actuelle-france.tex | La trajectoire de la dette publique | cours-discussion-situation-actuelle-france-2026-27 p. 9 |
 | taux souverain | sovereign yield | 9-situation-actuelle-france.tex | La trajectoire de la dette publique | cours-discussion-situation-actuelle-france-2026-27 p. 9 |
 | effet boule de neige | snowball effect | 9-situation-actuelle-france.tex | Facteurs d'évolution de la dette | cours-discussion-situation-actuelle-france-2026-27 p. 10; named in another sense in cours-concepts-cadres-theoriques-2026-27 p. 44 |
-| solde primaire stabilisant (SPS) | debt-stabilising primary balance | 9-situation-actuelle-france.tex | Solde primaire stabilisant (SPS) | cours-discussion-situation-actuelle-france-2026-27 p. 13 |
-| condition de stabilisation | stabilisation condition | 9-situation-actuelle-france.tex | Solde primaire stabilisant (SPS) | cours-discussion-situation-actuelle-france-2026-27 p. 13 |
-| excédent stabilisant | debt-stabilising surplus | 9-situation-actuelle-france.tex | Solde primaire stabilisant (SPS) | cours-discussion-situation-actuelle-france-2026-27 p. 14 |
-| déficit stabilisant | debt-stabilising deficit | 9-situation-actuelle-france.tex | Solde primaire stabilisant (SPS) | cours-discussion-situation-actuelle-france-2026-27 p. 14 |
+| solde primaire stabilisant (SPS) | debt-stabilising primary balance | 9-situation-actuelle-france.tex | Solde primaire stabilisant | cours-discussion-situation-actuelle-france-2026-27 p. 13 |
+| condition de stabilisation | stabilisation condition | 9-situation-actuelle-france.tex | Solde primaire stabilisant | cours-discussion-situation-actuelle-france-2026-27 p. 13 |
+| excédent stabilisant | debt-stabilising surplus | 9-situation-actuelle-france.tex | Solde public, solde primaire et soldes stabilisants de 2005 à 2025 | cours-discussion-situation-actuelle-france-2026-27 p. 14 |
+| déficit stabilisant | debt-stabilising deficit | 9-situation-actuelle-france.tex | Solde public, solde primaire et soldes stabilisants de 2005 à 2025 | cours-discussion-situation-actuelle-france-2026-27 p. 14 |
 | règle d'or | golden rule | 9-situation-actuelle-france.tex | Les cadres juridiques d'encadrement de la dette | cours-discussion-situation-actuelle-france-2026-27 p. 15 |
 | loi organique du 17 décembre 2012 relative à la programmation et à la gouvernance des finances publiques (LOPGFP) | Organic Law on the Programming and Governance of Public Finances | 9-situation-actuelle-france.tex | Les cadres juridiques d'encadrement de la dette | cours-discussion-situation-actuelle-france-2026-27 p. 15 |
 | lois de programmation des finances publiques (LPFP) | public finance programming laws | 9-situation-actuelle-france.tex | Les cadres juridiques d'encadrement de la dette | cours-discussion-situation-actuelle-france-2026-27 p. 15 |
@@ -414,7 +414,7 @@ only a term not yet in this table, and adds it here.
 | impulsion budgétaire | fiscal impulse | 9-situation-actuelle-france.tex | Résultats de l'étude | cours-discussion-situation-actuelle-france-2026-27 p. 24 |
 | effort budgétaire primaire structurel | structural primary fiscal effort | 9-situation-actuelle-france.tex | Résultats de l'étude | cours-discussion-situation-actuelle-france-2026-27 p. 24 |
 | réformes structurelles | structural reforms | 9-situation-actuelle-france.tex | Résultats de l'étude | cours-discussion-situation-actuelle-france-2026-27 p. 24; named first in cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 32; «réformes de structure», p. 2 |
-| déficit conjoncturel | cyclical deficit | 9-situation-actuelle-france.tex | Le déficit public français est surtout structurel (85-90 %) | cours-discussion-situation-actuelle-france-2026-27 p. 25 |
+| déficit conjoncturel | cyclical deficit | 9-situation-actuelle-france.tex | Le déficit primaire français est surtout structurel | cours-discussion-situation-actuelle-france-2026-27 p. 25 |
 | dépenses fiscales | tax expenditures | 9-situation-actuelle-france.tex | Augmenter les recettes | cours-discussion-situation-actuelle-france-2026-27 p. 26 |
 | taxe Zucman | Zucman tax | 9-situation-actuelle-france.tex | Taxe Zucman | cours-discussion-situation-actuelle-france-2026-27 p. 27 |
 | impôt plancher | minimum tax | 9-situation-actuelle-france.tex | Taxe Zucman | cours-discussion-situation-actuelle-france-2026-27 p. 27 |
