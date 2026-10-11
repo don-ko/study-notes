@@ -115,46 +115,6 @@ attainable combinations are those on the frontière itself, such as $A$, $B$, $E
 and $F$, and those inside it, such as $D$. A point beyond it, such as $C$, asks for
 more than the economy's resources can deliver.\\
 
-\begin{figure}[h!]
-  \centering
-  \begin{tikzpicture}[font=\scriptsize, >=stealth,
-      declare function={ppf(\x) = 3.9*(1 - 0.42845*\x/6.5 - 0.57155*(\x/6.5)^8);}]
-    \fill[blue!12] (0,0) -- plot[domain=0:6.5, samples=150] (\x, {ppf(\x)}) -- cycle;
-    \draw[->] (0,0) -- (7.1,0);
-    \draw[->] (0,0) -- (0,4.6);
-    \node[right, align=left] at (7.1,0) {Quantité de\\voitures produites};
-    \node[above, align=center] at (0,4.6) {Quantité d'ordinateurs\\produits};
-    \draw[very thick, blue!70!black]
-      plot[domain=0:6.5, samples=150] (\x, {ppf(\x)});
-    % guides and ticks
-    \draw[densely dotted] (0,2.86) -| (3.9,0);
-    \draw[densely dotted] (0,2.6) -| (4.55,0);
-    \draw[densely dotted] (0,1.3) -| (1.95,0);
-    \node[below] at (0,0) {$0$};
-    \node[below] at (1.95,0) {$300$};
-    \node[below] at (3.9,0) {$600$};
-    \node[below] at (4.55,0) {$700$};
-    \node[below] at (6.5,0) {$1\,000$};
-    \node[left] at (0,1.3) {$1\,000$};
-    \node[left] at (0,2.6) {$2\,000$};
-    \node[left] at (0,2.86) {$2\,200$};
-    \node[left] at (0,3.9) {$3\,000$};
-    % points
-    \fill (0.65,3.733) circle (1.6pt) node[above right] {$F$};
-    \fill (3.9,2.86) circle (1.6pt) node[above right] {$A$};
-    \fill (4.55,2.6) circle (1.6pt) node[above right] {$B$};
-    \fill (6.318,0.5) circle (1.6pt) node[right] {$E$};
-    \fill (1.95,1.3) circle (1.6pt) node[right] {$D$};
-    \fill (4.55,3.9) circle (1.6pt) node[right] {$C$};
-    % name of the curve
-    \draw (5.2,2.19) -- (6.0,2.95);
-    \node[right, align=left] at (6.0,2.95) {Frontière des\\possibilités\\de production};
-  \end{tikzpicture}
-  \caption*{\small La frontière des possibilités de production entre voitures et
-  ordinateurs. The shaded set is what the economy can produce; $C$, outside it, is
-  not attainable with the economy's resources.}
-\end{figure}
-
 Suppose now that the technology for making ordinateurs improves. Whatever number of
 voitures the economy turns out, it can now make more ordinateurs than before, and
 the whole frontière moves outward: on the ordinateurs axis it now starts at
@@ -164,39 +124,81 @@ From $A$ ($600$ voitures, $2\,200$ ordinateurs) the economy can then move to $G$
 
 \begin{figure}[h!]
   \centering
-  \begin{tikzpicture}[font=\scriptsize, >=stealth,
+  \begin{tikzpicture}[x=0.8cm, y=0.8cm, font=\scriptsize, >=stealth,
+      ttl/.style={align=center, font=\scriptsize\bfseries},
+      xlab/.style={anchor=north east, yshift=-11pt},
       declare function={ppf(\x) = 3.9*(1 - 0.42845*\x/6.5 - 0.57155*(\x/6.5)^8);}]
-    \draw[->] (0,0) -- (7.1,0);
-    \draw[->] (0,0) -- (0,5.8);
-    \node[right, align=left] at (7.1,0) {Quantité de\\voitures produites};
-    \node[above, align=center] at (0,5.8) {Quantité d'ordinateurs\\produits};
-    % initial frontier (blue) and new frontier (red)
-    \draw[very thick, blue!70!black]
-      plot[domain=0:6.5, samples=150] (\x, {ppf(\x)});
-    \draw[very thick, red!70!black]
-      plot[domain=0:6.5, samples=150]
-        (\x, {ppf(\x) + 1.3*(1 - \x/6.5)*(1 + 0.1034*\x/6.5)});
-    \draw[->, thick] (1.45,3.61) -- (1.75,4.35);
-    % guides and ticks
-    \draw[densely dotted] (0,2.86) -| (3.9,0);
-    \draw[densely dotted] (0,3.12) -| (4.4,0);
-    \node[below] at (0,0) {$0$};
-    \node[below, xshift=-3pt] at (3.9,0) {$600$};
-    \node[below, xshift=3pt] at (4.4,0) {$650$};
-    \node[below] at (6.5,0) {$1\,000$};
-    \node[left] at (0,2.86) {$2\,200$};
-    \node[left] at (0,3.12) {$2\,300$};
-    \node[left] at (0,3.9) {$3\,000$};
-    \node[left] at (0,5.2) {$4\,000$};
-    % points
-    \fill (3.9,2.86) circle (1.6pt) node[below left] {$A$};
-    \fill (4.4,3.12) circle (1.6pt) node[above right] {$G$};
+    % (a) the frontier
+    \begin{scope}
+      \node[ttl] at (3.55,7.2) {(a) La frontière des possibilités de production};
+      \fill[blue!12] (0,0) -- plot[domain=0:6.5, samples=150] (\x, {ppf(\x)}) -- cycle;
+      \draw[->] (0,0) -- (7.1,0);
+      \draw[->] (0,0) -- (0,4.6);
+      \node[xlab] at (7.1,0) {Quantité de voitures produites};
+      \node[above, align=center] at (0,4.6) {Quantité d'ordinateurs\\produits};
+      \draw[very thick, blue!70!black]
+        plot[domain=0:6.5, samples=150] (\x, {ppf(\x)});
+      % guides and ticks
+      \draw[densely dotted] (0,2.86) -| (3.9,0);
+      \draw[densely dotted] (0,2.6) -| (4.55,0);
+      \draw[densely dotted] (0,1.3) -| (1.95,0);
+      \node[below] at (0,0) {$0$};
+      \node[below] at (1.95,0) {$300$};
+      \node[below] at (3.9,0) {$600$};
+      \node[below] at (4.55,0) {$700$};
+      \node[below] at (6.5,0) {$1\,000$};
+      \node[left] at (0,1.3) {$1\,000$};
+      \node[left, yshift=-1.5pt] at (0,2.6) {$2\,000$};
+      \node[left, yshift=1.5pt] at (0,2.86) {$2\,200$};
+      \node[left] at (0,3.9) {$3\,000$};
+      % points
+      \fill (0.65,3.733) circle (1.6pt) node[above right] {$F$};
+      \fill (3.9,2.86) circle (1.6pt) node[above right] {$A$};
+      \fill (4.55,2.6) circle (1.6pt) node[above right] {$B$};
+      \fill (6.318,0.5) circle (1.6pt) node[right] {$E$};
+      \fill (1.95,1.3) circle (1.6pt) node[right] {$D$};
+      \fill (4.55,3.9) circle (1.6pt) node[right] {$C$};
+      % name of the curve
+      \draw (5.2,2.19) -- (6.0,2.95);
+      \node[right, align=left] at (6.0,2.95) {Frontière des\\possibilités\\de production};
+    \end{scope}
+    % (b) its shift
+    \begin{scope}[xshift=8.1cm]
+      \node[ttl] at (3.55,7.2) {(b) Un déplacement de la frontière};
+      \draw[->] (0,0) -- (7.1,0);
+      \draw[->] (0,0) -- (0,5.8);
+      \node[xlab] at (7.1,0) {Quantité de voitures produites};
+      \node[above, align=center] at (0,5.8) {Quantité d'ordinateurs\\produits};
+      % initial frontier (blue) and new frontier (red)
+      \draw[very thick, blue!70!black]
+        plot[domain=0:6.5, samples=150] (\x, {ppf(\x)});
+      \draw[very thick, red!70!black]
+        plot[domain=0:6.5, samples=150]
+          (\x, {ppf(\x) + 1.3*(1 - \x/6.5)*(1 + 0.1034*\x/6.5)});
+      \draw[->, thick] (1.45,3.61) -- (1.75,4.35);
+      % guides and ticks
+      \draw[densely dotted] (0,2.86) -| (3.9,0);
+      \draw[densely dotted] (0,3.12) -| (4.4,0);
+      \node[below] at (0,0) {$0$};
+      \node[below, xshift=-3pt] at (3.9,0) {$600$};
+      \node[below, xshift=3pt] at (4.4,0) {$650$};
+      \node[below] at (6.5,0) {$1\,000$};
+      \node[left, yshift=-1.5pt] at (0,2.86) {$2\,200$};
+      \node[left, yshift=1.5pt] at (0,3.12) {$2\,300$};
+      \node[left] at (0,3.9) {$3\,000$};
+      \node[left] at (0,5.2) {$4\,000$};
+      % points
+      \fill (3.9,2.86) circle (1.6pt) node[below left] {$A$};
+      \fill (4.4,3.12) circle (1.6pt) node[above right] {$G$};
+    \end{scope}
   \end{tikzpicture}
-  \caption*{\small Un déplacement de la frontière des possibilités de production.
-  A technological advance in the production of ordinateurs shifts the frontière
+  \caption*{\small La frontière des possibilités de production entre voitures et
+  ordinateurs (a) et son déplacement (b). In (a) the shaded set is what the economy
+  can produce; $C$, outside it, is not attainable with the economy's resources. In
+  (b) a technological advance in the production of ordinateurs shifts the frontière
   outward, from the blue curve to the red one; the voitures intercept does not move.
-  From $A$ to $G$ the economy produces more voitures and more ordinateurs. The
-  ticks near $A$ and $G$ are spread for legibility, not drawn to scale.}
+  From $A$ to $G$ the economy produces more voitures and more ordinateurs. The ticks
+  near $A$ and $G$ are spread for legibility, not drawn to scale.}
 \end{figure}
 
 Three complexités make the economy hard to understand.
@@ -310,8 +312,9 @@ Organising exchange by négociations bilatérales runs into three problems.
   \item Les négociations bilatérales n'exploitent pas les économies d'échelle.
 \end{itemize}
 
-Sélection adverse and aléa moral are only named here; they return with the
-défaillances de marché.
+Sélection adverse and aléa moral are only named here, and the course does not
+develop them; the asymétries d'information return with the défaillances de marché,
+through Akerlof's lemons alone.
 
 \subsection{Marx vs.\ Hayek}
 
