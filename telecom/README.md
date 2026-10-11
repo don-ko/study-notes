@@ -9,7 +9,8 @@ in [`don-ko/telecom`](https://github.com/don-ko/telecom) (private)
 `<module>/notes/` directories on 2026-09-28.
 
 Six modules have notes: five are written from the material in their `cours/`,
-`td/` and `examens/`, and one FMA module holds only the setup, described below.
+`td/` and `examens/` — Économie's from `cours/` alone — and one FMA module holds
+only the setup, described below.
 The notes are **not** a second copy of the decks: the decks are slides, and
 these are continuous prose in the format the rest of my notes use, so the two
 are read for different things.
@@ -53,7 +54,7 @@ never forks.
 | [`ece-3tc21-propagation-antennes`](1a-s1/ece-3tc21-propagation-antennes/) | 6 | 69 | the 131-page poly, the L1–L3 and L4–L5 amphi decks, and the three autonomy TD series |
 | [`ece-3tc32-compilation`](1a-s1/ece-3tc32-compilation/) | 7 + reference sheet | 55 | the séance-1 to séance-3 decks, the séance-1 x86 corrigés, the séance-3 TP templates, and Stanford CS107's x86-64 reference sheet — the séance-4 deck is held and has no chapter yet |
 | [`fma-3tc11-probabilites`](1a-s1/fma-3tc11-probabilites/) | 9 | 133 | the 187-page poly, its 102 exercises with their annexe E solutions, and the ten annales — the one lecture deck held is deliberately not a source |
-| [`eco-3tc41-economie-contemporaine`](1a-s1/eco-3tc41-economie-contemporaine/) | 9 | 108 | the 2026-27 « micro » decks (the course plan and three cours) and the three 2026-27 « macro » leçons — the six 2025-26 séance decks are deliberately not a source |
+| [`eco-3tc41-economie-contemporaine`](1a-s1/eco-3tc41-economie-contemporaine/) | 9 | 108 | the « micro » half's course plan and three decks, and the « macro » half's three leçons — the six 2025-26 séance decks are deliberately not a source |
 
 The page counts are of the committed PDFs; `latexmk -pdf` from inside a module
 directory reproduces them, and that is where `custom.sty` has to be found.
@@ -67,16 +68,18 @@ exists until its chapter does — and the notes follow in their own spec. The co
 the abstract's "No chapters are written yet" paragraph, which is true only of
 the setup.
 
-A setup commits to no content, so the vintage test below does not apply to it.
-3TC10's material is 2025-26, and the decision to write its notes rests on its
-2026/2027 Moodle course publishing those polys under *Supports et programme* with
-no rival 2026-27 series beside them. The vintage stays a recorded risk for the
+A setup commits to no content, so the vintage test below does not bear on it.
+3TC10's material is 2025-26 too, and what supports writing notes from it is that
+its 2026/2027 Moodle course publishes those polys under *Supports et programme*
+with no rival 2026-27 series beside them. The vintage stays a recorded risk for the
 notes spec.
 
-Économie's notes are written from its two 2026-27 series alone. A held document
-is a notes source when its vintage is confirmed for the year being studied, or
-when it supplies content the confirmed sources do not. The module's six séance
-decks print 2025 on every cover and satisfy neither, so they are excluded.
+Économie's notes are built from its two 2026-27 series only, the « micro » half's
+plan and decks and the « macro » half's leçons. Its six 2025-26 séance decks are
+deliberately not a source. A held document is a notes source when its vintage is
+confirmed for the year being studied, or when it supplies content the confirmed
+sources do not; those decks satisfy neither. That test replaces the module-level
+precedent that kept Économie without notes while only the 2025-26 decks were held.
 
 Compilation's seven chapters cover séances 1 to 3. **Séance 4 is the first
 séance whose deck is held while its notes are not** — 145 pages of LR parsing
@@ -94,15 +97,17 @@ in italics — `\textbf{facteur de réflexion} (\textit{reflection coefficient})
 and everywhere else in French alone, English prose included (a noun only: an
 English adjective such as *executable* stays English). Each module's
 `glossary.md` fixes the French term, its gloss and the one chapter that glosses
-it. Definitions, theorems and any prose that closely translates the source are
+it. Économie's « micro » decks borrow textbook figures labelled only in English;
+where the course prints no French for such a label, the notes use the standard
+French term, and its glossary row says the course does not print it. Its « macro »
+decks state some definitions and facts wrongly; the notes state the correct fact
+and, where an exam question could turn on it, follow it with a short *Formulation
+du cours* remark giving the course's own wording, without saying where it comes
+from. Definitions, theorems and any prose that closely translates the source are
 the source's own French; the commentary written here stays English. The notes
 cite no source document — no slide, poly, corrigé or séance — so they stand on
 their own, and where a source is wrong they state the correct fact without
-pointing at the error. Économie adds two things. Where an error is one an exam
-could turn on, a short remark titled *Formulation du cours* follows with the
-course's own wording, still naming no source. And where a figure borrowed from
-an English textbook prints a label only in English, the label takes the standard
-French term and the glossary row records the English. The exams are sat in French, and this is the vocabulary
+pointing at the error. The exams are sat in French, and this is the vocabulary
 they use.
 
 ## Figures
