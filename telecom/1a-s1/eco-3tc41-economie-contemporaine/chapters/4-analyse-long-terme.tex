@@ -54,13 +54,12 @@ The parenthesis gives them their second name, the \textbf{coûts implicites}
 
 The two kinds of cost meet in a comparison of how an economist and an accountant
 read the same firm, with the same recette totale (figure below). The economist
-counts all the coûts d'opportunité: the coûts explicites and the coûts implicites
-together form the \textbf{coûts d'opportunité totaux}
-(\textit{total opportunity costs}), and what remains of the recette totale is the
-\textbf{profit économique} (\textit{economic profit}). The accountant counts only
-the coûts explicites, and what remains is the \textbf{profit comptable}
-(\textit{accounting profit}). So the profit économique is smaller than the profit
-comptable. Each bar splits the same recette totale:
+counts the coûts explicites and the coûts implicites; together they form the
+\textbf{coûts d'opportunité totaux} (\textit{total opportunity costs}), and what
+remains of the recette totale is the \textbf{profit économique}
+(\textit{economic profit}). The accountant counts only the coûts explicites, and
+what remains is the \textbf{profit comptable} (\textit{accounting profit}). So the
+profit économique is smaller than the profit comptable. Each bar splits the same recette totale:
 \begin{itemize}
   \item analyse économique : recette totale = coûts explicites + coûts implicites
     + profit économique ;
@@ -97,9 +96,9 @@ implicites.
       node[midway,right=7pt,align=left] {Recette\\totale};
   \end{tikzpicture}
   \caption*{\small Analyse économique contre analyse comptable. One recette totale,
-  split two ways: the economist subtracts all the coûts d'opportunité, the
-  accountant only the coûts explicites, so the profit économique is the smaller of
-  the two profits.}
+  split two ways: the economist subtracts the coûts d'opportunité totaux (coûts
+  explicites plus coûts implicites), the accountant only the coûts explicites, so
+  the profit économique is the smaller of the two profits.}
 \end{figure}
 
 \subsection{Coût moyen et coût marginal}
@@ -121,27 +120,11 @@ In words: the coût moyen is the coût total divided by the quantity $Q$, and th
 coût marginal is the change in the coût total divided by the change in quantity,
 $\Delta$ standing for a change.\\
 
-The figure draws the cost curves of a typical firm: $MC$ and $ATC$, and two
-curves the definitions above do not give, $AVC$, the curve of the
-\textbf{coût variable moyen} (\textit{average variable cost}), and $AFC$, that of
-the \textbf{coût fixe moyen} (\textit{average fixed cost}). Many firms have a
-\textbf{produit marginal} (\textit{marginal product}) that is increasing at first
-and then diminishing. As a result their cost curves have the shapes of the figure:
-the coût marginal and the coût variable moyen fall for a while before starting to
-rise. As drawn, moreover:
-\begin{itemize}
-  \item the rising $MC$ passes through the minimum of $AVC$, then through the
-    minimum of $ATC$;
-  \item $ATC$ lies above $AVC$, the gap between them at each quantity being the
-    height of $AFC$, and the gap narrows as the quantity grows;
-  \item $AFC$ falls throughout.
-\end{itemize}
-
 \begin{figure}[h!]
   \centering
   \begin{tikzpicture}
     \begin{axis}[
-        width=10cm, height=7cm,
+        width=10cm, height=5.6cm,
         axis lines=left,
         xmin=0, xmax=15.5, ymin=0, ymax=3.3,
         xtick={0,2,...,14},
@@ -195,6 +178,22 @@ rise. As drawn, moreover:
   the coût variable moyen first fall, then rise; the rising $MC$ crosses $AVC$ and
   then $ATC$ at their minima, and $AFC$ falls throughout.}
 \end{figure}
+
+The figure draws the cost curves of a typical firm: $MC$ and $ATC$, and two
+curves the definitions above do not give, $AVC$, the curve of the
+\textbf{coût variable moyen} (\textit{average variable cost}), and $AFC$, that of
+the \textbf{coût fixe moyen} (\textit{average fixed cost}). Many firms have a
+\textbf{produit marginal} (\textit{marginal product}) that is increasing at first
+and then diminishing. As a result their cost curves have the shapes of the figure:
+the coût marginal and the coût variable moyen fall for a while before starting to
+rise. As drawn, moreover:
+\begin{itemize}
+  \item the rising $MC$ passes through the minimum of $AVC$, then through the
+    minimum of $ATC$;
+  \item $ATC$ lies above $AVC$, the gap between them at each quantity being the
+    height of $AFC$, and the gap narrows as the quantity grows;
+  \item $AFC$ falls throughout.
+\end{itemize}
 
 \subsection{Rendements d'échelle}
 
