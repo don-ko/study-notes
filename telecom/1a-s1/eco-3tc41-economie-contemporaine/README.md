@@ -14,7 +14,7 @@ committed beside the sources.
 
 The decks, the « macro » ones above all, state some definitions and facts wrongly. The
 notes state the correct fact, checked against primary sources, and where an exam question could turn on it a
-remark titled *Formulation du cours* follows with the course's own wording: 48 remarks,
+remark titled *Formulation du cours* follows with the course's own wording: 49 remarks,
 all but one in chapters 7 to 9. The glossary keeps 445 terms: those a page defines or
 properly introduces, the labels the figures print only in English, and the acronyms'
 expansions.
