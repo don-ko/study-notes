@@ -160,7 +160,7 @@ only a term not yet in this table, and adds it here.
 | biais cognitifs | cognitive biases | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 26 |
 | préférences révélées | revealed preference | 6-rationalite-raisonnements-strategiques.tex | Les préférences révélées | cours-patrick-waelbroeck-2026-27/cours-3 p. 27 |
 | principe des préférences révélées | principle of revealed preference | 6-rationalite-raisonnements-strategiques.tex | Le principe des préférences révélées | cours-patrick-waelbroeck-2026-27/cours-3 p. 28 |
-| révélé préféré | revealed preferred | 6-rationalite-raisonnements-strategiques.tex | Weak Axiom of Revealed Preference | cours-patrick-waelbroeck-2026-27/cours-3 p. 29; also «révéle préféré» [sic], same page |
+| révélé préféré | revealed preferred | 6-rationalite-raisonnements-strategiques.tex | Les préférences révélées | cours-patrick-waelbroeck-2026-27/cours-3 p. 29; also «révéle préféré» [sic], same page |
 | jeux stratégiques | strategic games | 6-rationalite-raisonnements-strategiques.tex | Jeux stratégiques | cours-patrick-waelbroeck-2026-27/cours-3 p. 32 |
 | jeu | game | 6-rationalite-raisonnements-strategiques.tex | Jeux stratégiques | cours-patrick-waelbroeck-2026-27/cours-3 p. 32 |
 | joueurs | players | 6-rationalite-raisonnements-strategiques.tex | Jeux stratégiques | cours-patrick-waelbroeck-2026-27/cours-3 p. 32 |
