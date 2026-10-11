@@ -40,7 +40,7 @@ only a term not yet in this table, and adds it here.
 | courbe de demande | demand curve | 2-marche-concurrentiel.tex | La demande individuelle | not printed in French; the figure prints «Demand curve», cours-patrick-waelbroeck-2026-27/cours-1 p. 17 |
 | quantité demandée | quantity demanded | 2-marche-concurrentiel.tex | La demande individuelle | not printed in French; the figure prints «quantity demanded», cours-patrick-waelbroeck-2026-27/cours-1 p. 17 |
 | courbes d'indifférence | indifference curves | 2-marche-concurrentiel.tex | Courbes d'indifférence | cours-patrick-waelbroeck-2026-27/cours-1 p. 18; also «courbes d'indifférences», cours-patrick-waelbroeck-2026-27/cours-2 p. 25 |
-| taux marginal de substitution (TMS) | marginal rate of substitution | 2-marche-concurrentiel.tex | Taux marginal de substitution | cours-patrick-waelbroeck-2026-27/cours-1 p. 20; TMS is the notes' symbol (§ Notation), not printed; the figures print «MRS» |
+| taux marginal de substitution (TMS) | marginal rate of substitution | 2-marche-concurrentiel.tex | Taux marginal de substitution | cours-patrick-waelbroeck-2026-27/cours-1 p. 20; TMS is the notes' abbreviation, not printed; the figures print «MRS» |
 | optimum du consommateur | consumer's optimum | 2-marche-concurrentiel.tex | L'optimum du consommateur | cours-patrick-waelbroeck-2026-27/cours-1 p. 21; «L'optimum du consommateur» |
 | contrainte budgétaire | budget constraint | 2-marche-concurrentiel.tex | L'optimum du consommateur | cours-patrick-waelbroeck-2026-27/cours-1 p. 21; the figure prints «Budget constraint»; the French as printed in cours-patrick-waelbroeck-2026-27/cours-3 p. 28 |
 | prix relatif | relative price | 2-marche-concurrentiel.tex | L'optimum du consommateur | not printed in French; the figure prints «the relative price of the two goods», cours-patrick-waelbroeck-2026-27/cours-1 p. 21 |
@@ -56,7 +56,7 @@ only a term not yet in this table, and adds it here.
 | élasticité unitaire | unit elasticity | 2-marche-concurrentiel.tex | Élasticité de la demande | not printed in French; the figure prints «Unit Elastic Demand», cours-patrick-waelbroeck-2026-27/cours-1 p. 29 |
 | élastique | elastic | 2-marche-concurrentiel.tex | Élasticité de la demande | not printed in French; the figure prints «Elastic Demand», cours-patrick-waelbroeck-2026-27/cours-1 p. 29 |
 | parfaitement élastique | perfectly elastic | 2-marche-concurrentiel.tex | Élasticité de la demande | not printed in French; the figure prints «Perfectly Elastic Demand», cours-patrick-waelbroeck-2026-27/cours-1 p. 29 |
-| méthode du point milieu | midpoint method | 2-marche-concurrentiel.tex | Élasticité de la demande | not printed in French; the figure prints «midpoint method», cours-patrick-waelbroeck-2026-27/cours-1 p. 29; B2.1 |
+| méthode du point milieu | midpoint method | 2-marche-concurrentiel.tex | Élasticité de la demande | not printed in French; the figure prints «midpoint method», cours-patrick-waelbroeck-2026-27/cours-1 p. 29; the captions name the method, which the course does not define |
 | barème d'offre | supply schedule | 2-marche-concurrentiel.tex | L'offre | not printed in French; the figure prints «supply schedule», cours-patrick-waelbroeck-2026-27/cours-1 p. 30 |
 | courbe d'offre | supply curve | 2-marche-concurrentiel.tex | L'offre | not printed in French; the figure prints «Supply curve», cours-patrick-waelbroeck-2026-27/cours-1 p. 30 |
 | quantité offerte | quantity supplied | 2-marche-concurrentiel.tex | L'offre | not printed in French; the figure prints «quantity supplied», cours-patrick-waelbroeck-2026-27/cours-1 p. 30 |
@@ -76,14 +76,14 @@ only a term not yet in this table, and adds it here.
 | salaire minimum | minimum wage | 2-marche-concurrentiel.tex | Prix planchers | cours-patrick-waelbroeck-2026-27/cours-2 p. 7; the figure prints «Minimum wage»; the French as printed in cours-discussion-situation-actuelle-france-2026-27 p. 33 |
 | incidence fiscale | tax incidence | 2-marche-concurrentiel.tex | Effet des taxes | not printed in French; the figure prints «the incidence of the tax», cours-patrick-waelbroeck-2026-27/cours-2 p. 11 |
 | bien-être | welfare | 3-analyse-bien-etre.tex | Analyse de bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 12; «Partie 3 – Analyse de bien-être» |
-| disponibilité à payer | willingness to pay | 3-analyse-bien-etre.tex | Disponibilité à payer et surplus | cours-patrick-waelbroeck-2026-27/cours-2 p. 13; the course's calque of willingness to pay (B3.6) |
+| disponibilité à payer | willingness to pay | 3-analyse-bien-etre.tex | Disponibilité à payer et surplus | cours-patrick-waelbroeck-2026-27/cours-2 p. 13; the course's calque of willingness to pay |
 | surplus du consommateur | consumer surplus | 3-analyse-bien-etre.tex | Disponibilité à payer et surplus | cours-patrick-waelbroeck-2026-27/cours-2 p. 13 |
 | surplus du producteur | producer surplus | 3-analyse-bien-etre.tex | Surplus du producteur | cours-patrick-waelbroeck-2026-27/cours-2 p. 17 |
-| disponibilité à vendre | willingness to sell | 3-analyse-bien-etre.tex | Surplus du producteur | cours-patrick-waelbroeck-2026-27/cours-2 p. 17; its printed definition is B3.1 |
+| disponibilité à vendre | willingness to sell | 3-analyse-bien-etre.tex | Surplus du producteur | cours-patrick-waelbroeck-2026-27/cours-2 p. 17; its printed definition («différence entre le prix de vente et le coût») is the surplus du producteur's, so the notes state both |
 | surplus total | total surplus | 3-analyse-bien-etre.tex | Surplus total | cours-patrick-waelbroeck-2026-27/cours-2 p. 21 |
 | efficacité de Pareto | Pareto efficiency | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 23 |
 | boîte d'Edgeworth | Edgeworth box | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 23 |
-| courbe de contrats | contract curve | 3-analyse-bien-etre.tex | Boîte d'Edgeworth | cours-patrick-waelbroeck-2026-27/cours-2 p. 28; the course's form, kept (B3.5) |
+| courbe de contrats | contract curve | 3-analyse-bien-etre.tex | Boîte d'Edgeworth | cours-patrick-waelbroeck-2026-27/cours-2 p. 28; the course's form, kept |
 | taux marginal de transformation | marginal rate of transformation | 3-analyse-bien-etre.tex | Product Mix | cours-patrick-waelbroeck-2026-27/cours-2 p. 29; printed «les taux marginaux de substitution et transformation» |
 | premier théorème du bien-être | first welfare theorem | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 30 |
 | main invisible | invisible hand | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 30; «La main invisible d'Adam Smith» |
@@ -99,17 +99,17 @@ only a term not yet in this table, and adds it here.
 | équilibre concurrentiel de long terme | long-run competitive equilibrium | 4-analyse-long-terme.tex | Coûts explicites et coûts d'opportunité | cours-patrick-waelbroeck-2026-27/cours-2 p. 38 |
 | coûts explicites | explicit costs | 4-analyse-long-terme.tex | Coûts explicites et coûts d'opportunité | cours-patrick-waelbroeck-2026-27/cours-2 p. 38 |
 | coûts d'opportunité | opportunity costs | 4-analyse-long-terme.tex | Coûts explicites et coûts d'opportunité | cours-patrick-waelbroeck-2026-27/cours-2 p. 38 |
-| coûts implicites | implicit costs | 4-analyse-long-terme.tex | Coûts explicites et coûts d'opportunité | cours-patrick-waelbroeck-2026-27/cours-2 p. 38; printed «Les coûts d'opportunité (implicites)»; the figure (p. 39) prints «Implicit costs» (B4.2) |
+| coûts implicites | implicit costs | 4-analyse-long-terme.tex | Coûts explicites et coûts d'opportunité | cours-patrick-waelbroeck-2026-27/cours-2 p. 38; printed «Les coûts d'opportunité (implicites)»; the figure (p. 39) prints «Implicit costs» |
 | profit économique | economic profit | 4-analyse-long-terme.tex | Analyse économique contre analyse comptable | not printed in French; the figure prints «Economic profit», cours-patrick-waelbroeck-2026-27/cours-2 p. 39 |
 | profit comptable | accounting profit | 4-analyse-long-terme.tex | Analyse économique contre analyse comptable | not printed in French; the figure prints «Accounting profit», cours-patrick-waelbroeck-2026-27/cours-2 p. 39 |
-| coûts d'opportunité totaux | total opportunity costs | 4-analyse-long-terme.tex | Analyse économique contre analyse comptable | not printed in French; the figure prints «Total opportunity costs», cours-patrick-waelbroeck-2026-27/cours-2 p. 39; B4.2 |
+| coûts d'opportunité totaux | total opportunity costs | 4-analyse-long-terme.tex | Analyse économique contre analyse comptable | not printed in French; the figure prints «Total opportunity costs», cours-patrick-waelbroeck-2026-27/cours-2 p. 39 |
 | coût total (TC) | total cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | cours-patrick-waelbroeck-2026-27/cours-2 p. 40 |
 | coût fixe (FC) | fixed cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | cours-patrick-waelbroeck-2026-27/cours-2 p. 40 |
 | coût variable (VC) | variable cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | cours-patrick-waelbroeck-2026-27/cours-2 p. 40 |
 | coût moyen | average total cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | cours-patrick-waelbroeck-2026-27/cours-2 p. 40; ATC in the slide's formula image |
 | coût marginal | marginal cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | cours-patrick-waelbroeck-2026-27/cours-2 p. 40; MC in the slide's formula image |
-| coût variable moyen | average variable cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | not printed in French; the figure prints «average variable cost», cours-patrick-waelbroeck-2026-27/cours-2 p. 41; curve AVC (B4.4) |
-| coût fixe moyen | average fixed cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | not printed in French; the figure prints «AFC», cours-patrick-waelbroeck-2026-27/cours-2 p. 41; a curve label only, never spelled out (B4.4) |
+| coût variable moyen | average variable cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | not printed in French; the figure prints «average variable cost», cours-patrick-waelbroeck-2026-27/cours-2 p. 41; the curve's label is AVC |
+| coût fixe moyen | average fixed cost | 4-analyse-long-terme.tex | Coût moyen et coût marginal | not printed in French; the figure prints «AFC», cours-patrick-waelbroeck-2026-27/cours-2 p. 41; a curve label only, never spelled out |
 | produit marginal | marginal product | 4-analyse-long-terme.tex | Coût moyen et coût marginal | not printed in French; the figure prints «increasing marginal product before diminishing marginal product», cours-patrick-waelbroeck-2026-27/cours-2 p. 41 |
 | rendements d'échelle | returns to scale | 4-analyse-long-terme.tex | Rendements d'échelle | cours-patrick-waelbroeck-2026-27/cours-2 p. 42 |
 | économies d'échelle | economies of scale | 4-analyse-long-terme.tex | Rendements d'échelle | cours-patrick-waelbroeck-2026-27/cours-2 p. 42; the figure prints «Economies of scale»; the French as printed in cours-patrick-waelbroeck-2026-27/cours-1 p. 14, «économies d'échelles» |
@@ -121,7 +121,7 @@ only a term not yet in this table, and adds it here.
 | monopole | monopoly | 5-defaillances-marche.tex | Monopole | cours-patrick-waelbroeck-2026-27/cours-3 p. 3 |
 | barrières à l'entrée | barriers to entry | 5-defaillances-marche.tex | Monopole | cours-patrick-waelbroeck-2026-27/cours-3 p. 3 |
 | recette totale (RT) | total revenue | 5-defaillances-marche.tex | Monopole | cours-patrick-waelbroeck-2026-27/cours-3 p. 4; printed in the slide's image; the text layer holds only the title |
-| recette marginale | marginal revenue | 5-defaillances-marche.tex | Monopole | not printed in French; the figure prints «Marginal revenue», cours-patrick-waelbroeck-2026-27/cours-3 p. 4; the slide's rm (B5.3) |
+| recette marginale | marginal revenue | 5-defaillances-marche.tex | Monopole | not printed in French; the figure prints «Marginal revenue», cours-patrick-waelbroeck-2026-27/cours-3 p. 4; the slide's rm |
 | prix de monopole | monopoly price | 5-defaillances-marche.tex | Monopole | not printed in French; the figure prints «Monopoly price», cours-patrick-waelbroeck-2026-27/cours-3 p. 4 |
 | perte sèche | deadweight loss | 5-defaillances-marche.tex | Perte sèche | cours-patrick-waelbroeck-2026-27/cours-3 p. 5; also cours-patrick-waelbroeck-2026-27/plan-du-cours p. 2 |
 | quantité de monopole | monopoly quantity | 5-defaillances-marche.tex | Perte sèche | not printed in French; the figure prints «Monopoly quantity», cours-patrick-waelbroeck-2026-27/cours-3 p. 5 |
@@ -157,7 +157,7 @@ only a term not yet in this table, and adds it here.
 | rationalité | rationality | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 23; «Rationnalité» [sic] in the plan, p. 22 |
 | fonction d'utilité | utility function | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 23 |
 | ordinalité | ordinality | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 23; «L'ordinalité de la fonction d'utilité» |
-| préfère x à y strictement | strictly prefers x to y | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 24; the symbol ≻ (§ Notation) |
+| préfère x à y strictement | strictly prefers x to y | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 24; the symbol ≻ |
 | indifférent entre x et y | indifferent between x and y | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 24; the symbol ∼ |
 | préfère x à y faiblement | weakly prefers x to y | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 24; the symbol ⪰ |
 | biais cognitifs | cognitive biases | 6-rationalite-raisonnements-strategiques.tex | La rationalité économique | cours-patrick-waelbroeck-2026-27/cours-3 p. 26 |
@@ -230,13 +230,13 @@ only a term not yet in this table, and adds it here.
 | dette publique brute | gross public debt | 7-concepts-cadres-theoriques.tex | Déficit public et dette au sens de Maastricht | cours-concepts-cadres-theoriques-2026-27 p. 21; «Dette publique (brute)» in the table |
 | dette publique nette | net public debt | 7-concepts-cadres-theoriques.tex | Déficit public et dette au sens de Maastricht | cours-concepts-cadres-theoriques-2026-27 p. 21; in the slide's INSEE table (image) and its note 2 |
 | indice des prix à la consommation de l'Union monétaire (IPCUM) | Monetary Union Index of Consumer Prices | 7-concepts-cadres-theoriques.tex | Inflation, désinflation et déflation | cours-concepts-cadres-theoriques-2026-27 p. 26 |
-| indice des prix à la consommation harmonisé (IPCH) | harmonised index of consumer prices | 7-concepts-cadres-theoriques.tex | Inflation, désinflation et déflation | cours-concepts-cadres-theoriques-2026-27 p. 26; printed «l'indice des prix à la consommation (IPCH)», without «harmonisé»; «IPCH», p. 46; the full name is the notes' (§ Notation: acronyms expanded at first use) |
+| indice des prix à la consommation harmonisé (IPCH) | harmonised index of consumer prices | 7-concepts-cadres-theoriques.tex | Inflation, désinflation et déflation | cours-concepts-cadres-theoriques-2026-27 p. 26; printed «l'indice des prix à la consommation (IPCH)», without «harmonisé»; «IPCH», p. 46; the full name is the notes', since every acronym is expanded at first use |
 | inflation rampante | creeping inflation | 7-concepts-cadres-theoriques.tex | Inflation, désinflation et déflation | cours-concepts-cadres-theoriques-2026-27 p. 26 |
 | inflation galopante | galloping inflation | 7-concepts-cadres-theoriques.tex | Inflation, désinflation et déflation | cours-concepts-cadres-theoriques-2026-27 p. 26 |
 | désinflation | disinflation | 7-concepts-cadres-theoriques.tex | Inflation, désinflation et déflation | cours-concepts-cadres-theoriques-2026-27 p. 26 |
 | taux de croissance | growth rate | 7-concepts-cadres-theoriques.tex | PIB, variations et croissance économique | cours-concepts-cadres-theoriques-2026-27 p. 28 |
 | croissance économique | economic growth | 7-concepts-cadres-theoriques.tex | PIB, variations et croissance économique | cours-concepts-cadres-theoriques-2026-27 p. 28 |
-| ralentissement | slowdown | 7-concepts-cadres-theoriques.tex | PIB, variations et croissance économique | cours-concepts-cadres-theoriques-2026-27 p. 28 (B7.21); printed «ralentissement du taux de croissance» in the course's récession definition |
+| ralentissement | slowdown | 7-concepts-cadres-theoriques.tex | PIB, variations et croissance économique | cours-concepts-cadres-theoriques-2026-27 p. 28; printed «ralentissement du taux de croissance» in the course's récession definition, which the notes correct |
 | crise économique | economic crisis | 7-concepts-cadres-theoriques.tex | PIB, variations et croissance économique | cours-concepts-cadres-theoriques-2026-27 p. 28 |
 | PIB nominal | nominal GDP | 7-concepts-cadres-theoriques.tex | PIB nominal vs. PIB réel | cours-concepts-cadres-theoriques-2026-27 p. 29 |
 | PIB réel | real GDP | 7-concepts-cadres-theoriques.tex | PIB nominal vs. PIB réel | cours-concepts-cadres-theoriques-2026-27 p. 29 |
@@ -260,7 +260,7 @@ only a term not yet in this table, and adds it here.
 | taux de change | exchange rate | 7-concepts-cadres-theoriques.tex | Zoom : impacts des variations du taux de change e sur les importations et les exportations | cours-concepts-cadres-theoriques-2026-27 p. 39 |
 | monnaie de référence | base currency | 7-concepts-cadres-theoriques.tex | Zoom : impacts des variations du taux de change e sur les importations et les exportations | cours-concepts-cadres-theoriques-2026-27 p. 39 |
 | monnaie de cotation | quote currency | 7-concepts-cadres-theoriques.tex | Zoom : impacts des variations du taux de change e sur les importations et les exportations | cours-concepts-cadres-theoriques-2026-27 p. 39 |
-| stabilisateurs automatiques | automatic stabilisers | 7-concepts-cadres-theoriques.tex | Les effets de la conjoncture sur le solde budgétaire | cours-concepts-cadres-theoriques-2026-27 p. 41; printed «stabilisateurs économiques automatique des dépenses publiques» (also «Les stabilisateurs économiques», the heading of 3.2, p. 40, and p. 47); B7.29 (S): the notes use the standard term, so quote cannot match it |
+| stabilisateurs automatiques | automatic stabilisers | 7-concepts-cadres-theoriques.tex | Les effets de la conjoncture sur le solde budgétaire | cours-concepts-cadres-theoriques-2026-27 p. 41; printed «stabilisateurs économiques automatique des dépenses publiques» (also «Les stabilisateurs économiques», the heading of 3.2, p. 40, and p. 47); the notes use the standard term |
 | politiques discrétionnaires | discretionary policies | 7-concepts-cadres-theoriques.tex | Les politiques discrétionnaires | cours-concepts-cadres-theoriques-2026-27 p. 43 |
 | relance | stimulus | 7-concepts-cadres-theoriques.tex | Les politiques discrétionnaires | cours-concepts-cadres-theoriques-2026-27 p. 43; «de relance ou de rigueur (ou expansive/restrictive)» |
 | rigueur | restraint | 7-concepts-cadres-theoriques.tex | Les politiques discrétionnaires | cours-concepts-cadres-theoriques-2026-27 p. 43; «de relance ou de rigueur (ou expansive/restrictive)» |
@@ -279,8 +279,8 @@ only a term not yet in this table, and adds it here.
 | marché monétaire | money market | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; «Marché monétaire ou interbancaire» |
 | banques commerciales | commercial banks | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; «banques commerciales ou de second rang», p. 55 |
 | taux directeurs | key interest rates | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46 |
-| taux des opérations principales de refinancement | main refinancing rate | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; printed «taux sur les opérations de refinancement»; B7.31 (S): the standard name, so quote cannot match it |
-| taux de la facilité de dépôt | deposit facility rate | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; printed «taux sur les réserve/dépôts auprès de la BCE»; the name as printed in cours-discussion-situation-actuelle-france-2026-27 p. 22; B7.31 (S) |
+| taux des opérations principales de refinancement | main refinancing rate | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; printed «taux sur les opérations de refinancement»; the notes use the standard name |
+| taux de la facilité de dépôt | deposit facility rate | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; printed «taux sur les réserve/dépôts auprès de la BCE»; the name as printed in cours-discussion-situation-actuelle-france-2026-27 p. 22 |
 | taux de la facilité de prêt marginal | marginal lending facility rate | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46; printed «taux facilités de prêt marginal»; «taux de prêt marginal», cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 57 |
 | politique monétaire conventionnelle | conventional monetary policy | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46 |
 | marché des changes | foreign exchange market | 7-concepts-cadres-theoriques.tex | La politique monétaire européenne via la BCE | cours-concepts-cadres-theoriques-2026-27 p. 46 |
@@ -353,7 +353,7 @@ only a term not yet in this table, and adds it here.
 | volet correctif | corrective arm | 8-politiques-conjoncturelles-1970-2026.tex | Pacte de Stabilité et de Croissance : 1997, réformé en 2024 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 29 |
 | procédure de déficit excessif (PDE) | excessive deficit procedure | 8-politiques-conjoncturelles-1970-2026.tex | Pacte de Stabilité et de Croissance : 1997, réformé en 2024 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 29 |
 | objectif de moyen terme (OMT) | medium-term objective | 8-politiques-conjoncturelles-1970-2026.tex | Pacte de Stabilité et de Croissance : 1997, réformé en 2024 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 29; «Objectif à Moyen Teme (OMT)» [sic], cours-discussion-situation-actuelle-france-2026-27 p. 15 |
-| plan budgétaire et structurel à moyen terme (PSMT) | medium-term fiscal-structural plan | 8-politiques-conjoncturelles-1970-2026.tex | Que contient le plan budgétaire français ? | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 30; printed only as «PSMT» («Le PSMT français a été validé le 26 novembre 2024») and as «le plan budgétaire français» in the title; the expansion is the French government's name for the plan, the notes' (§ Notation), so quote matches only «PSMT» |
+| plan budgétaire et structurel à moyen terme (PSMT) | medium-term fiscal-structural plan | 8-politiques-conjoncturelles-1970-2026.tex | Que contient le plan budgétaire français ? | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 30; printed only as «PSMT» («Le PSMT français a été validé le 26 novembre 2024») and as «le plan budgétaire français» in the title; the expansion is the French government's name for the plan, which the notes add |
 | déficit structurel | structural deficit | 8-politiques-conjoncturelles-1970-2026.tex | Les révisions du PSC de 2005 et le TSCG de 2011-12 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 31; «deficit structurel», p. 5 |
 | dépenses nettes | net expenditure | 8-politiques-conjoncturelles-1970-2026.tex | Les révisions du PSC de 2005 et le TSCG de 2011-12 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 31 |
 | pacte budgétaire européen | Fiscal Compact | 8-politiques-conjoncturelles-1970-2026.tex | Les révisions du PSC de 2005 et le TSCG de 2011-12 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 31 |
@@ -362,7 +362,7 @@ only a term not yet in this table, and adds it here.
 | crise des dettes souveraines | sovereign debt crisis | 8-politiques-conjoncturelles-1970-2026.tex | Succession de chocs économiques | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 38 |
 | politique monétaire non conventionnelle | unconventional monetary policy | 8-politiques-conjoncturelles-1970-2026.tex | Succession de chocs économiques | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 38 |
 | croissance structurelle | structural growth | 8-politiques-conjoncturelles-1970-2026.tex | La crise des dettes souveraines en zone euro, 2008-2012 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 39 |
-| Mécanisme européen de stabilité (MES) | European Stability Mechanism | 8-politiques-conjoncturelles-1970-2026.tex | La crise des dettes souveraines en zone euro, 2008-2012 | not printed: the deck names the 2012 mechanism «Mécanisme européen de stabilisation financière (MESF)», cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 39; the MESF is the 2010 mechanism, and the 2012 one is the MES (B8.17, S) |
+| Mécanisme européen de stabilité (MES) | European Stability Mechanism | 8-politiques-conjoncturelles-1970-2026.tex | La crise des dettes souveraines en zone euro, 2008-2012 | not printed: the deck names the 2012 mechanism «Mécanisme européen de stabilisation financière (MESF)», cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 39; the MESF is the 2010 mechanism, and the 2012 one is the MES |
 | canal des taux d'intérêt | interest-rate channel | 8-politiques-conjoncturelles-1970-2026.tex | Le risque de déflation, 2015-2020 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 40 |
 | canal des crédits | credit channel | 8-politiques-conjoncturelles-1970-2026.tex | Le risque de déflation, 2015-2020 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 40 |
 | assouplissement quantitatif (QE) | quantitative easing | 8-politiques-conjoncturelles-1970-2026.tex | Le risque de déflation, 2015-2020 | cours-politiques-conjoncturelles-oeuvre-1970-2026-27 p. 40; «Assouplissement quantitatif (QE)»; also cours-concepts-cadres-theoriques-2026-27 p. 45 |
@@ -487,9 +487,9 @@ English equivalent.
 | complètes | cours-patrick-waelbroeck-2026-27/cours-3 p. 25 — the first axiom; differs from complete only by the accent and the feminine plural agreeing with préférences |
 | réflexives | cours-patrick-waelbroeck-2026-27/cours-3 p. 25 — the second axiom; differs from reflexive only by the accent and the feminine plural |
 | transitives | cours-patrick-waelbroeck-2026-27/cours-3 p. 25 — the third axiom; transitive in English, plus the plural |
-| Independence of Irrelevant Alternatives (IIA) | cours-patrick-waelbroeck-2026-27/cours-3 p. 26 — printed in English only, as « Independance of Irrelevant Alternatives (IIA) » (B6.2) |
+| Independence of Irrelevant Alternatives (IIA) | cours-patrick-waelbroeck-2026-27/cours-3 p. 26 — printed in English only, as « Independance of Irrelevant Alternatives (IIA) » |
 | Dark patterns | cours-patrick-waelbroeck-2026-27/cours-3 p. 26 — printed in English in the slide's French text |
-| Weak Axiom of Revealed Preference (WARP) | cours-patrick-waelbroeck-2026-27/cours-3 p. 29 — printed in English only, as « Weak Axiom of Revelead Preferences »; « Weak Axiom of Revealed Preferences (WARP) », cours-patrick-waelbroeck-2026-27/plan-du-cours p. 2 (B6.5) |
+| Weak Axiom of Revealed Preference (WARP) | cours-patrick-waelbroeck-2026-27/cours-3 p. 29 — printed in English only, as « Weak Axiom of Revelead Preferences »; « Weak Axiom of Revealed Preferences (WARP) », cours-patrick-waelbroeck-2026-27/plan-du-cours p. 2 |
 | actions | cours-patrick-waelbroeck-2026-27/cours-3 p. 32 — « Pour chaque joueur, un ensemble d'actions »; the same word in English |
 | Timing | cours-patrick-waelbroeck-2026-27/cours-3 p. 32 — printed in English in the slide's French text |
 | Welfare State | cours-concepts-cadres-theoriques-2026-27 p. 6 — « Etat providence (« Welfare State ») »; « welfare state », p. 69: the course's own English (État-providence is glossed above) |
@@ -579,10 +579,10 @@ does not gloss, each with the reason.
 - analyse économique, analyse comptable — the two points of view of the title (cours-patrick-waelbroeck-2026-27/cours-2 p. 39); the terms are profit économique and profit comptable
 - structure des coûts, choix alternatif — ordinary phrases (cours-patrick-waelbroeck-2026-27/cours-2 p. 38)
 - sortie du marché (« exiting the market ») — the figure's callout (cours-patrick-waelbroeck-2026-27/cours-2 p. 43), described in English prose
-- régulation — named once among the barriers to entry (cours-patrick-waelbroeck-2026-27/cours-3 p. 3), kept as printed (B5.4); réglementation, its neighbour on p. 9, is not glossed either
+- régulation — named once among the barriers to entry (cours-patrick-waelbroeck-2026-27/cours-3 p. 3), kept as printed; réglementation, its neighbour on p. 9, is not glossed either
 - monopolisation d'un input clé — a barrier to entry named as a phrase (cours-patrick-waelbroeck-2026-27/cours-3 p. 3); input is Sans glose
 - l'approche de Pigou — a heading (cours-patrick-waelbroeck-2026-27/cours-3 p. 10); its term is taxe pigouvienne
-- vignettes Crit'Air — the name of a French scheme (cours-patrick-waelbroeck-2026-27/cours-3 p. 9), spelt as B5.5 fixes it
+- vignettes Crit'Air — the name of a French scheme (cours-patrick-waelbroeck-2026-27/cours-3 p. 9), spelt correctly («Crit'air» on the slide)
 - typologie des biens économiques — a heading over the four types of goods (cours-patrick-waelbroeck-2026-27/cours-3 p. 16)
 - non-excluabilité — the negation of excluabilité (cours-patrick-waelbroeck-2026-27/cours-3 p. 18)
 - ressource commune — « La ressource commune » restates biens communs (cours-patrick-waelbroeck-2026-27/cours-3 p. 19)
@@ -597,7 +597,7 @@ does not gloss, each with the reason.
 - effet externe — the slide's synonym of externalités (chapter 5) (cours-concepts-cadres-theoriques-2026-27 p. 7)
 - relance et stabilisation de la conjoncture — the third function's name (cours-concepts-cadres-theoriques-2026-27 p. 7), made of relance and conjoncture
 - politiques économiques de régulation conjoncturelle monétaire ou budgétaire — a phrase naming politique monétaire and politique budgétaire (cours-concepts-cadres-theoriques-2026-27 p. 7)
-- valeur ajoutée brute — a row of the INSEE table (cours-concepts-cadres-theoriques-2026-27 p. 10, image), made of valeur ajoutée (VA), which is glossed; it stays unglossed in the PIB definition too (B7.2), where impôts sur les produits and subventions sur les produits are only mentioned too
+- valeur ajoutée brute — a row of the INSEE table (cours-concepts-cadres-theoriques-2026-27 p. 10, image), made of valeur ajoutée (VA), which is glossed; it stays unglossed in the PIB definition too, where impôts sur les produits and subventions sur les produits are only mentioned too
 - dépense de consommation finale, formation brute de capital, excédent brut d'exploitation et revenu mixte brut, rémunération des salariés — rows of the INSEE table (cours-concepts-cadres-theoriques-2026-27 p. 10, image), carried in the reproduced table; a table cell stays unglossed
 - par la production, par les revenus, par les dépenses — the Annexe 1 infographic's titles (cours-concepts-cadres-theoriques-2026-27 p. 53) for approche production, approche revenus and approche demande
 - transferts de richesse — the slide's paraphrase of prestations sociales, « (= transferts de richesse) » (cours-concepts-cadres-theoriques-2026-27 p. 12)
