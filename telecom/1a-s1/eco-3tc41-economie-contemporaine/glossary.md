@@ -83,13 +83,13 @@ only a term not yet in this table, and adds it here.
 | surplus total | total surplus | 3-analyse-bien-etre.tex | Surplus total | cours-patrick-waelbroeck-2026-27/cours-2 p. 21 |
 | efficacité de Pareto | Pareto efficiency | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 23 |
 | boîte d'Edgeworth | Edgeworth box | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 23 |
-| courbe de contrats | contract curve | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 28; the course's form, kept (B3.5) |
+| courbe de contrats | contract curve | 3-analyse-bien-etre.tex | Boîte d'Edgeworth | cours-patrick-waelbroeck-2026-27/cours-2 p. 28; the course's form, kept (B3.5) |
 | taux marginal de transformation | marginal rate of transformation | 3-analyse-bien-etre.tex | Product Mix | cours-patrick-waelbroeck-2026-27/cours-2 p. 29; printed «les taux marginaux de substitution et transformation» |
-| premier théorème du bien-être | first welfare theorem | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 30 |
-| main invisible | invisible hand | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 30; «La main invisible d'Adam Smith» |
-| planificateur social | social planner | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 30 |
-| deuxième théorème du bien-être | second welfare theorem | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 31 |
-| impôts forfaitaires | lump-sum taxes | 3-analyse-bien-etre.tex | L'efficacité de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 31; the slide prints «(lump-sum taxes)» beside it |
+| premier théorème du bien-être | first welfare theorem | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 30 |
+| main invisible | invisible hand | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 30; «La main invisible d'Adam Smith» |
+| planificateur social | social planner | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 30 |
+| deuxième théorème du bien-être | second welfare theorem | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 31 |
+| impôts forfaitaires | lump-sum taxes | 3-analyse-bien-etre.tex | Les théorèmes du bien-être | cours-patrick-waelbroeck-2026-27/cours-2 p. 31; the slide prints «(lump-sum taxes)» beside it |
 | critère de Pareto | Pareto criterion | 3-analyse-bien-etre.tex | Critiques du critère de Pareto | cours-patrick-waelbroeck-2026-27/cours-2 p. 33 |
 | critère max-min | maximin criterion | 3-analyse-bien-etre.tex | L'approche de John Rawls | cours-patrick-waelbroeck-2026-27/cours-2 p. 35 |
 | voile de l'ignorance | veil of ignorance | 3-analyse-bien-etre.tex | L'approche de John Rawls | cours-patrick-waelbroeck-2026-27/cours-2 p. 35 |
