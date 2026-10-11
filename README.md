@@ -48,6 +48,7 @@ more LaTeX documents gives each its own subdirectory, named by kind —
 |---|---|---|
 | ECE_3TC21 — Antennes & Propagation | Electrical engineering | [notes](telecom/1a-s1/ece-3tc21-propagation-antennes/ece-3tc21-propagation-antennes-notes.pdf) |
 | ECE_3TC32 — Compilation | Computing | [notes](telecom/1a-s1/ece-3tc32-compilation/ece-3tc32-compilation-notes.pdf) |
+| ECO_3TC41 — Introduction à l'économie contemporaine | Economics | [notes](telecom/1a-s1/eco-3tc41-economie-contemporaine/eco-3tc41-economie-contemporaine-notes.pdf) |
 | FMA_3TC10 — Analyse fonctionnelle et de Fourier | Mathematics | [notes (setup only)](telecom/1a-s1/fma-3tc10-analyse-fonctionnelle-fourier/fma-3tc10-analyse-fonctionnelle-fourier-notes.pdf) |
 | FMA_3TC11 — Probabilités | Mathematics | [notes](telecom/1a-s1/fma-3tc11-probabilites/fma-3tc11-probabilites-notes.pdf) |
 | PHY_3TC20 — Optique et Photonique | Physics | [notes](telecom/1a-s1/phy-3tc20-optique-photonique/phy-3tc20-optique-photonique-notes.pdf) |
@@ -65,6 +66,7 @@ more LaTeX documents gives each its own subdirectory, named by kind —
 - **Mathematics:** MA1521, MA2104, FMA_3TC10, FMA_3TC11, ISSU0128
 - **Statistics:** ST1131, ST2131, ST2132, ST3236, ST4234, ST4238
 - **Physics and electrical engineering:** PHY_3TC20, ECE_3TC21
+- **Economics:** ECO_3TC41
 
 ## Conventions
 
@@ -79,7 +81,7 @@ more LaTeX documents gives each its own subdirectory, named by kind —
 - **Committed PDFs.** Every document's built PDF is committed next to its source;
   LaTeX aux files are not.
 - **House style.** The `custom.sty` in `nus/y2s1/cs2100`, `nus/y2s1/cs3231` and
-  the five telecom modules is byte-identical to the house style's reference copy,
+  the six telecom modules is byte-identical to the house style's reference copy,
   `~/Documents/area/tex-templates/notes/custom.sty`. The cs3230 notes carry a later
   fork of it that adds numbered theorems, an index, `cleveref` and algorithms, which
   those notes depend on; the UCL notes carry an earlier variant.

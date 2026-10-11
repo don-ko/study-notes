@@ -8,7 +8,7 @@ in [`don-ko/telecom`](https://github.com/don-ko/telecom) (private)
 (`~/Documents/project/telecom/`). The notes moved here from its
 `<module>/notes/` directories on 2026-09-28.
 
-Five modules have notes: four are written from the material in their `cours/`,
+Six modules have notes: five are written from the material in their `cours/`,
 `td/` and `examens/`, and one FMA module holds only the setup, described below.
 The notes are **not** a second copy of the decks: the decks are slides, and
 these are continuous prose in the format the rest of my notes use, so the two
@@ -41,7 +41,7 @@ than 3 — subsubsections carry no number — and `titlesec` setting
 departure the French forces, and `fix-cm` rides with it: EC's optical sizes
 would otherwise print the 30pt title light where the reference prints it bold.
 `custom.sty` is **copied unchanged** from there — `shasum -a 256` matches across
-all seven documents and the house style's reference copy,
+all eight documents and the house style's reference copy,
 `~/Documents/area/tex-templates/notes/custom.sty` — so anything module-specific
 (TikZ libraries, `pgfplots`, the `listings` language definition for x86-64 GAS
 assembly) is declared in that module's main file instead, and the style package
@@ -53,6 +53,7 @@ never forks.
 | [`ece-3tc21-propagation-antennes`](1a-s1/ece-3tc21-propagation-antennes/) | 6 | 69 | the 131-page poly, the L1–L3 and L4–L5 amphi decks, and the three autonomy TD series |
 | [`ece-3tc32-compilation`](1a-s1/ece-3tc32-compilation/) | 7 + reference sheet | 55 | the séance-1 to séance-3 decks, the séance-1 x86 corrigés, the séance-3 TP templates, and Stanford CS107's x86-64 reference sheet — the séance-4 deck is held and has no chapter yet |
 | [`fma-3tc11-probabilites`](1a-s1/fma-3tc11-probabilites/) | 9 | 133 | the 187-page poly, its 102 exercises with their annexe E solutions, and the ten annales — the one lecture deck held is deliberately not a source |
+| [`eco-3tc41-economie-contemporaine`](1a-s1/eco-3tc41-economie-contemporaine/) | 9 | 108 | the 2026-27 « micro » decks (the course plan and three cours) and the three 2026-27 « macro » leçons — the six 2025-26 séance decks are deliberately not a source |
 
 The page counts are of the committed PDFs; `latexmk -pdf` from inside a module
 directory reproduces them, and that is where `custom.sty` has to be found.
@@ -66,15 +67,16 @@ exists until its chapter does — and the notes follow in their own spec. The co
 the abstract's "No chapters are written yet" paragraph, which is true only of
 the setup.
 
-A setup does not run against the Économie precedent below either: it commits to
-no content. 3TC10's material is 2025-26 too, but the decision to write its notes
-rests on one thing Économie lacks: its 2026/2027 Moodle course publishes those
-polys under *Supports et programme* with no rival 2026-27 series beside them.
-The vintage stays a recorded risk for the notes spec.
+A setup commits to no content, so the vintage test below does not apply to it.
+3TC10's material is 2025-26, and the decision to write its notes rests on its
+2026/2027 Moodle course publishing those polys under *Supports et programme* with
+no rival 2026-27 series beside them. The vintage stays a recorded risk for the
+notes spec.
 
-Économie has no notes. Its six séance decks print 2025 on every cover and the
-module README records their reuse this year as unconfirmed, so there is nothing
-yet worth writing notes against.
+Économie's notes are written from its two 2026-27 series alone. A held document
+is a notes source when its vintage is confirmed for the year being studied, or
+when it supplies content the confirmed sources do not. The module's six séance
+decks print 2025 on every cover and satisfy neither, so they are excluded.
 
 Compilation's seven chapters cover séances 1 to 3. **Séance 4 is the first
 séance whose deck is held while its notes are not** — 145 pages of LR parsing
@@ -96,7 +98,11 @@ it. Definitions, theorems and any prose that closely translates the source are
 the source's own French; the commentary written here stays English. The notes
 cite no source document — no slide, poly, corrigé or séance — so they stand on
 their own, and where a source is wrong they state the correct fact without
-pointing at the error. The exams are sat in French, and this is the vocabulary
+pointing at the error. Économie adds two things. Where an error is one an exam
+could turn on, a short remark titled *Formulation du cours* follows with the
+course's own wording, still naming no source. And where a figure borrowed from
+an English textbook prints a label only in English, the label takes the standard
+French term and the glossary row records the English. The exams are sat in French, and this is the vocabulary
 they use.
 
 ## Figures
@@ -115,5 +121,7 @@ the Probabilités notes
 ([2026-09-17](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-09-17-fma-3tc11-notes-design.md)),
 the Compilation x86-64 reference sheet
 ([2026-09-21](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-09-21-ece-3tc32-x86-reference-sheet-design.md)),
-and the French-first rewrite
-([2026-09-21](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-09-21-french-first-notes-design.md)).
+the French-first rewrite
+([2026-09-21](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-09-21-french-first-notes-design.md)),
+and the Économie notes
+([2026-10-10](https://github.com/don-ko/telecom/blob/main/docs/superpowers/specs/2026-10-10-eco-3tc41-notes-design.md)).
