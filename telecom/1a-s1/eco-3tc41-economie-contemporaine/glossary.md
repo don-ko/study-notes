@@ -122,7 +122,10 @@ only a term not yet in this table, and adds it here.
 | barrières à l'entrée | barriers to entry | 5-defaillances-marche.tex | Monopole | cours-patrick-waelbroeck-2026-27/cours-3 p. 3 |
 | recette totale (RT) | total revenue | 5-defaillances-marche.tex | Monopole | cours-patrick-waelbroeck-2026-27/cours-3 p. 4; printed in the slide's image; the text layer holds only the title |
 | recette marginale | marginal revenue | 5-defaillances-marche.tex | Monopole | not printed in French; the figure prints «Marginal revenue», cours-patrick-waelbroeck-2026-27/cours-3 p. 4; the slide's rm (B5.3) |
+| prix de monopole | monopoly price | 5-defaillances-marche.tex | Monopole | not printed in French; the figure prints «Monopoly price», cours-patrick-waelbroeck-2026-27/cours-3 p. 4 |
 | perte sèche | deadweight loss | 5-defaillances-marche.tex | Perte sèche | cours-patrick-waelbroeck-2026-27/cours-3 p. 5; also cours-patrick-waelbroeck-2026-27/plan-du-cours p. 2 |
+| quantité de monopole | monopoly quantity | 5-defaillances-marche.tex | Perte sèche | not printed in French; the figure prints «Monopoly quantity», cours-patrick-waelbroeck-2026-27/cours-3 p. 5 |
+| quantité efficace | efficient quantity | 5-defaillances-marche.tex | Perte sèche | not printed in French; the figure prints «Efficient quantity», cours-patrick-waelbroeck-2026-27/cours-3 p. 5 |
 | externalités | externalities | 5-defaillances-marche.tex | Externalités | cours-patrick-waelbroeck-2026-27/cours-3 p. 6 |
 | externalités positives | positive externalities | 5-defaillances-marche.tex | Externalités | cours-patrick-waelbroeck-2026-27/cours-3 p. 6 |
 | externalités négatives | negative externalities | 5-defaillances-marche.tex | Externalités | cours-patrick-waelbroeck-2026-27/cours-3 p. 6; «externalité négative», cours-patrick-waelbroeck-2026-27/cours-1 p. 3 |
